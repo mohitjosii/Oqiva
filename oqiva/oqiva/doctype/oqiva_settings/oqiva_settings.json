@@ -1,0 +1,118 @@
+{
+ "actions": [],
+ "creation": "2026-11-01 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sec_limits",
+  "max_objects_per_board",
+  "max_document_bytes",
+  "max_boards_per_workspace",
+  "workspace_storage_bytes",
+  "col_retention",
+  "trash_retention_days",
+  "auto_version_interval_min",
+  "version_retention",
+  "sec_access",
+  "auto_grant_role",
+  "realtime_reauth_seconds"
+ ],
+ "fields": [
+  {
+   "fieldname": "sec_limits",
+   "fieldtype": "Section Break",
+   "label": "Fair-use limits"
+  },
+  {
+   "fieldname": "max_objects_per_board",
+   "fieldtype": "Int",
+   "label": "Max Objects Per Board",
+   "default": "3000",
+   "description": "Objects (shapes, connectors, sections) per board."
+  },
+  {
+   "fieldname": "max_document_bytes",
+   "fieldtype": "Long Int",
+   "label": "Max Document Bytes",
+   "default": "5242880",
+   "description": "Largest saved board document, in bytes."
+  },
+  {
+   "fieldname": "max_boards_per_workspace",
+   "fieldtype": "Int",
+   "label": "Max Boards Per Workspace",
+   "default": "2000"
+  },
+  {
+   "fieldname": "workspace_storage_bytes",
+   "fieldtype": "Long Int",
+   "label": "Workspace Storage Bytes",
+   "default": "2147483648",
+   "description": "Image storage per workspace, in bytes."
+  },
+  {
+   "fieldname": "col_retention",
+   "fieldtype": "Column Break",
+   "label": "Col Retention"
+  },
+  {
+   "fieldname": "trash_retention_days",
+   "fieldtype": "Int",
+   "label": "Trash Retention Days",
+   "default": "30"
+  },
+  {
+   "fieldname": "auto_version_interval_min",
+   "fieldtype": "Int",
+   "label": "Auto Version Interval Min",
+   "default": "10"
+  },
+  {
+   "fieldname": "version_retention",
+   "fieldtype": "Int",
+   "label": "Version Retention",
+   "default": "50"
+  },
+  {
+   "fieldname": "sec_access",
+   "fieldtype": "Section Break",
+   "label": "Access"
+  },
+  {
+   "fieldname": "auto_grant_role",
+   "fieldtype": "Check",
+   "label": "Grant the Oqiva User role on first visit",
+   "default": "1"
+  },
+  {
+   "fieldname": "realtime_reauth_seconds",
+   "fieldtype": "Int",
+   "label": "Realtime Reauth Seconds",
+   "default": "15",
+   "description": "How often a live editing session is re-checked."
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-01 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Oqiva",
+ "name": "Oqiva Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1
+  },
+  {
+   "role": "Oqiva Admin",
+   "read": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "issingle": 1
+}

@@ -1,0 +1,190 @@
+{
+ "actions": [],
+ "creation": "2026-11-01 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "workspace",
+  "project",
+  "title",
+  "description",
+  "sec_content",
+  "document",
+  "crdt_state",
+  "revision",
+  "schema_version",
+  "last_save_id",
+  "object_count",
+  "thumbnail",
+  "sec_state",
+  "created_by_user",
+  "last_opened_on",
+  "archived_on",
+  "is_trashed",
+  "trashed_on",
+  "trashed_with_project",
+  "has_active_link"
+ ],
+ "fields": [
+  {
+   "fieldname": "workspace",
+   "fieldtype": "Link",
+   "label": "Workspace",
+   "options": "Oqiva Workspace",
+   "reqd": 1,
+   "set_only_once": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Oqiva Project",
+   "search_index": 1
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "label": "Title",
+   "reqd": 1,
+   "length": 120,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "sec_content",
+   "fieldtype": "Section Break",
+   "label": "Content"
+  },
+  {
+   "fieldname": "document",
+   "fieldtype": "JSON",
+   "label": "Document"
+  },
+  {
+   "fieldname": "crdt_state",
+   "fieldtype": "Long Text",
+   "label": "Crdt State",
+   "read_only": 1
+  },
+  {
+   "fieldname": "revision",
+   "fieldtype": "Int",
+   "label": "Revision",
+   "default": "1",
+   "read_only": 1
+  },
+  {
+   "fieldname": "schema_version",
+   "fieldtype": "Int",
+   "label": "Schema Version",
+   "default": "1",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_save_id",
+   "fieldtype": "Data",
+   "label": "Last Save Id",
+   "read_only": 1
+  },
+  {
+   "fieldname": "object_count",
+   "fieldtype": "Int",
+   "label": "Object Count",
+   "read_only": 1
+  },
+  {
+   "fieldname": "thumbnail",
+   "fieldtype": "Attach Image",
+   "label": "Thumbnail",
+   "read_only": 1
+  },
+  {
+   "fieldname": "sec_state",
+   "fieldtype": "Section Break",
+   "label": "State"
+  },
+  {
+   "fieldname": "created_by_user",
+   "fieldtype": "Link",
+   "label": "Created By User",
+   "options": "User",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "last_opened_on",
+   "fieldtype": "Datetime",
+   "label": "Last Opened On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "archived_on",
+   "fieldtype": "Datetime",
+   "label": "Archived On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "is_trashed",
+   "fieldtype": "Check",
+   "label": "Is Trashed",
+   "search_index": 1
+  },
+  {
+   "fieldname": "trashed_on",
+   "fieldtype": "Datetime",
+   "label": "Trashed On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "trashed_with_project",
+   "fieldtype": "Link",
+   "label": "Trashed With Project",
+   "options": "Oqiva Project",
+   "read_only": 1
+  },
+  {
+   "fieldname": "has_active_link",
+   "fieldtype": "Check",
+   "label": "Has Active Link",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-01 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Oqiva",
+ "name": "Oqiva Board",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "Oqiva User",
+   "read": 1
+  },
+  {
+   "role": "Oqiva Admin",
+   "read": 1,
+   "report": 1,
+   "export": 1
+  },
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "autoname": "hash",
+ "naming_rule": "Random",
+ "track_changes": 1,
+ "row_format": "Dynamic",
+ "title_field": "title"
+}

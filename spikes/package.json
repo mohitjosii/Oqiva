@@ -1,0 +1,12 @@
+{
+  "name": "oqiva-spikes",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "playwright-core": "1.49.1",
+    "socket.io-client": "^4.7.5",
+    "yjs": "^13.6.20",
+    "y-protocols": "^1.0.6",
+    "lib0": "^0.2.99"
+  }
+}

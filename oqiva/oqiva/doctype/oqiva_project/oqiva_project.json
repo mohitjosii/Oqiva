@@ -1,0 +1,112 @@
+{
+ "actions": [],
+ "creation": "2026-11-01 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "workspace",
+  "project_name",
+  "description",
+  "color",
+  "icon",
+  "created_by_user",
+  "archived_on",
+  "is_trashed",
+  "trashed_on"
+ ],
+ "fields": [
+  {
+   "fieldname": "workspace",
+   "fieldtype": "Link",
+   "label": "Workspace",
+   "options": "Oqiva Workspace",
+   "reqd": 1,
+   "set_only_once": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "label": "Project Name",
+   "reqd": 1,
+   "length": 120,
+   "in_list_view": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Select",
+   "label": "Color",
+   "options": "gray\nblue\ngreen\norange\nred\nviolet\nteal\npink",
+   "default": "blue"
+  },
+  {
+   "fieldname": "icon",
+   "fieldtype": "Data",
+   "label": "Icon",
+   "length": 64
+  },
+  {
+   "fieldname": "created_by_user",
+   "fieldtype": "Link",
+   "label": "Created By User",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "archived_on",
+   "fieldtype": "Datetime",
+   "label": "Archived On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "is_trashed",
+   "fieldtype": "Check",
+   "label": "Is Trashed",
+   "search_index": 1
+  },
+  {
+   "fieldname": "trashed_on",
+   "fieldtype": "Datetime",
+   "label": "Trashed On",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-01 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Oqiva",
+ "name": "Oqiva Project",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "Oqiva User",
+   "read": 1
+  },
+  {
+   "role": "Oqiva Admin",
+   "read": 1,
+   "report": 1,
+   "export": 1
+  },
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1,
+   "export": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "autoname": "hash",
+ "naming_rule": "Random",
+ "track_changes": 1,
+ "row_format": "Dynamic",
+ "title_field": "project_name"
+}

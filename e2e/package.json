@@ -1,0 +1,11 @@
+{
+  "name": "oqiva-e2e",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "home": "node home.e2e.mjs"
+  },
+  "devDependencies": {
+    "playwright-core": "1.49.1"
+  }
+}

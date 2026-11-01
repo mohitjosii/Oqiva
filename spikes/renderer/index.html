@@ -1,0 +1,99 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Renderer spike</title>
+<style>
+	html, body { margin: 0; height: 100%; overflow: hidden; }
+	svg { width: 100vw; height: 100vh; display: block; background: #f7f7f7; }
+	text { font: 13px Inter, sans-serif; fill: #222; pointer-events: none; }
+</style>
+<svg id="canvas" xmlns="http://www.w3.org/2000/svg"><g id="world"></g></svg>
+<script>
+	// An SVG canvas holding N shapes, each a rounded rectangle with a label, laid out on
+	// a grid. It can mount every object, or only those that intersect the viewport.
+	const NS = "http://www.w3.org/2000/svg"
+	const svg = document.getElementById("canvas")
+	const world = document.getElementById("world")
+	const view = { x: 0, y: 0, scale: 1 }
+	let objects = []
+	let culling = false
+	const mounted = new Map()
+
+	function make(i, cols) {
+		const col = i % cols, row = Math.floor(i / cols)
+		return { id: i, x: col * 200, y: row * 130, w: 160, h: 90, label: `Shape ${i}` }
+	}
+
+	function mount(o) {
+		const g = document.createElementNS(NS, "g")
+		const rect = document.createElementNS(NS, "rect")
+		rect.setAttribute("width", o.w); rect.setAttribute("height", o.h); rect.setAttribute("rx", 8)
+		rect.setAttribute("fill", "#fff"); rect.setAttribute("stroke", "#6b7280"); rect.setAttribute("stroke-width", 1.5)
+		const text = document.createElementNS(NS, "text")
+		text.setAttribute("x", o.w / 2); text.setAttribute("y", o.h / 2 + 4); text.setAttribute("text-anchor", "middle")
+		text.textContent = o.label
+		g.append(rect, text)
+		g.setAttribute("transform", `translate(${o.x} ${o.y})`)
+		world.appendChild(g)
+		mounted.set(o.id, g)
+	}
+
+	function visible(o) {
+		const vw = svg.clientWidth / view.scale, vh = svg.clientHeight / view.scale
+		const left = -view.x / view.scale, top = -view.y / view.scale
+		return o.x + o.w > left && o.x < left + vw && o.y + o.h > top && o.y < top + vh
+	}
+
+	function sync() {
+		world.setAttribute("transform", `translate(${view.x} ${view.y}) scale(${view.scale})`)
+		if (!culling) return
+		for (const o of objects) {
+			const show = visible(o)
+			const has = mounted.has(o.id)
+			if (show && !has) mount(o)
+			else if (!show && has) { mounted.get(o.id).remove(); mounted.delete(o.id) }
+		}
+	}
+
+	window.setup = (n, useCulling) => {
+		world.replaceChildren(); mounted.clear()
+		culling = useCulling
+		const cols = Math.ceil(Math.sqrt(n * 1.6))
+		objects = Array.from({ length: n }, (_, i) => make(i, cols))
+		view.x = 0; view.y = 0; view.scale = 1
+		const t0 = performance.now()
+		if (!culling) objects.forEach(mount)
+		sync()
+		return performance.now() - t0
+	}
+
+	// Runs ``step`` once per animation frame for ``frames`` frames and times each frame.
+	window.measure = (frames, step) => new Promise((resolve) => {
+		const times = []
+		let last = null, count = 0
+		function tick(now) {
+			if (last !== null) times.push(now - last)
+			last = now
+			if (count++ >= frames) {
+				times.sort((a, b) => a - b)
+				const avg = times.reduce((s, v) => s + v, 0) / times.length
+				resolve({ avg, p95: times[Math.floor(times.length * 0.95)], max: times[times.length - 1] })
+				return
+			}
+			step(count)
+			requestAnimationFrame(tick)
+		}
+		requestAnimationFrame(tick)
+	})
+
+	window.pan = (frames) => measure(frames, (i) => { view.x -= 14; view.y -= 6; sync() })
+	window.zoom = (frames) => measure(frames, (i) => {
+		view.scale = 0.25 + 1.75 * (0.5 + 0.5 * Math.sin(i / 18)); sync()
+	})
+	window.drag = (frames) => measure(frames, (i) => {
+		const o = objects[Math.floor(objects.length / 2)]
+		o.x += 3; o.y += 1
+		const g = mounted.get(o.id)
+		if (g) g.setAttribute("transform", `translate(${o.x} ${o.y})`)
+	})
+	window.mountedCount = () => mounted.size
+</script>

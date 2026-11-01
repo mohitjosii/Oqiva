@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [version-16, develop]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.event.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - run: pip install ruff semgrep
+      - name: Ruff
+        run: |
+          ruff check oqiva
+          ruff format --check oqiva
+      - name: Frappe semgrep rules
+        run: |
+          git clone --depth 1 https://github.com/frappe/semgrep-rules.git frappe-semgrep-rules
+          semgrep --metrics=off --error --config ./frappe-semgrep-rules/rules --config r/python.lang.correctness oqiva realtime scripts
+
+  frontend:
+    name: Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: yarn install --frozen-lockfile
+        working-directory: frontend
+      - name: Unit tests
+        run: yarn test
+        working-directory: frontend
+      - name: Production build
+        run: yarn build
+        working-directory: frontend
+      - name: Relay handler loads
+        run: node -e "require('./realtime/handlers.js')"
+
+  licenses:
+    name: Dependency licences
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: yarn install --frozen-lockfile
+        working-directory: frontend
+      - run: python3 scripts/check_licenses.py
+
+  tests:
+    name: Frappe tests
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:11.8
+        env:
+          MARIADB_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=5s --health-timeout=5s --health-retries=10
+      redis-cache:
+        image: redis:alpine
+        ports:
+          - 13000:6379
+      redis-queue:
+        image: redis:alpine
+        ports:
+          - 11000:6379
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install bench
+        run: pip install frappe-bench
+      - name: Create bench
+        run: bench init --skip-redis-config-generation --skip-assets --python "$(which python)" --frappe-branch version-16 ~/frappe-bench
+      - name: Create site and install Oqiva
+        working-directory: /home/runner/frappe-bench
+        run: |
+          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL character_set_server = 'utf8mb4'"
+          mariadb --host 127.0.0.1 --port 3306 -u root -proot -e "SET GLOBAL collation_server = 'utf8mb4_unicode_ci'"
+          bench get-app oqiva "${GITHUB_WORKSPACE}"
+          bench setup requirements --dev
+          bench new-site --db-root-password root --admin-password admin --no-mariadb-socket test_site
+          bench --site test_site install-app oqiva
+          bench --site test_site set-config allow_tests true
+          bench --site test_site set-config developer_mode 1
+      - name: Run tests
+        working-directory: /home/runner/frappe-bench
+        run: bench --site test_site run-tests --app oqiva

@@ -1,0 +1,9 @@
+{
+  "name": "oqiva",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "build": "cd frontend && yarn install --frozen-lockfile && yarn build",
+    "test": "cd frontend && yarn test"
+  }
+}

@@ -1,33 +1,57 @@
-### Oqiva
+# Oqiva
 
-Create and manage your all workflow at one place
+A shared visual workspace for diagrams, flows and ideas, built as a Frappe app. Teams
+organise boards into projects inside workspaces, share them with the right level of
+access, and (from Phase 3) draw on an infinite canvas together.
 
-### Installation
+**Status:** Phases 1 and 2 are built: workspaces, members and invites, projects, the
+board list and lifecycle (create, rename, move, duplicate, archive, trash, restore,
+delete), favorites, recents, search, and the permission model. The canvas editor,
+sharing, comments and realtime arrive in later phases. See `docs/DEVELOPMENT_PLAN.md`.
 
-You can install this app using the [bench](https://github.com/frappe/bench) CLI:
-
-```bash
-cd $PATH_TO_YOUR_BENCH
-bench get-app $URL_OF_THIS_REPO --branch version-16
-bench install-app oqiva
-```
-
-### Contributing
-
-This app uses `pre-commit` for code formatting and linting. Please [install pre-commit](https://pre-commit.com/#installation) and enable it for this repository:
+## Install
 
 ```bash
-cd apps/oqiva
-pre-commit install
+bench get-app oqiva /path/to/oqiva          # or the git URL
+bench --site your-site install-app oqiva
+bench build --app oqiva                      # builds the SPA in frontend/
 ```
 
-Pre-commit is configured to use the following tools for checking and formatting your code:
+Open `/oqiva`. The first visit creates your personal workspace.
 
-- ruff
-- eslint
-- prettier
-- pyupgrade
+## Develop
 
-### License
+```bash
+# backend tests (need allow_tests in the site config)
+bench --site your-site run-tests --app oqiva
 
-mit
+# frontend
+cd frontend
+yarn install
+yarn dev        # hot reload, proxied to the bench
+yarn test
+yarn build      # writes oqiva/public/frontend and oqiva/www/oqiva.html
+
+# lint and the dependency licence check
+ruff check oqiva && ruff format --check oqiva
+python3 scripts/check_licenses.py
+```
+
+Browser checks live in `e2e/` (see its README). Spikes that settled early risks live
+in `spikes/`.
+
+## Layout
+
+| Path | What it holds |
+|---|---|
+| `oqiva/access/` | Who the caller is to a record (`resolve.py`), the rules table (`rules.py`), Frappe permission hooks, and the service-write guard |
+| `oqiva/services/` | Business logic. Every write is checked here, then made |
+| `oqiva/api/` | Thin whitelisted endpoints. Every endpoint that changes state is POST only |
+| `oqiva/oqiva/doctype/` | The DocTypes |
+| `realtime/handlers.js` | The relay that Frappe's socket server loads for live editing |
+| `frontend/` | The Vue 3 and frappe-ui single-page app |
+| `docs/` | Architecture, decisions, the Draw feature reference, the development plan, the security test plan |
+
+## Licence
+
+MIT. See `license.txt`.

@@ -1,0 +1,32 @@
+{
+  "name": "oqiva-frontend",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build --base=/assets/oqiva/frontend/ && yarn copy-html-entry",
+    "copy-html-entry": "cp ../oqiva/public/frontend/index.html ../oqiva/www/oqiva.html",
+    "test": "vitest run",
+    "format": "prettier --write \"src/**/*.{js,vue}\""
+  },
+  "dependencies": {
+    "frappe-ui": "^0.1.278",
+    "vue": "^3.5.12",
+    "vue-router": "^4.4.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.4",
+    "@vue/test-utils": "^2.4.6",
+    "autoprefixer": "^10.4.20",
+    "jsdom": "^25.0.1",
+    "postcss": "^8.4.47",
+    "prettier": "^3.3.3",
+    "tailwindcss": "^3.4.14",
+    "vite": "^5.4.10",
+    "vitest": "^2.1.8"
+  },
+  "resolutions": {
+    "rollup": "4.63.5"
+  }
+}

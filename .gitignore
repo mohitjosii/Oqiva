@@ -53,3 +53,9 @@ jspm_packages/
 
 # Aider AI Chat
 .aider*
+
+# Oqiva frontend: dependencies and build output
+node_modules/
+oqiva/public/frontend/
+oqiva/www/oqiva.html
+frontend/dist/
