@@ -503,3 +503,32 @@ Where the built code differs from, or settles, something in this document.
 | Socket in the SPA | frappe-ui's socket is switched off (`FrappeUI` option `socketio: false`) until Phase 5. | It tried to open a connection nothing listens to. |
 | Onboarding | `/welcome` asks for a workspace name only. Role chips were left out. | They changed nothing yet. |
 | Semgrep | The official Frappe semgrep rules report 0 findings on `oqiva/`, `realtime/` and `scripts/`. | Part of P1.10. |
+
+---
+
+## 21. Implementation notes for Phase 3 (canvas engine core)
+
+The engine lives in `frontend/src/engine/`. Its layers follow section 15.1, and a test (`boundary.test.js`) fails if any engine file calls the server, so the engine can be tested and reused on its own.
+
+| Layer | Files | What it does |
+|---|---|---|
+| Model | `model/` | Document schema v1 with `parseDocument` (migrates, clamps, drops what cannot be drawn, keeps object kinds from newer versions), themes, shape geometry, factories |
+| Geometry | `geometry/` | The one screen to board transform (zoom 10-400% about the cursor, fit, pan clamping), rotated bounds, outline-accurate hit testing, resize and rotation maths in the object's own frame |
+| Text | `text/` | Rich text model, wrapping layout, auto height, conversion to and from Tiptap (ADR-010) |
+| Store | `store/` | Operations (add, remove, update, canvas, theme), each returning its inverse; history of up to 100 steps with coalescing; gestures that turn a drag into one step; selection, limits |
+| Interaction | `interaction/` | A pointer controller driven by plain event objects, a pure keymap, commands, view helpers |
+| Render | `render/`, `ui/` | `BoardCanvas` (grid, page, only the objects on screen), `ShapeView`, selection overlay, text editor overlay, floating palette, save indicator, shortcuts dialog |
+| Persistence | `persistence/` | An autosave state machine (1.5 s debounce, retry with backoff, retry-safe save ids, conflict stop), failure classification |
+
+Decisions and behaviour worth knowing:
+
+- **Objects are values.** An edit replaces an object, so an unchanged object is the same object. Vue skips redrawing it, and bounds are cached per object.
+- **Every change is an operation** with a recorded inverse, so undo never stores pointer positions. The same stream will feed realtime in Phase 5. Savers hear about a finished step, never about the frames of a drag.
+- **Only what is on screen is drawn** (plus a margin), and no text is drawn below 35% zoom (ADR-009). A board opened framed to fit shows every object, so it draws them all, without text.
+- **Saved honestly.** The indicator says Saved only after the server confirmed. A retry of unchanged content reuses its save id, so a save whose reply was lost is recognised and not reported as a conflict. A real conflict stops saving and keeps the board read-only until reload.
+- **A new empty text box leaves no trace**: its creation is taken back out of history, so it cannot be redone either.
+- **The board page follows the route.** It takes the board name as an argument when it sends a request, and clears the previous board while the next one loads. A browser run found it asking for a board after the person had already left.
+- **Limits.** Server and client both enforce the object limit (`max_objects_per_board`) and the document size limit. Lowering a limit never stops an existing board opening.
+- **Settings are numbers.** Frappe returns a Long Int setting as text, so `get_setting` converts every value. A test found this when a size comparison failed.
+- **Tests that change settings put them back** (`RestoresSettings`), because Frappe rolls back only when a test class ends.
+- **The one test that commits** (`TestConcurrentSaves`) deletes only the rows it made, and only `@oqiva.test` users.

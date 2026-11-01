@@ -22,6 +22,8 @@ READ_ONLY_ENDPOINTS = {
 	"get_board",
 	"query",
 	"authorize",
+	"load_document",
+	"get_revision",
 }
 
 
@@ -175,3 +177,14 @@ class TestUninstall(IntegrationTestCase):
 		self.assertFalse(frappe.db.exists("DocShare", {"share_doctype": "Oqiva Board"}))
 		self.assertFalse(frappe.db.exists("Role", ROLE_USER))
 		self.assertFalse(frappe.db.exists("Has Role", {"role": ROLE_USER}))
+
+
+class TestSettings(IntegrationTestCase):
+	def test_settings_come_back_as_numbers(self):
+		"""Success: Long Int settings, which Frappe returns as text, are converted."""
+		from oqiva.utils.settings import get_setting
+
+		self.assertEqual(get_setting("max_document_bytes"), 5 * 1024 * 1024)
+		self.assertIsInstance(get_setting("workspace_storage_bytes"), int)
+		frappe.db.set_single_value("Oqiva Settings", "max_document_bytes", 1234)
+		self.assertEqual(get_setting("max_document_bytes"), 1234)

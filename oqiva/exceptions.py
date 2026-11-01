@@ -53,3 +53,19 @@ class OqivaLimitExceeded(OqivaError):
 	"""A configured fair-use limit would be exceeded."""
 
 	code = "OQIVA_LIMIT_EXCEEDED"
+
+
+class OqivaStaleRevision(OqivaConflict):
+	"""A save was made against a revision that is no longer the current one."""
+
+	code = "OQIVA_STALE_REVISION"
+
+	@classmethod
+	def default_message(cls) -> str:
+		return _("This board was changed somewhere else. Reload to see the latest version.")
+
+
+class OqivaDocumentTooNew(OqivaError):
+	"""The stored document was written by a newer version of the app."""
+
+	code = "OQIVA_DOCUMENT_TOO_NEW"

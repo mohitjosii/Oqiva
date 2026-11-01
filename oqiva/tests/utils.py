@@ -8,7 +8,7 @@ from types import SimpleNamespace
 
 import frappe
 
-from oqiva.constants import ROLE_USER
+from oqiva.constants import ROLE_USER, SETTINGS_DEFAULTS
 from oqiva.services import board_service, member_service, project_service, workspace_service
 
 
@@ -68,3 +68,22 @@ def share_board(board: str, user: str, level: str) -> None:
 	frappe.share.add(
 		"Oqiva Board", board, user=user, share=0, notify=0, flags={"ignore_share_permission": True}, **flags
 	)
+
+
+class RestoresSettings:
+	"""Mix into a test case that changes Oqiva Settings: they are put back after every test.
+
+	Frappe rolls the database back only when a test class ends, so a setting changed in one
+	test would otherwise leak into the next.
+	"""
+
+	def setUp(self):
+		super().setUp()
+		self._saved_settings = {
+			name: frappe.db.get_single_value("Oqiva Settings", name) for name in SETTINGS_DEFAULTS
+		}
+
+	def tearDown(self):
+		for name, value in self._saved_settings.items():
+			frappe.db.set_single_value("Oqiva Settings", name, value)
+		super().tearDown()

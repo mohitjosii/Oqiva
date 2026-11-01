@@ -522,7 +522,7 @@
   dependencies:
     "@tanstack/virtual-core" "3.19.9"
 
-"@tiptap/core@3.32.2", "@tiptap/core@^3.11.0":
+"@tiptap/core@3.32.2", "@tiptap/core@^3.11.0", "@tiptap/core@^3.26.0":
   version "3.32.2"
   resolved "https://registry.yarnpkg.com/@tiptap/core/-/core-3.32.2.tgz#d25bf32076bf2a0d47c95874117c7f3477099608"
   integrity sha512-EitM8KY3agYfnp/bqhfxcaReVq4CUqVzMqoSIl7xSfYABTGYoTDtVXUdYSGutcCBFjc86BbXjrOlDlqkgC8BsQ==
@@ -686,12 +686,12 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-task-list/-/extension-task-list-3.32.2.tgz#02e9877e70ae53a3ea08e234b621145581e90f98"
   integrity sha512-nnJa/ih9EgiUcP5z8Zth4lnPHBZQyJqmNv3Wvpyr+QvG45kqtRQUIyt51iy9yQNdVM9YaHyO5KcVnmtXTIzxpg==
 
-"@tiptap/extension-text-align@^3.11.0":
+"@tiptap/extension-text-align@^3.11.0", "@tiptap/extension-text-align@^3.26.0":
   version "3.32.2"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-text-align/-/extension-text-align-3.32.2.tgz#770ad94782c9231f69a4845d68089043b5f39ee2"
   integrity sha512-o1DKPodB0FKqpdYp/OKyM6nYSbZXnPEC9rWx/O/Vccs2OOeF08iOO3cKYs1lS/qNg/xFeR8gKxGMrve7CfCkKA==
 
-"@tiptap/extension-text-style@^3.11.0":
+"@tiptap/extension-text-style@^3.11.0", "@tiptap/extension-text-style@^3.26.0":
   version "3.32.2"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-text-style/-/extension-text-style-3.32.2.tgz#0b4cc4e7e3ddf09130f44edda6a33a62661ebc71"
   integrity sha512-7VHyvO8V7xCOj4BY56gqCylZXF972dtk+ngIIXT19nhBXYuQZKXGrN11xPrfMip/1nGsMWov9PZB2HleYJnXGQ==
@@ -716,7 +716,7 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extensions/-/extensions-3.32.2.tgz#58d374ec86b7a58a5872a6a532e61637136939e8"
   integrity sha512-TUE1JedPjYQ/T527f2a4xz+4Xi1a5nIgW8KwC0DjmqbaHirlz0eCNI2nMEN70pu5WPpqgXmki3lCF3LScQxIGw==
 
-"@tiptap/pm@3.32.2", "@tiptap/pm@^3.11.0":
+"@tiptap/pm@3.32.2", "@tiptap/pm@^3.11.0", "@tiptap/pm@^3.26.0":
   version "3.32.2"
   resolved "https://registry.yarnpkg.com/@tiptap/pm/-/pm-3.32.2.tgz#c966dfd10171ab9b8f93715525cad8af0b4faf5c"
   integrity sha512-4cuUbYf55NnYBIvDBK/K1VFVQ4pocKwAZC5TAy4s9dptvazxVHkQVMbiQsyhwfIbM4rxmHWkM/6omaFfTB++/g==
@@ -735,7 +735,7 @@
     prosemirror-transform "^1.12.2"
     prosemirror-view "^1.42.6"
 
-"@tiptap/starter-kit@^3.11.0":
+"@tiptap/starter-kit@^3.11.0", "@tiptap/starter-kit@^3.26.0":
   version "3.32.2"
   resolved "https://registry.yarnpkg.com/@tiptap/starter-kit/-/starter-kit-3.32.2.tgz#4c8163713ceff77b77f71413d7569420aa4c7323"
   integrity sha512-6K+oOMF4orhnOxivgUTKiSpNAEftHyWOcfFIvIEMUP044b34obBUogzMTfM3RjtewZtQXVafO9zmGU30IllC1g==
@@ -770,7 +770,7 @@
   resolved "https://registry.yarnpkg.com/@tiptap/suggestion/-/suggestion-3.32.2.tgz#a4ff478ad03def43815a40fd10002548fa210bae"
   integrity sha512-AD6WQ+mEFLok8svJv6Ibffyao+vXBGn3klQo4gCXH+UHwtgct5tF4goL9Rsz8J6zcDmYfx5W8AqYjBiQIyRNHA==
 
-"@tiptap/vue-3@^3.11.0":
+"@tiptap/vue-3@^3.11.0", "@tiptap/vue-3@^3.26.0":
   version "3.32.2"
   resolved "https://registry.yarnpkg.com/@tiptap/vue-3/-/vue-3-3.32.2.tgz#8f3ce1afd63f6edafb9f60c4f72be73536eaa4ad"
   integrity sha512-d3v4FgfaCRO8Ku8K+ArXAjhqqMBAAWjh/tUqMLZaLYfTJIC3s5Y/6BCTun7Ds4e8I40Jf8cMqCx3xPLq7nsoEQ==

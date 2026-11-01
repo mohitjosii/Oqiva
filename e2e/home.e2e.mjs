@@ -33,7 +33,8 @@ await step("creates a fresh workspace, which starts empty with a first-run promp
 await step("creates a board and opens it", async () => {
 	await page.getByRole("button", { name: "New board" }).first().click()
 	await page.waitForURL(/\/oqiva\/board\//)
-	await expect(page.getByRole("heading", { name: "The canvas editor is coming next" })).toBeVisible()
+	await expect(page.locator('[data-testid="board-canvas"]')).toBeVisible()
+	await expect(page.locator('[data-testid="palette"]')).toBeVisible()
 	await shot(page, "03-board")
 	await page.getByRole("button", { name: "Back to workspace" }).first().click()
 	await expect(page.getByRole("heading", { name: /Welcome back/ })).toBeVisible()

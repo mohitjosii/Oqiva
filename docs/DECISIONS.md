@@ -125,3 +125,20 @@ These numbers come from a virtual machine with no GPU, so the browser rasterised
 - Zoomed far out, the viewport holds hundreds of objects, which is where the remaining zoom cost sits. The renderer therefore draws a **simplified shape (no text) below a zoom threshold**.
 - Dragging one object is cheap at any size, so dragging needs no special handling.
 - Re-measure on real hardware in P13.02 before raising the limit.
+
+## ADR-010: The engine draws text itself and uses Tiptap only to edit it
+**Status:** Accepted (Phase 3, 2026-11-01)
+**Context:** Text in shapes must look the same in the editor, the viewer, exports and thumbnails (one render-to-SVG path), and must be saved as plain data. Putting Tiptap's HTML inside the canvas (a `foreignObject`) would break SVG and PNG export and tie the saved format to the editor library.
+**Decision:**
+- A shape's text is stored as our own small model: paragraphs of runs `{t, b, i, u, c}`, with size, colour and alignment on the object.
+- The canvas lays the text out itself (`engine/text/layout.js`, wrapping at spaces, breaking over-long words, honouring line breaks) and draws it as SVG `<text>`. Measuring uses the browser's font engine, and the layout is the same function in tests with a fake ruler.
+- While text is edited, a Tiptap editor is laid exactly over the shape (same position, rotation and zoom). On every keystroke its content is converted to our model and applied as a live gesture, so the whole edit is one undo step and the shape grows to keep its text inside.
+- Colours anywhere in a document must be plain hex. The client drops anything else, and the server refuses it, so a collaborator's document can never make a browser fetch an address of their choosing.
+
+**Consequences:** Export, thumbnails and the viewer need no HTML. The HTML editor and the SVG text can wrap a line differently by a character or two, because they use different layout engines. Both use the same font, size and line height, and the SVG layout is what is saved and shown. Replacing Tiptap later would not touch the saved format.
+
+## ADR-011: One document saved whole, under a row lock, against a revision
+**Status:** Accepted (Phase 3, 2026-11-01)
+**Decision:** `board.save_document` takes the whole document, the revision the client last saw and a save id. It validates the document's structure and size, locks the board row, and writes only if the revision still matches. A repeated save id returns the earlier result. Loading reports `corrupt` or `too_new` instead of opening a blank board, so a damaged document can never be overwritten by accident.
+**Tested:** two saves from two database connections at the same moment: exactly one wins, the other gets a stale-revision error (`test_document.py`, T5.3).
+**Consequences:** Until realtime arrives (Phase 5) a second writer stops with "changed somewhere else" and must reload. Saving the whole document is simple and safe at the 3,000-object limit (about 1 MB); deltas can come later if measurements say so.

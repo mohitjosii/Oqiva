@@ -23,7 +23,8 @@
 | Milestone | After phase | What you get | 1 developer | 2 developers (§Team) |
 |---|---|---|---|---|
 | **M0** Architecture signed off | 0 | Docs (done 2026-10-31) | – | – |
-| Foundation and home area | 2 | Phases 1 and 2 built 2026-11-01, awaiting review | – | – |
+| Foundation and home area | 2 | Phases 1 and 2 built 2026-11-01, committed | – | – |
+| Canvas engine core | 3 | Phase 3 built 2026-11-01 on `canvas_engine`, awaiting review | – | – |
 | **M1 MVP** (internal UAT) | 7 | Oqiva parity for block diagrams: workspaces, projects, boards, editor, connectors, shape library, templates, realtime, comments, sharing, versions, export and import | ~25 weeks | ~15–16 weeks |
 | **M2 v1** | 10 | MVP plus Draw-level mind maps, flowcharts and whiteboard | ~34 weeks | ~23–25 weeks |
 | **M3 v1.1** | 13 | Feedback, admin console, AI and hardening, release | ~40 weeks | ~27–28 weeks |
@@ -89,7 +90,16 @@
 
 ---
 
-## Phase 3: Canvas engine core (about 4.5 weeks)
+## Phase 3: Canvas engine core ✅ (built 2026-11-01 on branch `canvas_engine`, awaiting review gate)
+
+> **Status.** Tasks P3.01 to P3.10 are done, with the gaps listed below. Checks: 111 backend tests (93 + 18), 177 frontend tests (127 of them for the engine), a 20-step browser run of the editor (`e2e/editor.e2e.mjs`) and the 14-step home-area run, all passing; Frappe semgrep 0 findings; licence check passes. The performance budget from ADR-009 held in the browser: a board of 1,000 shapes mounts under 200 of them at 100% and draws no text when zoomed far out.
+>
+> **Not built yet, with where it goes:**
+> - Scrollbars on the preset-size canvas (P3.03). Panning is clamped to the page and what lies outside it, but there are no scrollbar thumbs. Moved to P6.04 with the minimap.
+> - Flip horizontal and vertical (P3.06). It arrives with the right palette's Transform tiles (P4.04).
+> - Text that shrinks to fit (P3.07, DF-T4). It is needed for sticky notes and table cells, so it moves to P6.03 and P4.08.
+> - `crdt_state` in the save call. It arrives with realtime in P5.01.
+> - Size and polygon-side changes after a shape is drawn. Those are palette actions (P4.05).
 **Goal:** a block-diagram editor that persists: shapes, selection, transforms and text.
 
 | ID | Lane | Task | Refs | Days | Depends |
