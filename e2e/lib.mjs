@@ -57,7 +57,7 @@ export async function step(name, work) {
 	} catch (error) {
 		failures++
 		if (activePage) await shot(activePage, `FAIL-${name.replace(/\W+/g, "-").slice(0, 40)}`)
-		console.log(`  FAIL ${name}\n       ${String(error.message).split("\n").slice(0, 4).join("\n       ")}`)
+		console.log(`  FAIL ${name}\n       ${String(error.message).split("\n").slice(0, 12).join("\n       ")}`)
 	}
 }
 

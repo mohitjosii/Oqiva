@@ -10,6 +10,9 @@ export async function loadProjects(workspace) {
 	try {
 		const items = await api("project.list_projects", { workspace })
 		if (projectsState.workspace === workspace) projectsState.items = items
+	} catch {
+		// The sidebar just shows no projects; the page itself reports real problems.
+		if (projectsState.workspace === workspace) projectsState.items = []
 	} finally {
 		projectsState.loading = false
 	}

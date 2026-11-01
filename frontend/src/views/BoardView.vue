@@ -1,19 +1,79 @@
 <script setup>
-import { Badge, Button, FeatherIcon } from "frappe-ui"
-import { computed, onMounted } from "vue"
+import { Badge, Button, FeatherIcon, toast } from "frappe-ui"
+import { computed, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
+import BoardTitle from "@/components/BoardTitle.vue"
 import ErrorState from "@/components/ErrorState.vue"
 import { useAsync } from "@/composables/useAsync"
 import { api } from "@/data/api"
 import { findWorkspace, homeWorkspace } from "@/data/session"
-import { timeAgo } from "@/utils/time"
+import BoardEditor from "@/engine/BoardEditor.vue"
+import { parseDocument } from "@/engine/model/schema"
+import SaveIndicator from "@/engine/ui/SaveIndicator.vue"
+import { messageFor } from "@/utils/errors"
 
-// The canvas editor arrives in Phase 3. Until then this page opens a board, records
-// the visit, and shows what the editor will be given.
 const route = useRoute()
 const router = useRouter()
-const board = useAsync(() => api("board.open_board", { board: route.params.board }))
-onMounted(board.run)
+const boardName = computed(() => route.params.board)
+
+// The board to open is passed in rather than read from the route when the request is sent: by
+// then the person may already have gone elsewhere, and the route would have no board in it.
+const board = useAsync((name) => api("board.open_board", { board: name }))
+const content = useAsync((name) => api("board.load_document", { board: name }))
+const status = ref({ status: "saved", message: "" })
+
+async function open(name) {
+	if (!name) return
+	status.value = { status: "saved", message: "" }
+	board.data.value = null // never show the previous board's content while this one loads
+	content.data.value = null
+	await board.run(name)
+	if (board.data.value && route.params.board === name) await content.run(name)
+}
+
+// Going straight from one board to another reuses this page, so follow the route.
+watch(boardName, open, { immediate: true })
+
+const RECOVERY = {
+	corrupt: {
+		title: "This board's content can't be read",
+		text: "It is stored, but it isn't a board Oqiva understands. Nothing has been changed, and it is not opened so that it can't be overwritten with a blank board.",
+	},
+	too_new: {
+		title: "This board needs a newer version of Oqiva",
+		text: "It was saved by a newer version of the app. Update Oqiva to open it.",
+	},
+}
+
+// What the editor is given, or the reason it cannot be opened.
+const prepared = computed(() => {
+	const loaded = content.data.value
+	if (!loaded) return null
+	if (loaded.recovery) return { recovery: loaded.recovery }
+	try {
+		const { document } = parseDocument(loaded.document)
+		return {
+			host: {
+				document,
+				revision: loaded.revision,
+				capabilities: loaded.capabilities,
+				limits: loaded.limits,
+				api: {
+					save: ({ document: json, baseRevision, saveId }) =>
+						api("board.save_document", {
+							board: boardName.value,
+							document: json,
+							base_revision: baseRevision,
+							save_id: saveId,
+						}),
+					getRevision: () => api("board.get_revision", { board: boardName.value }),
+				},
+			},
+		}
+	} catch (error) {
+		return { recovery: error.code === "too_new" ? "too_new" : "corrupt" }
+	}
+})
 
 const back = computed(() => {
 	const data = board.data.value
@@ -23,6 +83,7 @@ const back = computed(() => {
 		? { name: "project", params: { workspace, project: data.project } }
 		: { name: "dashboard", params: { workspace } }
 })
+
 // Back returns to wherever the user came from inside the app. The computed route is the
 // fallback for a board opened from a link, and for a click before the board has loaded.
 function goBack() {
@@ -30,55 +91,121 @@ function goBack() {
 	else router.push(back.value)
 }
 
+const caps = computed(() => board.data.value?.capabilities || {})
+const readonly = computed(() => !caps.value.can_edit)
 const access = computed(() => {
-	const caps = board.data.value?.capabilities
-	if (!caps) return ""
-	if (caps.can_edit) return "Can edit"
-	return caps.can_comment ? "Can comment" : "View only"
+	if (caps.value.can_edit) return "Can edit"
+	return caps.value.can_comment ? "Can comment" : "View only"
 })
+
+async function rename(title) {
+	try {
+		const updated = await api("board.update_board", { board: boardName.value, title })
+		board.data.value = { ...board.data.value, title: updated.title }
+	} catch (error) {
+		toast.error(messageFor(error))
+	}
+}
+
+const reload = () => window.location.reload()
+const failed = computed(() => board.error.value || content.error.value)
 </script>
 
 <template>
-	<div class="flex min-h-screen flex-col bg-surface-gray-1">
+	<div class="flex h-screen flex-col bg-surface-gray-1">
 		<header
-			class="flex items-center gap-3 border-b border-outline-gray-2 bg-surface-white px-4 py-2.5"
+			class="flex items-center gap-2 border-b border-outline-gray-2 bg-surface-white px-3 py-2"
 		>
 			<Button icon="chevron-left" variant="ghost" title="Back to workspace" @click="goBack" />
-			<h1 class="min-w-0 flex-1 truncate text-base font-semibold text-ink-gray-9">
-				{{ board.data.value?.title || "Board" }}
-			</h1>
+			<BoardTitle
+				v-if="board.data.value"
+				:title="board.data.value.title"
+				:editable="Boolean(caps.can_rename)"
+				@rename="rename"
+			/>
+			<div class="flex-1" />
+			<SaveIndicator
+				v-if="prepared?.host"
+				:status="status.status"
+				:message="status.message"
+				:readonly="readonly"
+			/>
 			<Badge
-				v-if="access"
+				v-if="board.data.value"
 				:label="access"
-				:theme="access === 'Can edit' ? 'green' : 'gray'"
+				:theme="caps.can_edit ? 'green' : 'gray'"
 			/>
 		</header>
 
-		<main class="flex flex-1 items-center justify-center p-6">
-			<ErrorState v-if="board.error.value" :error="board.error.value" @retry="board.run" />
-			<p v-else-if="!board.data.value" class="text-sm text-ink-gray-5" role="status">
+		<div
+			v-if="status.status === 'conflict'"
+			class="flex items-center gap-3 border-b border-outline-amber-2 bg-surface-amber-1 px-4 py-2 text-sm text-ink-gray-8"
+			role="alert"
+		>
+			<FeatherIcon
+				name="alert-triangle"
+				class="h-4 w-4 shrink-0 text-ink-amber-3"
+				aria-hidden="true"
+			/>
+			<span class="flex-1"
+				>This board was changed somewhere else. Saving has stopped so their work is not
+				overwritten. Reload to see the latest version.</span
+			>
+			<Button label="Reload" size="sm" variant="solid" @click="reload" />
+		</div>
+		<div
+			v-else-if="status.status === 'error'"
+			class="flex items-center gap-3 border-b border-outline-red-1 bg-surface-red-1 px-4 py-2 text-sm text-ink-gray-8"
+			role="alert"
+		>
+			<FeatherIcon
+				name="alert-circle"
+				class="h-4 w-4 shrink-0 text-ink-red-3"
+				aria-hidden="true"
+			/>
+			<span class="flex-1">Your latest changes are not saved yet. {{ status.message }}</span>
+		</div>
+
+		<main class="relative min-h-0 flex-1">
+			<div v-if="failed" class="flex h-full items-center justify-center p-6">
+				<ErrorState :error="failed" @retry="() => open(boardName)" />
+			</div>
+			<BoardEditor
+				v-else-if="prepared?.host"
+				:key="boardName"
+				:host="prepared.host"
+				@status="status = $event"
+			/>
+			<div v-else-if="prepared?.recovery" class="flex h-full items-center justify-center p-6">
+				<div
+					class="max-w-md rounded-xl border border-outline-gray-2 bg-surface-white p-8 text-center"
+				>
+					<FeatherIcon
+						name="alert-circle"
+						class="mx-auto h-8 w-8 text-ink-gray-4"
+						aria-hidden="true"
+					/>
+					<h2 class="mt-3 text-lg font-semibold text-ink-gray-9">
+						{{ RECOVERY[prepared.recovery].title }}
+					</h2>
+					<p class="mt-2 text-sm text-ink-gray-6">
+						{{ RECOVERY[prepared.recovery].text }}
+					</p>
+					<Button
+						class="mt-5"
+						variant="subtle"
+						label="Back to workspace"
+						@click="goBack"
+					/>
+				</div>
+			</div>
+			<p
+				v-else
+				class="flex h-full items-center justify-center text-sm text-ink-gray-5"
+				role="status"
+			>
 				Opening board…
 			</p>
-			<div
-				v-else
-				class="w-full max-w-lg rounded-xl border border-dashed border-outline-gray-3 bg-surface-white p-8 text-center"
-			>
-				<FeatherIcon
-					name="edit-3"
-					class="mx-auto h-8 w-8 text-ink-gray-4"
-					aria-hidden="true"
-				/>
-				<h2 class="mt-3 text-lg font-semibold text-ink-gray-9">
-					The canvas editor is coming next
-				</h2>
-				<p class="mt-1 text-sm text-ink-gray-6">
-					This board is saved and ready. Drawing opens up in the next release. It was
-					edited
-					{{ timeAgo(board.data.value.modified) }} in
-					{{ board.data.value.workspace_name }}.
-				</p>
-				<Button class="mt-5" variant="subtle" label="Back to workspace" @click="goBack" />
-			</div>
 		</main>
 	</div>
 </template>

@@ -11,6 +11,12 @@
     "format": "prettier --write \"src/**/*.{js,vue}\""
   },
   "dependencies": {
+    "@tiptap/core": "^3.26.0",
+    "@tiptap/extension-text-align": "^3.26.0",
+    "@tiptap/extension-text-style": "^3.26.0",
+    "@tiptap/pm": "^3.26.0",
+    "@tiptap/starter-kit": "^3.26.0",
+    "@tiptap/vue-3": "^3.26.0",
     "frappe-ui": "^0.1.278",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5"

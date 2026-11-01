@@ -3,7 +3,7 @@
 import frappe
 
 from oqiva.api import current_user
-from oqiva.services import board_service
+from oqiva.services import board_service, document_service
 
 
 @frappe.whitelist()
@@ -82,3 +82,21 @@ def purge_board(board: str, confirm_title: str) -> dict:
 def set_favorite(board: str, favorite: bool = True) -> dict:
 	"""Star or unstar a board."""
 	return board_service.set_favorite(current_user(), board, favorite)
+
+
+@frappe.whitelist()
+def load_document(board: str) -> dict:
+	"""A board's content, revision and limits for the editor."""
+	return document_service.load_document(current_user(), board)
+
+
+@frappe.whitelist()
+def get_revision(board: str) -> dict:
+	"""A board's current revision and the id of the save that made it."""
+	return document_service.get_revision(current_user(), board)
+
+
+@frappe.whitelist(methods=["POST"])
+def save_document(board: str, document: str, base_revision: int, save_id: str) -> dict:
+	"""Save a board's content against the revision the client last saw."""
+	return document_service.save_document(current_user(), board, document, base_revision, save_id)

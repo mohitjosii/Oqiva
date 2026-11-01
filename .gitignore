@@ -59,3 +59,9 @@ node_modules/
 oqiva/public/frontend/
 oqiva/www/oqiva.html
 frontend/dist/
+
+# Written by the frappe-ui build tooling
+frontend/src/auto-imports.d.ts
+frontend/src/components.d.ts
+frontend/auto-imports.d.ts
+frontend/components.d.ts
