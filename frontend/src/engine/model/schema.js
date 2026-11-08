@@ -18,7 +18,13 @@ export const CANVAS_PRESETS = {
 }
 
 export const GRID_SIZES = { dense: 16, sparse: 48 }
-export const KNOWN_KINDS = new Set(["shape", "text"])
+export const KNOWN_KINDS = new Set(["shape", "text", "image", "table"])
+export const GEOMETRIES = new Set(["straight", "elbow", "curved"])
+export const HEADS = new Set(["none", "arrow", "open", "dot"])
+export const ANCHOR_NAMES = new Set(["n", "ne", "e", "se", "s", "sw", "w", "nw"])
+// Pictures live in the board's own private files, never at an address someone else chose.
+export const IMAGE_SRC = /^\/private\/files\/[A-Za-z0-9._%()+~-]{1,200}$/
+export const TABLE_LIMITS = { maxRows: 30, maxCols: 20, minSize: 20, maxSize: 2000 }
 export const SHAPE_NAMES = new Set([
 	"rectangle",
 	"ellipse",
@@ -108,6 +114,72 @@ export function sanitizeText(text, themeName = DEFAULT_THEME) {
 	}
 }
 
+const finite = (value) => typeof value === "number" && Number.isFinite(value)
+
+function sanitizeEnd(end, objectIds) {
+	if (end && typeof end.objectId === "string") {
+		return objectIds.has(end.objectId) && ANCHOR_NAMES.has(end.anchor)
+			? { objectId: end.objectId, anchor: end.anchor }
+			: null
+	}
+	if (end && finite(end.x) && finite(end.y)) {
+		return {
+			x: number(end.x, 0, -LIMITS.coordinate, LIMITS.coordinate),
+			y: number(end.y, 0, -LIMITS.coordinate, LIMITS.coordinate),
+		}
+	}
+	return null
+}
+
+export function sanitizeConnector(raw, index, objectIds) {
+	if (!raw || typeof raw !== "object" || typeof raw.id !== "string" || !ID_PATTERN.test(raw.id))
+		return null
+	const from = sanitizeEnd(raw.from, objectIds)
+	const to = sanitizeEnd(raw.to, objectIds)
+	if (!from || !to) return null // an end attached to something that is gone cannot be drawn
+	const style = sanitizeStyle(raw.style)
+	const label =
+		typeof raw.label?.text === "string" && raw.label.text.trim()
+			? { text: raw.label.text.slice(0, 200) }
+			: null
+	return {
+		id: raw.id,
+		from,
+		to,
+		geometry: GEOMETRIES.has(raw.geometry) ? raw.geometry : "straight",
+		heads: {
+			start: HEADS.has(raw.heads?.start) ? raw.heads.start : "none",
+			end: HEADS.has(raw.heads?.end) ? raw.heads.end : "none",
+		},
+		bend: number(raw.bend, 0, -5000, 5000),
+		style: {
+			stroke: style.stroke || "#475569",
+			strokeWidth: Math.max(1, style.strokeWidth),
+			dash: style.dash,
+			opacity: style.opacity,
+		},
+		label,
+		z: number(raw.z, index, -1e9, 1e9),
+	}
+}
+
+export function sanitizeTable(raw, themeName) {
+	const size = (list) =>
+		(Array.isArray(list) ? list : [])
+			.slice(0, TABLE_LIMITS.maxRows)
+			.map((v) => number(v, 100, TABLE_LIMITS.minSize, TABLE_LIMITS.maxSize))
+	const rowH = size(raw?.rowH)
+	const colW = size(raw?.colW).slice(0, TABLE_LIMITS.maxCols)
+	if (!rowH.length || !colW.length) return null
+	const cells = rowH.map((_, r) =>
+		colW.map((__, c) => sanitizeText(raw.cells?.[r]?.[c], themeName)),
+	)
+	const fills = rowH.map((_, r) =>
+		colW.map((__, c) => (isColor(raw.fills?.[r]?.[c]) ? raw.fills[r][c] : null)),
+	)
+	return { colW, rowH, cells, fills }
+}
+
 function sanitizeStyle(style = {}) {
 	const source = style && typeof style === "object" ? style : {}
 	return {
@@ -136,9 +208,25 @@ export function sanitizeObject(raw, index, themeName) {
 		rotation: normalizeRotation(number(raw.rotation, 0, -1e6, 1e6)),
 		z: number(raw.z, index, -1e9, 1e9),
 		style: sanitizeStyle(raw.style),
-		text: sanitizeText(raw.text, themeName),
+		text: raw.kind === "shape" || isText ? sanitizeText(raw.text, themeName) : null,
 	}
 	if (object.shape === "polygon") object.sides = Math.round(number(raw.sides, 5, 3, 12))
+	if (typeof raw.groupId === "string" && ID_PATTERN.test(raw.groupId))
+		object.groupId = raw.groupId
+	if (raw.flipX === true) object.flipX = true
+	if (raw.flipY === true) object.flipY = true
+	if (raw.kind === "image") {
+		if (typeof raw.src !== "string" || !IMAGE_SRC.test(raw.src)) return null
+		object.src = raw.src
+		object.alt = typeof raw.alt === "string" ? raw.alt.slice(0, 200) : ""
+	}
+	if (raw.kind === "table") {
+		const table = sanitizeTable(raw.table, themeName)
+		if (!table) return null
+		object.table = table
+		object.w = table.colW.reduce((sum, v) => sum + v, 0) // a table is exactly as big as its cells
+		object.h = table.rowH.reduce((sum, v) => sum + v, 0)
+	}
 	return object
 }
 
@@ -178,6 +266,19 @@ export function parseDocument(input) {
 		}
 	}
 	objects.sort((a, b) => a.z - b.z)
+	const objectIds = new Set(objects.map((object) => object.id))
+	const connectorIds = new Set()
+	const connectors = []
+	for (const [index, item] of (Array.isArray(raw.connectors) ? raw.connectors : []).entries()) {
+		const connector = sanitizeConnector(item, index, objectIds)
+		if (!connector || connectorIds.has(connector.id) || objectIds.has(connector.id)) {
+			issues.push(`dropped connector ${index}`)
+		} else {
+			connectorIds.add(connector.id)
+			connectors.push(connector)
+		}
+	}
+	connectors.sort((a, b) => a.z - b.z)
 	const document = {
 		...raw,
 		schemaVersion: SCHEMA_VERSION,
@@ -189,7 +290,7 @@ export function parseDocument(input) {
 		},
 		theme: { preset: themeName },
 		objects,
-		connectors: Array.isArray(raw.connectors) ? raw.connectors : [],
+		connectors,
 		mindmaps: Array.isArray(raw.mindmaps) ? raw.mindmaps : [],
 		flowcharts: Array.isArray(raw.flowcharts) ? raw.flowcharts : [],
 	}

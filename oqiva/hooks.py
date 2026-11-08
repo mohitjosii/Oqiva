@@ -51,6 +51,7 @@ scheduler_events = {
 	"daily": [
 		"oqiva.services.trash_service.purge_expired_trash",
 		"oqiva.services.trash_service.prune_board_views",
+		"oqiva.services.audit_service.prune_audit_log",
 	],
 }
 

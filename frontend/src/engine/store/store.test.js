@@ -244,3 +244,181 @@ describe("selection, duplicate and read-only", () => {
 		expect(store.updateObjects([{ id: "a", patch: { x: 1 } }])).toBe(true)
 	})
 })
+
+describe("connectors in the store", () => {
+	const link = (id, from, to, over = {}) => ({
+		id,
+		from,
+		to,
+		geometry: "straight",
+		heads: { start: "none", end: "arrow" },
+		bend: 0,
+		style: { stroke: "#475569", strokeWidth: 2, dash: "solid", opacity: 1 },
+		label: null,
+		z: 1,
+		...over,
+	})
+	const attached = (objectId, anchor = "e") => ({ objectId, anchor })
+	const withLinks = () =>
+		createStore({
+			...createDocument(),
+			objects: [
+				shape({ id: "a", x: 0 }),
+				shape({ id: "b", x: 300, z: 2 }),
+				shape({ id: "c", x: 600, z: 3 }),
+			],
+			connectors: [
+				link("ab", attached("a"), attached("b", "w")),
+				link("bc", attached("b"), attached("c", "w"), { z: 2 }),
+				link("free", { x: 0, y: 500 }, { x: 80, y: 500 }, { z: 3 }),
+			],
+		})
+
+	it("takes a shape's connectors with it when the shape is deleted, in one step", () => {
+		const store = withLinks()
+		store.removeObjects(["b"])
+		expect(store.connectors.value.map((c) => c.id)).toEqual(["free"])
+		expect(store.history.undoStack).toHaveLength(1)
+		store.undo()
+		expect(store.connectors.value.map((c) => c.id)).toEqual(["ab", "bc", "free"])
+		expect(store.getObject("b")).not.toBeNull()
+		store.redo()
+		expect(store.connectors.value).toHaveLength(1)
+	})
+
+	it("deletes a selected connector alone, and mixed selections together", () => {
+		const store = withLinks()
+		store.select(["ab"])
+		store.removeItems(store.state.selection)
+		expect(store.getObject("a")).not.toBeNull()
+		expect(store.connectors.value.map((c) => c.id)).toEqual(["bc", "free"])
+		store.removeItems(["a", "free"])
+		expect(store.getObject("a")).toBeNull()
+		expect(store.connectors.value.map((c) => c.id)).toEqual(["bc"])
+	})
+
+	it("adds shapes and a connector as one step and selects both", () => {
+		const store = createStore(createDocument())
+		store.addItems({
+			objects: [shape({ id: "a" }), shape({ id: "b", z: 2 })],
+			connectors: [link("ab", attached("a"), attached("b", "w"))],
+		})
+		expect(store.history.undoStack).toHaveLength(1)
+		expect(store.state.selection).toEqual(["a", "b", "ab"])
+		store.undo()
+		expect(store.connectors.value).toHaveLength(0)
+		expect(store.objects.value).toHaveLength(0)
+	})
+
+	it("counts connectors toward the limit", () => {
+		const store = createStore(createDocument())
+		store.setLimits({ maxObjects: 2 })
+		const refused = []
+		store.subscribe((event) => event.type === "limit" && refused.push(true))
+		expect(store.addItems({ objects: [shape({ id: "a" }), shape({ id: "b", z: 2 })] })).toBe(
+			true,
+		)
+		expect(store.addConnectors([link("ab", attached("a"), attached("b", "w"))])).toBe(false)
+		expect(refused).toHaveLength(1)
+	})
+
+	it("edits a connector as a gesture, one undo step, together with a shape", () => {
+		const store = withLinks()
+		const gesture = store.beginGesture(["ab", "a"])
+		gesture.set([
+			{ id: "ab", patch: { bend: 40 } },
+			{ id: "a", patch: { x: 50 } },
+		])
+		gesture.set([{ id: "ab", patch: { bend: 60 } }])
+		expect(gesture.commit("Edit")).toBe(true)
+		expect(store.history.undoStack).toHaveLength(1)
+		expect([store.getConnector("ab").bend, store.getObject("a").x]).toEqual([60, 50])
+		store.undo()
+		expect([store.getConnector("ab").bend, store.getObject("a").x]).toEqual([0, 0])
+	})
+
+	it("moves a free connector with the selection, and leaves attached ends to their shapes", () => {
+		const store = withLinks()
+		store.moveBy(["free", "ab"], 10, 20)
+		expect(store.getConnector("free").from).toEqual({ x: 10, y: 520 })
+		expect(store.getConnector("ab").from).toEqual(attached("a"))
+	})
+
+	it("updates objects and connectors in one step", () => {
+		const store = withLinks()
+		store.updateItems([
+			{ id: "a", patch: { x: 5 } },
+			{ id: "ab", patch: { geometry: "elbow" } },
+		])
+		expect(store.history.undoStack).toHaveLength(1)
+		store.undo()
+		expect([store.getObject("a").x, store.getConnector("ab").geometry]).toEqual([0, "straight"])
+	})
+
+	it("exposes connectors in the snapshot and tells selected ones apart", () => {
+		const store = withLinks()
+		store.select(["a", "ab"])
+		expect(store.selectedObjects().map((o) => o.id)).toEqual(["a"])
+		expect(store.selectedConnectors().map((c) => c.id)).toEqual(["ab"])
+		expect(store.snapshot().connectors).toHaveLength(3)
+	})
+})
+
+describe("copying a selection", () => {
+	const link = (id, from, to) => ({
+		id,
+		from,
+		to,
+		geometry: "straight",
+		heads: { start: "none", end: "arrow" },
+		bend: 0,
+		style: { stroke: "#475569", strokeWidth: 2, dash: "solid", opacity: 1 },
+		label: null,
+		z: 1,
+	})
+	const build = () =>
+		createStore({
+			...createDocument(),
+			objects: [
+				shape({ id: "a", x: 0 }),
+				shape({ id: "b", x: 300, z: 2 }),
+				shape({ id: "c", x: 600, z: 3 }),
+			],
+			connectors: [
+				link("ab", { objectId: "a", anchor: "e" }, { objectId: "b", anchor: "w" }),
+				link("bc", { objectId: "b", anchor: "e" }, { objectId: "c", anchor: "w" }),
+			],
+		})
+
+	it("brings a connector whose two shapes are both copied, attached to the copies", () => {
+		const store = build()
+		const copies = store.cloneItems(["a", "b"])
+		expect(copies.objects).toHaveLength(2)
+		expect(copies.connectors).toHaveLength(1)
+		const [copy] = copies.connectors
+		expect(copy.from.objectId).toBe(copies.objects[0].id)
+		expect(copy.to.objectId).toBe(copies.objects[1].id)
+		expect(copy.id).not.toBe("ab")
+	})
+
+	it("leaves a connector behind when only one of its shapes is copied", () => {
+		const copies = build().cloneItems(["a"])
+		expect(copies.connectors).toHaveLength(0)
+	})
+
+	it("lets go of an end whose shape was not copied, where it was, moved with the copy", () => {
+		const copies = build().cloneItems(["a", "bc"])
+		expect(copies.objects).toHaveLength(1)
+		const [copy] = copies.connectors
+		expect(copy.from).toEqual({ x: 410, y: 40 }) // b's east anchor (400, 30), moved by the copy offset
+		expect(copy.to).toEqual({ x: 610, y: 40 })
+	})
+
+	it("duplicates shapes and their connectors together, and selects them all", () => {
+		const store = build()
+		const ids = store.duplicate(["a", "b"])
+		expect(ids).toHaveLength(3)
+		expect(store.connectors.value).toHaveLength(3)
+		expect(store.state.selection).toEqual(ids)
+	})
+})

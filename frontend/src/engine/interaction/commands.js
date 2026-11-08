@@ -1,7 +1,7 @@
 // What each named command does to the board.
 
-import { boundsOfObjects } from "../geometry/bounds"
-import { fitView, zoomIn, zoomOut, zoomTo } from "./view"
+import { copySelection, cutSelection } from "./clipboard"
+import { contentBounds, fitView, zoomIn, zoomOut, zoomTo } from "./view"
 
 export function runCommand(store, controller, command, ui = {}) {
 	const { state } = store
@@ -11,21 +11,29 @@ export function runCommand(store, controller, command, ui = {}) {
 		case "redo":
 			return store.redo()
 		case "selectAll":
-			return store.select(store.objects.value.map((object) => object.id))
+			return store.select([
+				...store.objects.value.map((object) => object.id),
+				...store.connectors.value.map((connector) => connector.id),
+			])
+		case "copy":
+			return copySelection(store)
+		case "cut":
+			return cutSelection(store)
 		case "duplicate":
 			return store.duplicate(state.selection)
 		case "delete":
-			return store.removeObjects(state.selection)
+			return store.removeItems(state.selection)
 		case "nudge":
 			return store.moveBy(state.selection, command.dx, command.dy, { coalesce: "nudge" })
 		case "escape":
 			// One press steps back one level: half-done drag, then tool, then selection.
 			if (controller.drag) return controller.cancel()
+			if (state.painter) return (state.painter = null)
 			if (state.tool !== "select") return (state.tool = "select")
 			return store.clearSelection()
 		case "tool":
 			controller.cancel()
-			state.tool = command.tool
+			state.tool = command.tool === "connector" ? state.lastConnectorTool : command.tool
 			return
 		case "zoomIn":
 			return zoomIn(store)
@@ -37,9 +45,11 @@ export function runCommand(store, controller, command, ui = {}) {
 			return fitView(store)
 		case "shortcuts":
 			return ui.toggleShortcuts?.()
+		case "print":
+			return ui.print?.()
 		default:
 			return undefined
 	}
 }
 
-export const hasContent = (store) => Boolean(boundsOfObjects(store.objects.value))
+export const hasContent = (store) => Boolean(contentBounds(store))

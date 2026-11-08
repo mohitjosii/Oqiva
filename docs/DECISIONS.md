@@ -142,3 +142,42 @@ These numbers come from a virtual machine with no GPU, so the browser rasterised
 **Decision:** `board.save_document` takes the whole document, the revision the client last saw and a save id. It validates the document's structure and size, locks the board row, and writes only if the revision still matches. A repeated save id returns the earlier result. Loading reports `corrupt` or `too_new` instead of opening a blank board, so a damaged document can never be overwritten by accident.
 **Tested:** two saves from two database connections at the same moment: exactly one wins, the other gets a stale-revision error (`test_document.py`, T5.3).
 **Consequences:** Until realtime arrives (Phase 5) a second writer stops with "changed somewhere else" and must reload. Saving the whole document is simple and safe at the 3,000-object limit (about 1 MB); deltas can come later if measurements say so.
+
+## ADR-012: Export is drawn in the browser from the one SVG; the server only checks and records it
+**Status:** Accepted (Phase 4, 2026-11-08)
+**Context:** Export must look like the screen, work offline from the server's point of view, and not make the server render anything. The architecture already has one render-to-SVG path (ADR-010), and `render/nodes.js` describes every object and line as plain data.
+**Decision:**
+- Export builds one SVG string from those descriptions (`export/svg.js`), with pictures fetched and embedded as data so the file stands alone. SVG is saved as that string. PNG and JPEG draw it onto a canvas. PDF puts a 2x PNG on a single page the size of the board (jsPDF, loaded only when a PDF is asked for). Print puts the SVG into a hidden frame, so only the board is on the paper.
+- Backgrounds: a board with its own background colour keeps it in every format. With none, PNG and SVG are transparent, and JPEG, PDF, print and thumbnails get white.
+- Size: a picture is limited to 8,192 pixels on a side and 40 million pixels; a larger one is exported at a smaller scale and the person is told.
+- Before drawing, the browser calls `export.prepare`. The server checks `board:export`, writes an Oqiva Audit Log entry (format and scope), limits the caller to 20 exports a minute, and returns a safe file name. If it refuses, nothing is drawn.
+- Thumbnails come from the same SVG, at most 480 pixels on the long side (256 KB at most), sent by `board.save_thumbnail` no more than once every 30 seconds and only after edits. Pictures show as a placeholder in a thumbnail so it never fetches them. If anything fails the tile keeps its placeholder.
+- The licence allow-list gains **Zlib**. jsPDF (MIT) needs `fast-png`, which needs `pako` (MIT and Zlib). Zlib is permissive and GPL-compatible, so it is not a copyleft case.
+
+**Consequences:**
+- A PDF is a picture, not selectable text. Real vector PDF needs a second renderer; that waits until someone asks.
+- Exported text uses whatever font the browser has for "Inter, system-ui, sans-serif": web fonts are not available to an SVG drawn as an image. Lines are laid out with Inter's measurements, so a line can wrap a little differently in an export where Inter is not installed.
+- A line's label sits on a white pill, which shows on a transparent export placed on a dark page.
+- Export does not need the realtime or save paths, and works for anyone who may view the board (Guests need a share).
+
+## ADR-013: Pictures are private Files attached to the board; access follows the board
+**Status:** Accepted (Phase 4, 2026-11-08)
+**Decision:**
+- `board.upload_image` stores the bytes as a private Frappe File attached to the board, under a random name with an extension taken from the file's own first bytes (PNG, JPEG, GIF or WebP). The name the browser sent is never used. SVG is refused because it can carry script. A document stores only the file's URL.
+- Who may fetch a picture is Frappe's own file check, which asks the board's permission hook, so it follows who may view the board. A signed-in person with no access gets a refusal (browser test).
+- `board.save_document` refuses a document whose pictures are not private files attached to a board the saver may view. A picture can therefore be copied between a person's own boards, and a document cannot point at somebody else's file.
+- Frappe stores identical content once, so two uploads of the same bytes share one file URL (still two File rows, which is also how a picture stays available while any board using it exists).
+- Storage per workspace is the sum of `file_size` over File rows attached to its boards, worked out when an upload arrives, so a counter cannot drift. The limit is `workspace_storage_bytes`; the largest single picture is `upload_max_bytes` (default 10 MB, new in Oqiva Settings). An upload is limited to 30 a minute per person.
+- Rejected uploads are written to the audit log.
+
+**Consequences:** Deleting a File gives the space back at once, and purging a board deletes its pictures and thumbnail with it (Frappe removes a document's attachments; tested). Deleting a picture *object* from a board keeps its file until the board is purged, because undo needs it, so storage can only be freed by purging boards or deleting files.
+
+## ADR-014: The right palette shows the intersection, except for arrangement; lines are stored by their ends
+**Status:** Accepted (Phase 4, 2026-11-08)
+**Decision:**
+- A palette tile appears only if **every** selected thing supports it (`interaction/palette.js`), so no tile silently skips part of the selection. Corner radius, for example, needs every selected thing to be a rectangle or a picture.
+- The exception is arrangement (align, distribute, space, size, swap, rotate, flip, group): when a marquee catches shapes it also catches the lines between them, and those lines follow their shapes anyway, so they are set aside rather than hiding every arrangement tile. A table is left out of flip and of same-size, because a mirrored table reads backwards and its size is the sum of its cells.
+- A line is stored as `{from, to, geometry, heads, bend, style, label}` where an end is an object id and one of eight anchors, or a free point. The route is worked out when drawing, so a line follows move, resize and rotate with nothing stored twice. Lines sharing an anchor are spread along its side (anchor fan-out).
+- Elbow lines use right angles with a single middle turn and do not steer around other shapes.
+
+**Consequences:** Deleting a shape deletes its lines in the same undo step. A copied line keeps its attachments only when both its shapes are copied too; otherwise it stays where it was as a free line.

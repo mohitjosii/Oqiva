@@ -24,6 +24,7 @@ ALLOWED = {
 	"CC0-1.0",
 	"Unlicense",
 	"Python-2.0",
+	"Zlib",  # permissive (used by pako, which jsPDF needs); ADR-012
 }
 FRONTEND = Path(__file__).resolve().parent.parent / "frontend"
 

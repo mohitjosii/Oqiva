@@ -1,19 +1,21 @@
 // The board's single source of truth. Every change to the document goes through here as an
 // operation, so history, autosave and (later) collaboration all see the same stream.
 //
-// Objects are plain values that are replaced, never edited in place. That keeps rendering
-// cheap (an unchanged object is the same object) and bounds caching safe.
+// Objects and connectors are plain values that are replaced, never edited in place. That
+// keeps rendering cheap (an unchanged item is the same item) and bounds caching safe.
 
 import { reactive, shallowRef } from "vue"
-import { newId } from "../model/ids"
-import { countObjects } from "../model/schema"
+import { isAttached } from "../geometry/connectors"
 import { createViewport } from "../geometry/viewport"
+import { countObjects } from "../model/schema"
 import { History } from "./history"
+import { cloneSelection } from "./clone"
 
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b)
+const LISTS = ["objects", "connectors"]
 
-function withPatch(object, patch) {
-	const next = { ...object }
+function withPatch(item, patch) {
+	const next = { ...item }
 	for (const [key, value] of Object.entries(patch)) {
 		if (value === undefined) delete next[key]
 		else next[key] = value
@@ -24,13 +26,18 @@ function withPatch(object, patch) {
 export function createStore(document, { readonly = false } = {}) {
 	const {
 		objects: initialObjects,
+		connectors: initialConnectors = [],
 		canvas: initialCanvas,
 		theme: initialTheme,
 		...extra
 	} = document
-	let objects = [...initialObjects].sort((a, b) => a.z - b.z)
-	let index = new Map(objects.map((object) => [object.id, object]))
-	const objectsRef = shallowRef(objects)
+	const data = {
+		objects: [...initialObjects].sort((a, b) => a.z - b.z),
+		connectors: [...initialConnectors].sort((a, b) => a.z - b.z),
+	}
+	const index = { objects: new Map(), connectors: new Map() }
+	const refs = { objects: shallowRef(data.objects), connectors: shallowRef(data.connectors) }
+	for (const list of LISTS) index[list] = new Map(data[list].map((item) => [item.id, item]))
 	const canvasRef = shallowRef({ ...initialCanvas })
 	const themeRef = shallowRef({ ...initialTheme })
 	const history = new History()
@@ -42,59 +49,79 @@ export function createStore(document, { readonly = false } = {}) {
 	// UI state that is not part of the document and is never saved.
 	const state = reactive({
 		tool: "select",
-		toolOptions: { sides: 5 },
+		toolOptions: { sides: 5, tableRows: 3, tableCols: 3 },
 		selection: [],
 		editingId: null,
+		editingCell: null, // {row, col} when the text being edited is a table cell
+		tableCell: null, // the cell chosen in a table: {id, row, col}
 		viewport: createViewport(),
 		size: { width: 0, height: 0 },
 		readonly,
 		preview: null, // a shape being drawn: {tool, rect}
+		connectorPreview: null, // a connector being drawn: {from, to, geometry, arrow}
 		marquee: null, // a rectangle being dragged out
 		panning: false,
 		lastShapeTool: "rectangle",
+		lastConnectorTool: "arrow-straight",
 		editingNew: false, // the object being edited was just created
 		spaceHeld: false,
+		hoverId: null, // the object under the pointer, for quick-add arrows
+		anchorShapes: [], // ids of objects whose anchors are shown
+		snap: null, // the anchor a connector end would attach to: {objectId, anchor}
+		guides: [], // alignment guides shown while dragging
+		painter: null, // a copied format waiting to be applied
+		alignTo: "selection", // what Align lines up with: selection, first, last or canvas
+		recentColors: [], // colours picked lately, newest first
+		uploads: 0, // pictures being uploaded
+		exporting: false, // an export is being made
 	})
 
-	const publish = () => {
-		objects = [...objects].sort((a, b) => a.z - b.z)
-		index = new Map(objects.map((object) => [object.id, object]))
-		objectsRef.value = objects
+	const publish = (list) => {
+		data[list] = [...data[list]].sort((a, b) => a.z - b.z)
+		index[list] = new Map(data[list].map((item) => [item.id, item]))
+		refs[list].value = data[list]
 	}
 
 	const emit = (event) => listeners.forEach((listener) => listener(event))
+	const listOf = (id) => LISTS.find((list) => index[list].has(id)) || null
+	const find = (id) => {
+		const list = listOf(id)
+		return list ? index[list].get(id) : null
+	}
 
 	// Applies one operation and returns the operation that reverses it.
 	function applyOp(op) {
+		const list = op.list || "objects"
 		switch (op.t) {
 			case "add": {
-				for (const object of op.objects) {
-					if (index.has(object.id)) throw new Error(`Object ${object.id} already exists`)
+				for (const item of op.items) {
+					if (LISTS.some((name) => index[name].has(item.id)))
+						throw new Error(`Object ${item.id} already exists`)
 				}
-				objects = objects.concat(op.objects)
-				publish()
-				return { t: "remove", ids: op.objects.map((object) => object.id) }
+				data[list] = data[list].concat(op.items)
+				publish(list)
+				return { t: "remove", list, ids: op.items.map((item) => item.id) }
 			}
 			case "remove": {
 				const gone = new Set(op.ids)
-				const removed = objects.filter((object) => gone.has(object.id))
-				objects = objects.filter((object) => !gone.has(object.id))
-				publish()
-				return { t: "add", objects: removed }
+				const removed = data[list].filter((item) => gone.has(item.id))
+				data[list] = data[list].filter((item) => !gone.has(item.id))
+				publish(list)
+				return { t: "add", list, items: removed }
 			}
 			case "update": {
 				const inverse = []
 				const changes = new Map(op.changes.map((change) => [change.id, change.patch]))
-				objects = objects.map((object) => {
-					const patch = changes.get(object.id)
-					if (!patch) return object
+				data[list] = data[list].map((item) => {
+					const patch = changes.get(item.id)
+					if (!patch) return item
 					const previous = {}
-					for (const key of Object.keys(patch)) previous[key] = object[key]
-					inverse.push({ id: object.id, patch: previous })
-					return withPatch(object, patch)
+					for (const key of Object.keys(patch)) previous[key] = item[key]
+					inverse.push({ id: item.id, patch: previous })
+					return withPatch(item, patch)
 				})
-				publish()
-				return { t: "update", changes: inverse }
+				publish(list)
+				return { t: "update", list, changes: inverse }
 			}
 			case "canvas": {
 				const previous = {}
@@ -143,7 +170,7 @@ export function createStore(document, { readonly = false } = {}) {
 		return true
 	}
 
-	const exists = (ids) => ids.filter((id) => index.has(id))
+	const exists = (ids) => ids.filter((id) => listOf(id))
 
 	function restoreSelection(ids) {
 		if (ids) state.selection = exists(ids)
@@ -155,10 +182,27 @@ export function createStore(document, { readonly = false } = {}) {
 		emit({ type: "change", origin, ops })
 	}
 
+	const ofList = (ids, list) => ids.filter((id) => index[list].has(id))
+
+	// Connectors attached to any of these objects, which must go when the objects do.
+	function dependentConnectors(objectIds) {
+		const gone = new Set(objectIds)
+		return data.connectors
+			.filter(
+				(c) =>
+					(isAttached(c.from) && gone.has(c.from.objectId)) ||
+					(isAttached(c.to) && gone.has(c.to.objectId)),
+			)
+			.map((c) => c.id)
+	}
+
+	const countAfterAdding = (extra) => countObjects(store.snapshot()) + extra
+
 	const store = {
 		state,
 		history,
-		objects: objectsRef,
+		objects: refs.objects,
+		connectors: refs.connectors,
 		canvas: canvasRef,
 		theme: themeRef,
 		historyVersion,
@@ -172,9 +216,13 @@ export function createStore(document, { readonly = false } = {}) {
 			return history.canRedo && writable()
 		},
 
-		// Reading through objectsRef makes a component that calls this re-render when objects change.
-		getObject: (id) => (void objectsRef.value, index.get(id) || null),
-		nextZ: () => (objects.length ? objects[objects.length - 1].z + 1 : 1),
+		// Reading through the refs makes a component that calls these re-render when items change.
+		getObject: (id) => (void refs.objects.value, index.objects.get(id) || null),
+		getConnector: (id) => (void refs.connectors.value, index.connectors.get(id) || null),
+		getItem: (id) => (void refs.objects.value, void refs.connectors.value, find(id)),
+		nextZ: () => (data.objects.length ? data.objects[data.objects.length - 1].z + 1 : 1),
+		nextConnectorZ: () =>
+			data.connectors.length ? data.connectors[data.connectors.length - 1].z + 1 : 1,
 
 		subscribe(listener) {
 			listeners.add(listener)
@@ -186,7 +234,8 @@ export function createStore(document, { readonly = false } = {}) {
 			schemaVersion: document.schemaVersion,
 			canvas: canvasRef.value,
 			theme: themeRef.value,
-			objects,
+			objects: data.objects,
+			connectors: data.connectors,
 		}),
 
 		setReadonly(value) {
@@ -206,8 +255,12 @@ export function createStore(document, { readonly = false } = {}) {
 				: exists([...state.selection, id])
 		},
 		selectedObjects: () => (
-			void objectsRef.value,
-			state.selection.map((id) => index.get(id)).filter(Boolean)
+			void refs.objects.value,
+			ofList(state.selection, "objects").map((id) => index.objects.get(id))
+		),
+		selectedConnectors: () => (
+			void refs.connectors.value,
+			ofList(state.selection, "connectors").map((id) => index.connectors.get(id))
 		),
 
 		// --- document changes ---
@@ -218,45 +271,109 @@ export function createStore(document, { readonly = false } = {}) {
 			maxObjects = limits.maxObjects ?? Infinity
 		},
 
-		addObjects(newObjects, { label = "Add", select = true } = {}) {
-			if (writable() && countObjects(store.snapshot()) + newObjects.length > maxObjects) {
+		// Adds objects and connectors together as one step.
+		addItems({ objects = [], connectors = [] }, { label = "Add", select = true } = {}) {
+			if (writable() && countAfterAdding(objects.length + connectors.length) > maxObjects) {
 				emit({ type: "limit", maxObjects })
 				return false
 			}
 			const before = [...state.selection]
-			const ok = transact(label, () => run({ t: "add", objects: newObjects }), {
-				selectUndo: before,
-				selectRedo: select ? newObjects.map((object) => object.id) : before,
-			})
-			if (ok && select) state.selection = newObjects.map((object) => object.id)
+			const added = [...objects, ...connectors].map((item) => item.id)
+			const ok = transact(
+				label,
+				() => {
+					if (objects.length) run({ t: "add", list: "objects", items: objects })
+					if (connectors.length) run({ t: "add", list: "connectors", items: connectors })
+				},
+				{ selectUndo: before, selectRedo: select ? added : before },
+			)
+			if (ok && select) state.selection = added
 			return ok
 		},
 
-		removeObjects(ids, { label = "Delete" } = {}) {
-			const present = exists(ids)
-			if (!present.length) return false
-			const ok = transact(label, () => run({ t: "remove", ids: present }), {
-				selectUndo: present,
-				selectRedo: [],
-			})
-			if (ok) state.selection = state.selection.filter((id) => !present.includes(id))
+		addObjects: (objects, options) => store.addItems({ objects }, options),
+		addConnectors: (connectors, options) => store.addItems({ connectors }, options),
+
+		// Removes objects and connectors. A removed object takes its connectors with it, in the same step.
+		removeItems(ids, { label = "Delete" } = {}) {
+			const objectIds = ofList(ids, "objects")
+			const connectorIds = [
+				...new Set([...ofList(ids, "connectors"), ...dependentConnectors(objectIds)]),
+			]
+			if (!objectIds.length && !connectorIds.length) return false
+			const removed = [...objectIds, ...connectorIds]
+			const ok = transact(
+				label,
+				() => {
+					if (connectorIds.length)
+						run({ t: "remove", list: "connectors", ids: connectorIds })
+					if (objectIds.length) run({ t: "remove", list: "objects", ids: objectIds })
+				},
+				{ selectUndo: removed, selectRedo: [] },
+			)
+			if (ok) state.selection = state.selection.filter((id) => !removed.includes(id))
 			return ok
 		},
+
+		removeObjects: (ids, options) => store.removeItems(ofList(ids, "objects"), options),
 
 		updateObjects(changes, { label = "Edit", coalesce } = {}) {
 			const real = changes.filter(
-				(change) => index.has(change.id) && Object.keys(change.patch).length,
+				(change) => index.objects.has(change.id) && Object.keys(change.patch).length,
 			)
 			if (!real.length) return false
-			return transact(label, () => run({ t: "update", changes: real }), { coalesce })
+			return transact(label, () => run({ t: "update", list: "objects", changes: real }), {
+				coalesce,
+			})
+		},
+
+		updateConnectors(changes, { label = "Edit line", coalesce } = {}) {
+			const real = changes.filter(
+				(change) => index.connectors.has(change.id) && Object.keys(change.patch).length,
+			)
+			if (!real.length) return false
+			return transact(label, () => run({ t: "update", list: "connectors", changes: real }), {
+				coalesce,
+			})
+		},
+
+		// Changes to objects and connectors together, for example a style applied to a mixed selection.
+		updateItems(changes, options = {}) {
+			const objects = changes.filter(
+				(change) => index.objects.has(change.id) && Object.keys(change.patch).length,
+			)
+			const connectors = changes.filter(
+				(change) => index.connectors.has(change.id) && Object.keys(change.patch).length,
+			)
+			if (!objects.length && !connectors.length) return false
+			return transact(
+				options.label || "Edit",
+				() => {
+					if (objects.length) run({ t: "update", list: "objects", changes: objects })
+					if (connectors.length)
+						run({ t: "update", list: "connectors", changes: connectors })
+				},
+				{ coalesce: options.coalesce },
+			)
 		},
 
 		moveBy(ids, dx, dy, options = {}) {
-			const changes = exists(ids).map((id) => {
-				const object = index.get(id)
+			const changes = ofList(ids, "objects").map((id) => {
+				const object = index.objects.get(id)
 				return { id, patch: { x: object.x + dx, y: object.y + dy } }
 			})
-			return store.updateObjects(changes, { label: "Move", ...options })
+			// A connector with both ends free moves with the selection; an attached end follows its object.
+			const lines = ofList(ids, "connectors")
+				.map((id) => index.connectors.get(id))
+				.filter((c) => !isAttached(c.from) && !isAttached(c.to))
+				.map((c) => ({
+					id: c.id,
+					patch: {
+						from: { x: c.from.x + dx, y: c.from.y + dy },
+						to: { x: c.to.x + dx, y: c.to.y + dy },
+					},
+				}))
+			return store.updateItems([...changes, ...lines], { label: "Move", ...options })
 		},
 
 		setCanvas(patch, label = "Canvas settings") {
@@ -267,37 +384,42 @@ export function createStore(document, { readonly = false } = {}) {
 			return transact("Theme", () => run({ t: "theme", patch: { preset: name } }))
 		},
 
+		// Copies of the given items, offset and re-identified (see clone.js).
+		cloneItems: (ids, offset = 10) =>
+			cloneSelection(data.objects, data.connectors, ids, offset),
+
 		duplicate(ids, offset = 10) {
-			const sources = exists(ids).map((id) => index.get(id))
-			if (!sources.length || !writable()) return []
-			let z = store.nextZ()
-			const copies = sources.map((object) => ({
-				...JSON.parse(JSON.stringify(object)),
-				id: newId(),
-				x: object.x + offset,
-				y: object.y + offset,
-				z: z++,
-			}))
-			store.addObjects(copies, { label: "Duplicate" })
-			return copies.map((copy) => copy.id)
+			if (!writable()) return []
+			const copies = store.cloneItems(exists(ids), offset)
+			if (!copies.objects.length && !copies.connectors.length) return []
+			store.addItems(copies, { label: "Duplicate" })
+			return [...copies.objects, ...copies.connectors].map((item) => item.id)
 		},
 
 		// A drag, resize or text edit: many live updates that become one undo step.
 		beginGesture(ids) {
-			const before = new Map(exists(ids).map((id) => [id, index.get(id)]))
+			const before = new Map(
+				exists(ids).map((id) => [id, { list: listOf(id), item: find(id) }]),
+			)
+			const apply = (changes) => {
+				for (const list of LISTS) {
+					const part = changes.filter((change) => before.get(change.id)?.list === list)
+					if (part.length) applyOp({ t: "update", list, changes: part })
+				}
+			}
 			return {
 				set(changes) {
 					if (!writable()) return
 					const real = changes.filter((change) => before.has(change.id))
 					if (!real.length) return
-					applyOp({ t: "update", changes: real })
+					apply(real)
 					emit({ type: "live", origin: "local" })
 				},
 				commit(label = "Edit") {
 					const redo = []
 					const undo = []
-					for (const [id, old] of before) {
-						const now = index.get(id)
+					for (const [id, { list, item: old }] of before) {
+						const now = index[list].get(id)
 						if (!now) continue
 						const patch = {}
 						const previous = {}
@@ -308,23 +430,24 @@ export function createStore(document, { readonly = false } = {}) {
 							}
 						}
 						if (Object.keys(patch).length) {
-							redo.push({ id, patch })
-							undo.push({ id, patch: previous })
+							redo.push({ t: "update", list, changes: [{ id, patch }] })
+							undo.push({ t: "update", list, changes: [{ id, patch: previous }] })
 						}
 					}
 					if (!redo.length) return false
-					const ops = [{ t: "update", changes: redo }]
-					history.push({ label, redo: ops, undo: [{ t: "update", changes: undo }] })
+					history.push({ label, redo, undo })
 					historyVersion.value++
-					emit({ type: "change", origin: "local", ops })
+					emit({ type: "change", origin: "local", ops: redo })
 					return true
 				},
 				cancel() {
-					const restore = [...before].map(([id, old]) => ({ id, patch: old }))
-					const current = restore.filter(({ id }) => index.has(id))
-					if (!current.length) return
-					objects = objects.map((object) => before.get(object.id) || object)
-					publish()
+					for (const list of LISTS) {
+						const restore = [...before].filter(([, entry]) => entry.list === list)
+						if (!restore.length) continue
+						const originals = new Map(restore.map(([id, entry]) => [id, entry.item]))
+						data[list] = data[list].map((item) => originals.get(item.id) || item)
+						publish(list)
+					}
 					emit({ type: "live", origin: "local" })
 				},
 			}

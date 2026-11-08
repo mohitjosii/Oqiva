@@ -1,11 +1,19 @@
 import { beforeEach, describe, expect, it } from "vitest"
 import { createStore } from "../store/createStore"
-import { createObject } from "../model/factories"
+import { createConnector, createObject, createTable } from "../model/factories"
 import { createDocument } from "../model/schema"
 import { toBoard, toScreen } from "../geometry/viewport"
 import { handlePoint, rotationFor } from "../geometry/resize"
 import { CanvasController } from "./controller"
 import { commandFor, SHORTCUTS } from "./keymap"
+import { runAction } from "./actions"
+import {
+	clearClipboard,
+	copySelection,
+	cutSelection,
+	hasClipboard,
+	pasteClipboard,
+} from "./clipboard"
 import { runCommand } from "./commands"
 import { fitView, setViewport, zoomIn, zoomOut, zoomTo } from "./view"
 
@@ -508,5 +516,606 @@ describe("running commands", () => {
 		expect(store.discardLastStep()).toBe(true)
 		expect(store.getObject(box.id)).toBeNull()
 		expect(store.canRedo).toBe(false)
+	})
+})
+
+describe("lines", () => {
+	const line = (over = {}) =>
+		createConnector({
+			from: { objectId: "a", anchor: "e" },
+			to: { objectId: "b", anchor: "w" },
+			theme: "ocean",
+			z: 1,
+			...over,
+		})
+	beforeEach(() => setup([rect("a", 100, 100), rect("b", 400, 100)]))
+
+	it("draws a line that attaches to the anchors it starts and ends near", () => {
+		store.state.tool = "arrow-straight"
+		drag([203, 132], [398, 128])
+		const [connector] = store.connectors.value
+		expect(connector.from).toEqual({ objectId: "a", anchor: "e" })
+		expect(connector.to).toEqual({ objectId: "b", anchor: "w" })
+		expect(connector.heads.end).toBe("arrow")
+		expect(store.state.tool).toBe("select")
+		expect(store.history.undoStack).toHaveLength(1)
+		expect(store.state.connectorPreview).toBeNull()
+		expect(store.state.snap).toBeNull()
+	})
+
+	it("leaves the ends free when they are not near an anchor", () => {
+		store.state.tool = "line-elbow"
+		drag([250, 400], [350, 500])
+		const [connector] = store.connectors.value
+		expect(connector.from).toEqual({ x: 250, y: 400 })
+		expect(connector.to).toEqual({ x: 350, y: 500 })
+		expect(connector.geometry).toBe("elbow")
+		expect(connector.heads.end).toBe("none")
+	})
+
+	it("shows the anchors and the snap target while drawing", () => {
+		store.state.tool = "arrow-straight"
+		controller.pointerMove(press(205, 135))
+		expect(store.state.anchorShapes).toContain("a")
+		expect(store.state.snap).toEqual({ objectId: "a", anchor: "e" })
+		controller.pointerMove(press(700, 600))
+		expect(store.state.anchorShapes).toEqual([])
+		expect(store.state.snap).toBeNull()
+	})
+
+	it("a click with a line tool, or ending where it began, draws nothing", () => {
+		store.state.tool = "arrow-straight"
+		drag([250, 400], [250, 400])
+		expect(store.connectors.value).toHaveLength(0)
+		store.state.tool = "arrow-straight"
+		drag([203, 132], [60, 300])
+		controller.pointerDown(press(203, 132))
+		controller.pointerMove(press(204, 133))
+		controller.pointerUp(press(204, 133))
+		expect(store.connectors.value).toHaveLength(1)
+	})
+
+	it("escape abandons a line half drawn", () => {
+		store.state.tool = "arrow-straight"
+		controller.pointerDown(press(250, 400))
+		controller.pointerMove(press(350, 500))
+		expect(store.state.connectorPreview).not.toBeNull()
+		runCommand(store, controller, { name: "escape" })
+		expect(store.state.connectorPreview).toBeNull()
+		expect(store.connectors.value).toHaveLength(0)
+	})
+
+	it("a click on a line selects it, and delete removes only the line", () => {
+		const connector = line()
+		store.addItems({ connectors: [connector] })
+		store.clearSelection()
+		drag([300, 131], [300, 131])
+		expect(store.state.selection).toEqual([connector.id])
+		runCommand(store, controller, { name: "delete" })
+		expect(store.connectors.value).toHaveLength(0)
+		expect(store.objects.value).toHaveLength(2)
+		store.undo()
+		expect(store.connectors.value).toHaveLength(1)
+	})
+
+	it("deleting a shape deletes its lines in the same step", () => {
+		store.addItems({ connectors: [line()] })
+		store.select(["a"])
+		runCommand(store, controller, { name: "delete" })
+		expect(store.connectors.value).toHaveLength(0)
+		store.undo()
+		expect(store.connectors.value).toHaveLength(1)
+		expect(store.objects.value).toHaveLength(2)
+	})
+
+	it("drags a line end onto another shape's anchor, then back to open space, as one step each", () => {
+		const connector = line()
+		store.addItems({ connectors: [connector] })
+		store.select([connector.id])
+		const handle = { target: { dataset: { handle: "line-to" } } }
+		controller.pointerDown(press(400, 130, handle))
+		controller.pointerMove(press(450, 92))
+		expect(store.state.snap).toEqual({ objectId: "b", anchor: "n" })
+		controller.pointerUp(press(450, 92))
+		expect(store.getConnector(connector.id).to).toEqual({ objectId: "b", anchor: "n" })
+		controller.pointerDown(press(450, 100, handle))
+		controller.pointerMove(press(700, 500))
+		controller.pointerUp(press(700, 500))
+		expect(store.getConnector(connector.id).to).toEqual({ x: 700, y: 500 })
+		expect(store.state.snap).toBeNull()
+		store.undo()
+		expect(store.getConnector(connector.id).to).toEqual({ objectId: "b", anchor: "n" })
+	})
+
+	it("bends a curved line from its middle handle", () => {
+		const connector = line({ geometry: "curved" })
+		store.addItems({ connectors: [connector] })
+		store.select([connector.id])
+		const handle = { target: { dataset: { handle: "line-bend" } } }
+		controller.pointerDown(press(300, 130, handle))
+		controller.pointerMove(press(300, 60))
+		controller.pointerUp(press(300, 60))
+		expect(Math.abs(store.getConnector(connector.id).bend)).toBeGreaterThan(50)
+		expect(store.history.undoStack).toHaveLength(2)
+	})
+
+	it("moving selected shapes leaves their lines attached; free ends move with a selected line", () => {
+		const attached = line()
+		const free = line({ from: { x: 10, y: 400 }, to: { x: 110, y: 400 } })
+		store.addItems({ connectors: [attached, free] })
+		store.select([free.id, "a"])
+		controller.pointerDown(press(150, 130))
+		controller.pointerMove(press(170, 150))
+		controller.pointerUp(press(170, 150))
+		expect(store.getObject("a").x).toBe(120)
+		expect(store.getConnector(attached.id).from).toEqual({ objectId: "a", anchor: "e" })
+		expect(store.getConnector(free.id).from).toEqual({ x: 30, y: 420 })
+		expect(store.getConnector(free.id).to).toEqual({ x: 130, y: 420 })
+	})
+
+	it("a marquee selects the lines it crosses", () => {
+		const connector = line()
+		store.addItems({ connectors: [connector] })
+		store.clearSelection()
+		drag([280, 60], [330, 200])
+		expect(store.state.selection).toEqual([connector.id])
+	})
+
+	it("double-clicking a line starts editing its label", () => {
+		const connector = line()
+		store.addItems({ connectors: [connector] })
+		controller.doubleClick(press(300, 130))
+		expect(store.state.editingId).toBe(connector.id)
+		expect(store.objects.value).toHaveLength(2)
+	})
+
+	it("hover arrows add a connected copy on that side, in one step", () => {
+		controller.pointerMove(press(150, 130))
+		expect(store.state.hoverId).toBe("a")
+		controller.pointerDown(press(240, 130, { target: { dataset: { quick: "e" } } }))
+		controller.pointerUp(press(240, 130))
+		expect(store.objects.value).toHaveLength(3)
+		expect(store.connectors.value).toHaveLength(1)
+		const added = store.objects.value.find((object) => !["a", "b"].includes(object.id))
+		const connector = store.connectors.value[0]
+		expect(connector.from).toEqual({ objectId: "a", anchor: "e" })
+		expect(connector.to).toEqual({ objectId: added.id, anchor: "w" })
+		// Directly east is taken by "b", so the copy sits clear of it.
+		expect(
+			added.x < 400 + 100 &&
+				added.x + added.w > 400 &&
+				added.y < 160 &&
+				added.y + added.h > 100,
+		).toBe(false)
+		expect(store.state.selection).toEqual([added.id])
+		expect(store.history.undoStack).toHaveLength(1)
+		store.undo()
+		expect(store.objects.value).toHaveLength(2)
+		expect(store.connectors.value).toHaveLength(0)
+	})
+
+	it("hover arrows do nothing for a read-only viewer", () => {
+		setup([rect("a", 100, 100)], { readonly: true })
+		controller.pointerMove(press(150, 130))
+		controller.pointerDown(press(240, 130, { target: { dataset: { quick: "e" } } }))
+		expect(store.objects.value).toHaveLength(1)
+	})
+
+	it("select all and the L key include lines", () => {
+		store.addItems({ connectors: [line()] })
+		runCommand(store, controller, { name: "selectAll" })
+		expect(store.state.selection).toHaveLength(3)
+		expect(commandFor({ key: "l", target: null }, {})).toEqual({
+			name: "tool",
+			tool: "connector",
+		})
+		runCommand(store, controller, { name: "tool", tool: "connector" })
+		expect(store.state.tool).toBe("arrow-straight")
+	})
+})
+
+describe("groups and the format painter", () => {
+	beforeEach(() => setup([rect("a", 100, 100), rect("b", 400, 100), rect("c", 700, 100)]))
+
+	it("clicking one member of a group picks the whole group, and moving it moves them all", () => {
+		store.select(["a", "b"])
+		runCommand(store, controller, { name: "selectAll" })
+		store.updateObjects([
+			{ id: "a", patch: { groupId: "g" } },
+			{ id: "b", patch: { groupId: "g" } },
+		])
+		store.clearSelection()
+		drag([150, 130], [150, 130])
+		expect(store.state.selection.sort()).toEqual(["a", "b"])
+		controller.pointerDown(press(150, 130))
+		controller.pointerMove(press(190, 160))
+		controller.pointerUp(press(190, 160))
+		expect([store.getObject("a").x, store.getObject("b").x, store.getObject("c").x]).toEqual([
+			140, 440, 700,
+		])
+	})
+
+	it("clicking inside a selected group keeps the group; a marquee takes whole groups", () => {
+		store.updateObjects([
+			{ id: "a", patch: { groupId: "g" } },
+			{ id: "b", patch: { groupId: "g" } },
+		])
+		store.select(["a", "b"])
+		drag([450, 130], [450, 130])
+		expect(store.state.selection.sort()).toEqual(["a", "b"])
+		store.clearSelection()
+		drag([90, 90], [230, 200]) // catches only "a"
+		expect(store.state.selection.sort()).toEqual(["a", "b"])
+	})
+
+	it("shift-click adds or removes a whole group", () => {
+		store.updateObjects([
+			{ id: "a", patch: { groupId: "g" } },
+			{ id: "b", patch: { groupId: "g" } },
+		])
+		store.select(["c"])
+		drag([150, 130], [150, 130], { shiftKey: true })
+		expect(store.state.selection.sort()).toEqual(["a", "b", "c"])
+		drag([450, 130], [450, 130], { shiftKey: true })
+		expect(store.state.selection).toEqual(["c"])
+	})
+
+	it("duplicating a group makes a new group, and a lone member leaves the group", () => {
+		store.updateObjects([
+			{ id: "a", patch: { groupId: "g" } },
+			{ id: "b", patch: { groupId: "g" } },
+		])
+		const ids = store.duplicate(["a", "b"])
+		const copies = ids.map((id) => store.getObject(id))
+		expect(copies[0].groupId).toBeTruthy()
+		expect(copies[0].groupId).toBe(copies[1].groupId)
+		expect(copies[0].groupId).not.toBe("g")
+		const [lone] = store.duplicate(["a"]).map((id) => store.getObject(id))
+		expect(lone.groupId).toBeUndefined()
+	})
+
+	it("the format painter puts a copied format on the next object clicked, then lets go", () => {
+		store.updateObjects([
+			{ id: "a", patch: { style: { ...store.getObject("a").style, fill: "#FEE2E2" } } },
+		])
+		store.select(["a"])
+		runAction(store, { name: "painter" })
+		expect(store.state.painter).not.toBeNull()
+		drag([450, 130], [450, 130])
+		expect(store.getObject("b").style.fill).toBe("#FEE2E2")
+		expect(store.state.painter).toBeNull()
+		expect(store.state.selection).toEqual(["a"]) // the selection did not move
+	})
+
+	it("escape puts the painter down before anything else", () => {
+		store.select(["a"])
+		runAction(store, { name: "painter" })
+		runCommand(store, controller, { name: "escape" })
+		expect(store.state.painter).toBeNull()
+		expect(store.state.selection).toEqual(["a"])
+	})
+})
+
+describe("shortcuts and form controls", () => {
+	it("typing in a text field keeps its keys, but a slider does not", () => {
+		const event = (type) => ({ key: "z", ctrlKey: true, target: { tagName: "INPUT", type } })
+		expect(commandFor(event("text"), {})).toBeNull()
+		expect(commandFor({ key: "z", ctrlKey: true, target: { tagName: "INPUT" } }, {})).toBeNull() // no type means text
+		expect(commandFor(event("range"), {})).toEqual({ name: "undo" })
+		expect(commandFor(event("checkbox"), {})).toEqual({ name: "undo" })
+		expect(
+			commandFor({ key: "z", ctrlKey: true, target: { tagName: "TEXTAREA" } }, {}),
+		).toBeNull()
+	})
+})
+
+describe("smart guides while dragging", () => {
+	beforeEach(() => setup([rect("a", 100, 100), rect("b", 400, 300)]))
+
+	it("snaps a dragged object's edge to another's and shows the guide", () => {
+		controller.pointerDown(press(150, 130)) // a, at (100,100)
+		controller.pointerMove(press(450, 430)) // its raw position would be x 400, y 400... near b's left edge (400)
+		controller.pointerMove(press(448, 330)) // raw x 398, y 300: within 6px of b's left edge and top edge
+		expect([store.getObject("a").x, store.getObject("a").y]).toEqual([400, 300])
+		expect(store.state.guides.length).toBeGreaterThan(0)
+		controller.pointerUp(press(448, 330))
+		expect(store.state.guides).toEqual([])
+	})
+
+	it("lets go once the pointer moves on", () => {
+		controller.pointerDown(press(150, 130))
+		controller.pointerMove(press(448, 330))
+		expect(store.getObject("a").x).toBe(400)
+		controller.pointerMove(press(470, 380))
+		expect(store.getObject("a").x).toBe(420)
+		expect(store.state.guides).toEqual([])
+	})
+
+	it("holding Alt turns the snap off", () => {
+		controller.pointerDown(press(150, 130, { altKey: true }))
+		controller.pointerMove(press(448, 330, { altKey: true }))
+		expect([store.getObject("a").x, store.getObject("a").y]).toEqual([398, 300])
+		expect(store.state.guides).toEqual([])
+	})
+
+	it("snaps to the page edge in a preset canvas", () => {
+		store.setCanvas({ mode: "preset", preset: "16:9" })
+		store.state.viewport = { x: 0, y: 0, scale: 1 }
+		controller.pointerDown(press(150, 130))
+		controller.pointerMove(press(54, 130)) // raw x 4: 4 from the page's left edge
+		expect(store.getObject("a").x).toBe(0)
+	})
+
+	it("snaps by screen distance, so zoomed out it reaches further across the board", () => {
+		controller.pointerDown(press(150, 130))
+		controller.pointerMove(press(150 + 288, 130)) // raw x 388: 12 board units from b's left edge
+		expect(store.getObject("a").x).toBe(388) // at 100% that is 12px away: too far to snap
+		controller.pointerUp(press(150 + 288, 130))
+		store.undo()
+		store.state.viewport = { x: 0, y: 0, scale: 0.5 }
+		controller.pointerDown(press(75, 65)) // inside "a" at half size
+		controller.pointerMove(press(75 + 144, 65)) // the same 288 board units, now 6 screen pixels from the edge
+		expect(store.getObject("a").x).toBe(400)
+	})
+})
+
+describe("clipboard", () => {
+	beforeEach(() => {
+		clearClipboard()
+		setup([rect("a", 100, 100), rect("b", 400, 100), rect("c", 700, 100)])
+	})
+
+	it("copies, then pastes a copy 10 units over, selected, as one step; each paste goes 10 further", () => {
+		store.select(["a"])
+		expect(copySelection(store)).toBe(true)
+		const first = pasteClipboard(store)
+		expect(first).toHaveLength(1)
+		expect(store.getObject(first[0]).x).toBe(110)
+		expect(store.state.selection).toEqual(first)
+		const second = pasteClipboard(store)
+		expect(store.getObject(second[0]).x).toBe(120)
+		expect(store.history.undoStack).toHaveLength(2)
+		store.undo()
+		expect(store.objects.value).toHaveLength(4)
+	})
+
+	it("pastes on top of the board", () => {
+		store.select(["c"])
+		copySelection(store)
+		store.select(["a"])
+		copySelection(store)
+		const [id] = pasteClipboard(store)
+		expect(store.objects.value.at(-1).id).toBe(id)
+	})
+
+	it("cuts: the original goes in one step, and the paste brings it back", () => {
+		store.select(["a"])
+		expect(cutSelection(store)).toBe(true)
+		expect(store.getObject("a")).toBeNull()
+		const [id] = pasteClipboard(store)
+		expect(store.getObject(id).x).toBe(110)
+		store.undo()
+		store.undo()
+		expect(store.getObject("a")).not.toBeNull()
+	})
+
+	it("keeps a line's ends only when both shapes are copied, else leaves it free where it was", () => {
+		store.addItems({
+			connectors: [
+				createConnector({
+					from: { objectId: "a", anchor: "e" },
+					to: { objectId: "b", anchor: "w" },
+					theme: "ocean",
+					z: 1,
+				}),
+			],
+		})
+		store.select(["a", "b"])
+		copySelection(store)
+		const both = pasteClipboard(store)
+		const line = store.connectors.value.find((c) => both.includes(c.id))
+		expect(line.from.objectId).not.toBe("a")
+		expect(both.includes(line.from.objectId) && both.includes(line.to.objectId)).toBe(true)
+		store.select(["a"])
+		copySelection(store)
+		pasteClipboard(store)
+		expect(store.connectors.value).toHaveLength(2) // no new line: only one end was copied
+	})
+
+	it("a line copied on its own keeps where it was as free ends", () => {
+		const line = createConnector({
+			from: { objectId: "a", anchor: "e" },
+			to: { objectId: "b", anchor: "w" },
+			theme: "ocean",
+			z: 1,
+		})
+		store.addItems({ connectors: [line] })
+		store.select([line.id])
+		copySelection(store)
+		const [id] = pasteClipboard(store)
+		const pasted = store.getConnector(id)
+		expect(pasted.from).toEqual({ x: 210, y: 140 }) // a's east anchor (200,130), moved 10
+		expect(pasted.to).toEqual({ x: 410, y: 140 })
+	})
+
+	it("survives a different board, and nothing happens when read-only or empty", () => {
+		store.select(["a"])
+		copySelection(store)
+		setup([rect("z", 0, 0)])
+		expect(hasClipboard()).toBe(true)
+		expect(pasteClipboard(store)).toHaveLength(1)
+		setup([], { readonly: true })
+		expect(pasteClipboard(store)).toEqual([])
+		clearClipboard()
+		setup([rect("a", 0, 0)])
+		expect(copySelection(store)).toBe(false)
+		expect(pasteClipboard(store)).toEqual([])
+	})
+
+	it("is refused, without a trace, when the board is full", () => {
+		store.setLimits({ maxObjects: 3 })
+		store.select(["a"])
+		copySelection(store)
+		const stepsBefore = store.history.undoStack.length
+		expect(pasteClipboard(store)).toEqual([])
+		expect(store.objects.value).toHaveLength(3)
+		expect(store.history.undoStack).toHaveLength(stepsBefore)
+	})
+})
+
+describe("auto-pan at the edge of the view", () => {
+	beforeEach(() => setup([rect("a", 100, 100)]))
+
+	it("scrolls the view while an object is held near an edge, and the object keeps up", () => {
+		controller.pointerDown(press(150, 130))
+		controller.pointerMove(press(995, 400)) // 5px from the right edge of a 1000px view
+		const x = store.state.viewport.x
+		const before = store.getObject("a").x
+		expect(controller.autoPanTick(100)).toBe(true)
+		expect(store.state.viewport.x).toBeLessThan(x) // the view moved right
+		expect(store.getObject("a").x).toBeGreaterThan(before) // and the object travelled with it
+		controller.pointerUp(press(995, 400))
+	})
+
+	it("does nothing in the middle of the view, with nothing held, or when panning by hand", () => {
+		expect(controller.autoPanTick(100)).toBe(false)
+		controller.pointerDown(press(150, 130))
+		controller.pointerMove(press(500, 350))
+		expect(controller.autoPanTick(100)).toBe(false)
+		controller.pointerUp(press(500, 350))
+		controller.pointerDown(press(500, 350, { button: 1 }))
+		expect(controller.autoPanTick(100)).toBe(false)
+	})
+
+	it("speeds up the nearer the pointer is to the edge, in every direction", () => {
+		controller.pointerDown(press(150, 130))
+		controller.pointerMove(press(20, 350))
+		const slow = store.state.viewport.x
+		controller.autoPanTick(100)
+		const moveNear = store.state.viewport.x - slow
+		controller.pointerMove(press(2, 350))
+		const mid = store.state.viewport.x
+		controller.autoPanTick(100)
+		expect(store.state.viewport.x - mid).toBeGreaterThan(moveNear)
+		controller.pointerMove(press(500, 3))
+		const y = store.state.viewport.y
+		controller.autoPanTick(100)
+		expect(store.state.viewport.y).toBeGreaterThan(y) // near the top: the view moves up, content down
+	})
+
+	it("also carries a drawing drag along", () => {
+		store.state.tool = "rectangle"
+		controller.pointerDown(press(500, 350))
+		controller.pointerMove(press(998, 350))
+		const x = store.state.viewport.x
+		controller.autoPanTick(200)
+		expect(store.state.viewport.x).toBeLessThan(x)
+		expect(store.state.preview.rect.w).toBeGreaterThan(498)
+	})
+})
+
+describe("tables", () => {
+	const table = (id = "t", x = 100, y = 100, over = {}) => ({
+		...createTable({ rows: 2, cols: 3, center: { x: 0, y: 0 }, theme: "ocean", z: 1 }),
+		id,
+		x,
+		y,
+		...over,
+	})
+	// A table at (100,100): cells 120 wide and 44 tall, so 360 by 88.
+
+	it("a click with the table tool drops a table of the chosen size, selected, in one step", () => {
+		setup([])
+		store.state.toolOptions.tableRows = 4
+		store.state.toolOptions.tableCols = 2
+		store.state.tool = "table"
+		drag([500, 300], [500, 300])
+		const [made] = store.objects.value
+		expect(made.kind).toBe("table")
+		expect([made.table.rowH.length, made.table.colW.length]).toEqual([4, 2])
+		expect([made.w, made.h]).toEqual([240, 176])
+		expect([made.x + made.w / 2, made.y + made.h / 2]).toEqual([500, 300])
+		expect(store.state.selection).toEqual([made.id])
+		expect(store.state.tool).toBe("select")
+		expect(store.state.tableCell).toEqual({ id: made.id, row: 0, col: 0 })
+		expect(store.history.undoStack).toHaveLength(1)
+	})
+
+	it("dragging out a rectangle shares it between the cells, each at least 20 across", () => {
+		setup([])
+		store.state.toolOptions.tableRows = 2
+		store.state.toolOptions.tableCols = 4
+		store.state.tool = "table"
+		controller.pointerDown(press(100, 100))
+		controller.pointerMove(press(500, 300))
+		expect(store.state.preview).toMatchObject({ tool: "table", rect: { w: 400, h: 200 } })
+		controller.pointerUp(press(500, 300))
+		const [made] = store.objects.value
+		expect([made.x, made.y, made.w, made.h]).toEqual([100, 100, 400, 200])
+		expect(made.table.colW).toEqual([100, 100, 100, 100])
+		expect(store.state.preview).toBeNull()
+		store.state.tool = "table"
+		drag([700, 100], [705, 102]) // dragged only a few pixels: far too small for eight cells
+		const tiny = store.objects.value.at(-1)
+		expect(tiny.table.colW.every((w) => w >= 20)).toBe(true)
+	})
+
+	it("pressing a cell of a table chooses it", () => {
+		setup([table()])
+		drag([300, 150], [300, 150]) // x 200 across, y 50 down: column 1, row 1
+		expect(store.state.tableCell).toEqual({ id: "t", row: 1, col: 1 })
+		drag([110, 110], [110, 110])
+		expect(store.state.tableCell).toEqual({ id: "t", row: 0, col: 0 })
+	})
+
+	it("double-clicking a cell starts editing that cell, not the table", () => {
+		setup([table()])
+		controller.doubleClick(press(430, 110)) // column 2, row 0
+		expect(store.state.editingId).toBe("t")
+		expect(store.state.editingCell).toEqual({ row: 0, col: 2 })
+		expect(store.state.tableCell).toEqual({ id: "t", row: 0, col: 2 })
+		expect(store.objects.value).toHaveLength(1)
+	})
+
+	it("double-clicking an ordinary shape clears any cell being edited", () => {
+		setup([table(), rect("a", 700, 100)])
+		store.state.editingCell = { row: 1, col: 1 }
+		controller.doubleClick(press(750, 130))
+		expect(store.state.editingId).toBe("a")
+		expect(store.state.editingCell).toBeNull()
+	})
+
+	it("resizing from a handle stretches the cells together and keeps the size in step", () => {
+		setup([table()])
+		store.select(["t"])
+		const handle = { target: { dataset: { handle: "se" } } }
+		controller.pointerDown(press(460, 188, handle))
+		controller.pointerMove(press(820, 276, handle)) // twice as wide and tall
+		controller.pointerUp(press(820, 276, handle))
+		const t = store.getObject("t")
+		expect(t.table.colW).toEqual([240, 240, 240])
+		expect(t.table.rowH).toEqual([88, 88])
+		expect([t.w, t.h]).toEqual([720, 176])
+		expect(store.history.undoStack).toHaveLength(1)
+	})
+
+	it("resizing from the top-left keeps the opposite corner, even when a minimum cell stops it", () => {
+		setup([table()])
+		store.select(["t"])
+		const handle = { target: { dataset: { handle: "nw" } } }
+		controller.pointerDown(press(100, 100, handle))
+		controller.pointerMove(press(450, 180, handle)) // far smaller than three 20-wide cells and two 20-tall rows allow
+		controller.pointerUp(press(450, 180, handle))
+		const t = store.getObject("t")
+		expect(t.table.colW.every((w) => w >= 20)).toBe(true)
+		expect(t.x + t.w).toBe(460) // the bottom-right corner has not moved
+		expect(t.y + t.h).toBe(188)
+	})
+
+	it("finds the cell on a table that is turned", () => {
+		setup([table("t", 100, 100, { rotation: 90 })]) // centre (280, 144): turned to stand 88 wide and 360 tall
+		// the first cell's middle (160, 122) before turning lands at (280 - (122 - 144), 144 + (160 - 280)).
+		drag([302, 24], [302, 24])
+		expect(store.state.tableCell).toEqual({ id: "t", row: 0, col: 0 })
 	})
 })

@@ -13,10 +13,11 @@ export function credentials() {
 
 // A browser context signed in as one test user, collecting anything that goes wrong.
 export async function signedIn(browser, { user, password }) {
-	const context = await browser.newContext({ viewport: { width: 1360, height: 860 } })
-	await context.route("**/*", (route) =>
-		route.continue({ headers: { ...route.request().headers(), "x-frappe-site-name": SITE } }),
-	)
+	// The header goes on the context, so the page and the context's own API requests both carry it.
+	const context = await browser.newContext({
+		viewport: { width: 1360, height: 860 },
+		extraHTTPHeaders: { "x-frappe-site-name": SITE },
+	})
 	const login = await context.request.post(`${BASE}/api/method/login`, {
 		data: { usr: user, pwd: password },
 		headers: { "x-frappe-site-name": SITE },

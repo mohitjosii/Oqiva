@@ -2,11 +2,17 @@
 // Selection outlines, resize and rotation handles, the marquee. Drawn in screen pixels so
 // handles keep their size at every zoom. Handles carry data-handle for the controller.
 import { computed } from "vue"
-import { boundsOfObjects, corners } from "../geometry/bounds"
+import { boundsOfObjects, centerOf, corners, rotatePoint } from "../geometry/bounds"
+import { ANCHORS, anchorDirection, anchorPoint } from "../geometry/connectors"
+import { activeCell } from "../interaction/tables"
+import { cellRect } from "../store/tableOps"
 import { HANDLE_NAMES, handlePoint, rotationHandlePoint } from "../geometry/resize"
 import { toScreen } from "../geometry/viewport"
 
-const props = defineProps({ store: { type: Object, required: true } })
+const props = defineProps({
+	store: { type: Object, required: true },
+	paths: { type: Object, required: true }, // a ref to every line's path
+})
 
 const ACCENT = "#2563eb"
 const HANDLE = 9
@@ -24,7 +30,13 @@ const CURSORS = {
 
 const state = computed(() => props.store.state)
 const selected = computed(() => props.store.selectedObjects())
-const single = computed(() => (selected.value.length === 1 ? selected.value[0] : null))
+const selectedLines = computed(() => props.store.selectedConnectors())
+const single = computed(() =>
+	selected.value.length === 1 && !selectedLines.value.length ? selected.value[0] : null,
+)
+const singleLine = computed(() =>
+	selectedLines.value.length === 1 && !selected.value.length ? selectedLines.value[0] : null,
+)
 const editable = computed(() => !state.value.readonly && !state.value.editingId)
 const toPx = (point) => toScreen(state.value.viewport, point)
 
@@ -39,6 +51,67 @@ const outlines = computed(() =>
 			.join(" "),
 	})),
 )
+
+const toPoints = (points) =>
+	points
+		.map((point) => {
+			const p = toPx(point)
+			return `${p.x},${p.y}`
+		})
+		.join(" ")
+
+const lineOutlines = computed(() =>
+	selectedLines.value
+		.map((connector) => ({ id: connector.id, path: props.paths.value.get(connector.id) }))
+		.filter((entry) => entry.path)
+		.map((entry) => ({ id: entry.id, points: toPoints(entry.path.points) })),
+)
+
+// Endpoint handles, and a bend handle on a curved line.
+const lineHandles = computed(() => {
+	const connector = singleLine.value
+	const path = connector && props.paths.value.get(connector.id)
+	if (!path || !editable.value) return []
+	const list = [
+		{ name: "line-from", ...toPx(path.p0), attached: connector.from.objectId !== undefined },
+		{ name: "line-to", ...toPx(path.p1), attached: connector.to.objectId !== undefined },
+	]
+	if (connector.geometry === "curved")
+		list.push({ name: "line-bend", ...toPx(path.mid), bend: true })
+	return list
+})
+
+// The eight anchors of shapes a line could attach to, with the one it would snap to marked.
+const anchorDots = computed(() => {
+	const snap = state.value.snap
+	return state.value.anchorShapes.flatMap((id) => {
+		const object = props.store.getObject(id)
+		if (!object) return []
+		return ANCHORS.map((anchor) => ({
+			key: `${id}:${anchor}`,
+			...toPx(anchorPoint(object, anchor)),
+			snapped: snap?.objectId === id && snap.anchor === anchor,
+		}))
+	})
+})
+
+const QUICK_OFFSET_PX = 20
+const QUICK_SIDES = ["n", "e", "s", "w"]
+// The little arrows beside a hovered shape that add a connected copy.
+const quickArrows = computed(() => {
+	const object = props.store.getObject(state.value.hoverId)
+	if (!object || state.value.marquee || state.value.panning || state.value.editingId) return []
+	return QUICK_SIDES.map((side) => {
+		const dir = anchorDirection(object, side)
+		const base = toPx(anchorPoint(object, side))
+		return {
+			side,
+			x: base.x + dir.x * QUICK_OFFSET_PX,
+			y: base.y + dir.y * QUICK_OFFSET_PX,
+			angle: (Math.atan2(dir.y, dir.x) * 180) / Math.PI,
+		}
+	})
+})
 
 const handles = computed(() => {
 	const object = single.value
@@ -66,6 +139,37 @@ const group = computed(() => {
 	return { x: a.x, y: a.y, width: b.x - a.x, height: b.y - a.y }
 })
 
+// The chosen cell of a selected table, outlined (it may be turned with the table).
+const cellOutline = computed(() => {
+	const cell = activeCell(props.store)
+	const object = cell && props.store.getObject(state.value.tableCell.id)
+	if (!object || state.value.editingId) return null
+	const r = cellRect(object.table, cell.row, cell.col)
+	const centre = centerOf(object)
+	return [
+		{ x: r.x, y: r.y },
+		{ x: r.x + r.w, y: r.y },
+		{ x: r.x + r.w, y: r.y + r.h },
+		{ x: r.x, y: r.y + r.h },
+	]
+		.map((p) => {
+			const board = { x: object.x + p.x, y: object.y + p.y }
+			const turned = object.rotation ? rotatePoint(board, centre, object.rotation) : board
+			const s = toPx(turned)
+			return `${s.x},${s.y}`
+		})
+		.join(" ")
+})
+
+const GUIDE = "#ec4899"
+const guideLines = computed(() =>
+	state.value.guides.map((guide, index) => {
+		const a = toPx({ x: guide.x1, y: guide.y1 })
+		const b = toPx({ x: guide.x2, y: guide.y2 })
+		return { key: index, x1: a.x, y1: a.y, x2: b.x, y2: b.y }
+	}),
+)
+
 const marquee = computed(() => {
 	const m = state.value.marquee
 	if (!m) return null
@@ -85,6 +189,60 @@ const marquee = computed(() => {
 			:stroke="ACCENT"
 			stroke-width="1.5"
 			pointer-events="none"
+		/>
+		<polyline
+			v-for="outline in lineOutlines"
+			:key="outline.id"
+			:points="outline.points"
+			fill="none"
+			:stroke="ACCENT"
+			stroke-opacity="0.35"
+			stroke-width="7"
+			stroke-linejoin="round"
+			stroke-linecap="round"
+			pointer-events="none"
+		/>
+		<circle
+			v-for="dot in anchorDots"
+			:key="dot.key"
+			:cx="dot.x"
+			:cy="dot.y"
+			:r="dot.snapped ? 6 : 4"
+			:fill="dot.snapped ? ACCENT : '#fff'"
+			:stroke="ACCENT"
+			stroke-width="1.5"
+			pointer-events="none"
+			:data-anchor="dot.snapped ? 'snapped' : 'anchor'"
+		/>
+		<g v-for="arrow in quickArrows" :key="arrow.side">
+			<circle
+				:cx="arrow.x"
+				:cy="arrow.y"
+				r="11"
+				fill="#fff"
+				:stroke="ACCENT"
+				stroke-width="1.25"
+				:data-quick="arrow.side"
+				style="cursor: pointer"
+			/>
+			<polygon
+				points="-4,-4 4,0 -4,4"
+				:fill="ACCENT"
+				:transform="`translate(${arrow.x} ${arrow.y}) rotate(${arrow.angle})`"
+				pointer-events="none"
+			/>
+		</g>
+		<circle
+			v-for="handle in lineHandles"
+			:key="handle.name"
+			:cx="handle.x"
+			:cy="handle.y"
+			:r="handle.bend ? 5 : 6"
+			:fill="handle.bend ? ACCENT : handle.attached ? ACCENT : '#fff'"
+			:stroke="ACCENT"
+			stroke-width="1.5"
+			:data-handle="handle.name"
+			style="cursor: move"
 		/>
 		<rect
 			v-if="group"
@@ -129,6 +287,29 @@ const marquee = computed(() => {
 			stroke-width="1.5"
 			:data-handle="handle.name"
 			:style="{ cursor: handle.cursor }"
+		/>
+		<polygon
+			v-if="cellOutline"
+			:points="cellOutline"
+			:fill="ACCENT"
+			fill-opacity="0.12"
+			:stroke="ACCENT"
+			stroke-width="2"
+			pointer-events="none"
+			data-testid="active-cell"
+		/>
+		<line
+			v-for="guide in guideLines"
+			:key="`guide-${guide.key}`"
+			:x1="guide.x1"
+			:y1="guide.y1"
+			:x2="guide.x2"
+			:y2="guide.y2"
+			:stroke="GUIDE"
+			stroke-width="1"
+			stroke-dasharray="4 3"
+			pointer-events="none"
+			data-guide="line"
 		/>
 		<rect
 			v-if="marquee"

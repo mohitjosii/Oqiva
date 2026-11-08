@@ -3,17 +3,31 @@
 // has been dragged beyond it.
 
 import { boundsOfObjects, growRect, unionBounds } from "../geometry/bounds"
+import { connectorPath, pathBounds, resolveConnectors } from "../geometry/connectors"
 import { clampToExtent, fitBounds, zoomAt, zoomStep } from "../geometry/viewport"
 import { pageSize } from "../model/schema"
 
 const PAN_SLACK = 80
+
+// The box around every object and line (a free line can lie outside every shape).
+export function contentBounds(store) {
+	const objects = store.objects.value
+	const byId = new Map(objects.map((object) => [object.id, object]))
+	const connectors = store.connectors.value
+	const resolved = connectors.length ? resolveConnectors(connectors, byId) : new Map()
+	const lines = connectors
+		.filter((connector) => resolved.has(connector.id))
+		.map((connector) => pathBounds(connectorPath(connector, resolved.get(connector.id))))
+	const boxes = [...(objects.length ? [boundsOfObjects(objects)] : []), ...lines]
+	return boxes.length ? unionBounds(boxes) : null
+}
 
 // What the view may roam over: the page (preset canvas) plus any objects outside it.
 export function panExtent(store) {
 	const canvas = store.canvas.value
 	if (canvas.mode !== "preset") return null
 	const { width, height } = pageSize(canvas)
-	const content = boundsOfObjects(store.objects.value)
+	const content = contentBounds(store)
 	return growRect(
 		unionBounds([{ x: 0, y: 0, w: width, h: height }, ...(content ? [content] : [])]),
 		0,
@@ -39,7 +53,7 @@ export const zoomTo = (store, scale) =>
 // Frame everything: the objects, or the page when the canvas has a preset size and is empty.
 export function fitView(store, padding = 48) {
 	const canvas = store.canvas.value
-	const content = boundsOfObjects(store.objects.value)
+	const content = contentBounds(store)
 	let target = content
 	if (canvas.mode === "preset") {
 		const { width, height } = pageSize(canvas)
