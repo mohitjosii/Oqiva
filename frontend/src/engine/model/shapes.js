@@ -58,7 +58,17 @@ export function toolById(id) {
 export const TEXT_BOX_SIZE = { w: 200, h: 36 }
 export const MIN_SIZE = 8
 
+// The outline of a polygon-like shape in its own coordinates, mirrored if the object is flipped.
 export function polygonPoints(object) {
+	const points = basePoints(object)
+	if (!points || (!object.flipX && !object.flipY)) return points
+	return points.map(([x, y]) => [
+		object.flipX ? object.w - x : x,
+		object.flipY ? object.h - y : y,
+	])
+}
+
+function basePoints(object) {
 	const { w, h } = object
 	switch (object.shape) {
 		case "triangle":
@@ -112,9 +122,11 @@ export function textArea(object) {
 			: SHAPE_TYPES[object.shape] || SHAPE_TYPES.rectangle
 	const box = type.textBox
 	const width = Math.max(20, object.w * box.w - TEXT_PADDING_X * 2)
+	const boxX = object.flipX ? 1 - box.x - box.w : box.x
+	const boxY = object.flipY ? 1 - box.y - box.h : box.y
 	return {
-		x: object.w * box.x + (object.w * box.w - width) / 2,
-		y: object.h * box.y + TEXT_PADDING_Y,
+		x: object.w * boxX + (object.w * box.w - width) / 2,
+		y: object.h * boxY + TEXT_PADDING_Y,
 		w: width,
 		h: Math.max(10, object.h * box.h - TEXT_PADDING_Y * 2),
 	}

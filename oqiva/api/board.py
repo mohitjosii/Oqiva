@@ -1,9 +1,11 @@
 """Board endpoints."""
 
 import frappe
+from frappe.rate_limiter import rate_limit
 
 from oqiva.api import current_user
-from oqiva.services import board_service, document_service
+from oqiva.exceptions import OqivaError
+from oqiva.services import board_service, document_service, file_service
 
 
 @frappe.whitelist()
@@ -100,3 +102,25 @@ def get_revision(board: str) -> dict:
 def save_document(board: str, document: str, base_revision: int, save_id: str) -> dict:
 	"""Save a board's content against the revision the client last saw."""
 	return document_service.save_document(current_user(), board, document, base_revision, save_id)
+
+
+def _sent_file() -> bytes:
+	"""The bytes of the one file in this request."""
+	sent = frappe.request.files.get("file") if frappe.request else None
+	if not sent:
+		raise OqivaError(frappe._("No file was sent."))
+	return sent.read()
+
+
+@frappe.whitelist(methods=["POST"])
+@rate_limit(limit=30, seconds=60, methods=["POST"], ip_based=False, user_based=True)
+def upload_image(board: str) -> dict:
+	"""Add a picture to a board. Send it as the multipart field ``file``."""
+	return file_service.upload_image(current_user(), board, _sent_file())
+
+
+@frappe.whitelist(methods=["POST"])
+@rate_limit(limit=10, seconds=60, methods=["POST"], ip_based=False, user_based=True)
+def save_thumbnail(board: str) -> dict:
+	"""Replace a board's thumbnail. Send a small PNG as the multipart field ``file``."""
+	return file_service.save_thumbnail(current_user(), board, _sent_file())

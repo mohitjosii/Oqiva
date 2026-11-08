@@ -20,7 +20,14 @@ class TestLicensePolicy(unittest.TestCase):
 
 	def test_permissive_licences_pass(self):
 		"""Success: MIT-compatible licences and dual licences with a permissive option."""
-		for expression in ("MIT", "ISC", "Apache-2.0", "(MPL-2.0 OR Apache-2.0)", "(MIT AND BSD-3-Clause)"):
+		for expression in (
+			"MIT",
+			"ISC",
+			"Apache-2.0",
+			"(MPL-2.0 OR Apache-2.0)",
+			"(MIT AND BSD-3-Clause)",
+			"(MIT AND Zlib)",
+		):
 			self.assertTrue(self.policy.acceptable(expression), expression)
 
 	def test_copyleft_and_unknown_licences_fail(self):

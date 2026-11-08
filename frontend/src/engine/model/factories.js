@@ -1,6 +1,6 @@
 import { newId } from "./ids"
 import { MIN_SIZE, SHAPE_TYPES, TEXT_BOX_SIZE, toolById } from "./shapes"
-import { sanitizeText } from "./schema"
+import { sanitizeText, TABLE_LIMITS } from "./schema"
 import { themedStyle, themeOf } from "./themes"
 
 export function emptyText(themeName, overrides = {}) {
@@ -47,4 +47,81 @@ export function defaultRect(toolId, center) {
 	const w = tool?.ratio ? side : size.w
 	const h = tool?.ratio ? side : size.h
 	return { x: center.x - w / 2, y: center.y - h / 2, w, h }
+}
+
+// A connector between two ends: {objectId, anchor} for an attached end, {x, y} for a free one.
+export function createConnector({ from, to, geometry = "straight", arrow = true, theme, z }) {
+	return {
+		id: newId(),
+		from,
+		to,
+		geometry,
+		heads: { start: "none", end: arrow ? "arrow" : "none" },
+		bend: 0,
+		style: { stroke: themeOf(theme).stroke, strokeWidth: 2, dash: "solid", opacity: 1 },
+		label: null,
+		z,
+	}
+}
+
+// A picture already uploaded to the board. ``size`` is its natural size; it is scaled down to fit.
+export function createImage({ src, alt = "", size, center, maxSide = 480, z }) {
+	const factor = Math.min(1, maxSide / Math.max(size.w, size.h))
+	const w = Math.max(MIN_SIZE, Math.round(size.w * factor))
+	const h = Math.max(MIN_SIZE, Math.round(size.h * factor))
+	return {
+		id: newId(),
+		kind: "image",
+		shape: "rectangle",
+		x: center.x - w / 2,
+		y: center.y - h / 2,
+		w,
+		h,
+		rotation: 0,
+		z,
+		style: { fill: null, stroke: null, strokeWidth: 0, dash: "solid", opacity: 1, radius: 0 },
+		text: null,
+		src,
+		alt,
+	}
+}
+
+// An empty table of ``rows`` by ``cols`` cells, ``cell`` board units each.
+export function createTable({ rows, cols, center, rect, theme, z, cell = { w: 120, h: 44 } }) {
+	// Dragged out over ``rect``, the cells share it equally (none under the minimum size).
+	const size = rect
+		? {
+				w: Math.max(TABLE_LIMITS.minSize, Math.round(rect.w / cols)),
+				h: Math.max(TABLE_LIMITS.minSize, Math.round(rect.h / rows)),
+			}
+		: cell
+	const w = cols * size.w
+	const h = rows * size.h
+	const origin = rect ? { x: rect.x, y: rect.y } : { x: center.x - w / 2, y: center.y - h / 2 }
+	return {
+		id: newId(),
+		kind: "table",
+		shape: "rectangle",
+		x: origin.x,
+		y: origin.y,
+		w,
+		h,
+		rotation: 0,
+		z,
+		style: {
+			fill: "#FFFFFF",
+			stroke: themeOf(theme).stroke,
+			strokeWidth: 1,
+			dash: "solid",
+			opacity: 1,
+			radius: 0,
+		},
+		text: null,
+		table: {
+			colW: Array(cols).fill(size.w),
+			rowH: Array(rows).fill(size.h),
+			cells: Array.from({ length: rows }, () => Array(cols).fill(null)),
+			fills: Array.from({ length: rows }, () => Array(cols).fill(null)),
+		},
+	}
 }

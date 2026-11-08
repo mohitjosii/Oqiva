@@ -12,6 +12,8 @@ import { toScreen } from "../geometry/viewport"
 import { themeOf } from "../model/themes"
 import { textArea } from "../model/shapes"
 import { autoHeight } from "../text/fit"
+import { emptyText } from "../model/factories"
+import { CELL_PADDING, cellRect, growRow, setCellText, withTable } from "../store/tableOps"
 import { fromProseMirror, isEmptyText, toProseMirror } from "../text/richText"
 
 const props = defineProps({
@@ -32,7 +34,11 @@ const SWATCHES = [
 
 const editor = shallowRef(null)
 const tick = ref(0) // bumps on every editor transaction so active states re-read
-const session = reactive({ id: null, base: { align: "center", size: 16, color: "#111111" } })
+const session = reactive({
+	id: null,
+	cell: null,
+	base: { align: "center", size: 16, color: "#111111" },
+})
 let gesture = null
 
 const state = computed(() => props.store.state)
@@ -53,10 +59,22 @@ const frameStyle = computed(() => {
 	}
 })
 
+// Where the text goes: the shape's text area, or the chosen cell of a table.
+const areaOf = (o) => {
+	if (!session.cell) return textArea(o)
+	const rect = cellRect(o.table, session.cell.row, session.cell.col)
+	return {
+		x: rect.x + CELL_PADDING.x,
+		y: rect.y + CELL_PADDING.y,
+		w: Math.max(10, rect.w - CELL_PADDING.x * 2),
+		h: Math.max(10, rect.h - CELL_PADDING.y * 2),
+	}
+}
+
 const areaStyle = computed(() => {
 	const o = object.value
 	if (!o) return {}
-	const area = textArea(o)
+	const area = areaOf(o)
 	return {
 		left: `${area.x * scale.value}px`,
 		top: `${area.y * scale.value}px`,
@@ -66,7 +84,7 @@ const areaStyle = computed(() => {
 		lineHeight: 1.3,
 		textAlign: session.base.align,
 		color: session.base.color,
-		justifyContent: o.kind === "text" ? "flex-start" : "center",
+		justifyContent: o.kind === "text" && !session.cell ? "flex-start" : "center",
 		fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
 	}
 })
@@ -95,9 +113,22 @@ function currentText() {
 }
 
 // Pushes what has been typed into the board, growing the shape if the text needs room.
+function syncCell(text) {
+	const current = props.store.getObject(session.id)
+	if (!current?.table) return
+	const { row, col } = session.cell
+	const table = growRow(
+		setCellText(current.table, row, col, isEmptyText(text) ? null : text),
+		row,
+		props.measure,
+	)
+	gesture.set([{ id: session.id, patch: withTable(table) }])
+}
+
 function sync() {
 	if (!editor.value || !gesture) return
 	const text = currentText()
+	if (session.cell) return syncCell(text)
 	const current = props.store.getObject(session.id)
 	if (!current) return
 	const height = autoHeight({ ...current, text }, props.measure, text)
@@ -105,18 +136,24 @@ function sync() {
 }
 
 function begin(id) {
+	if (props.store.getConnector(id)) return // a line's label has its own editor
 	const target = props.store.getObject(id)
 	if (!target || state.value.readonly) {
 		state.value.editingId = null
 		return
 	}
 	const theme = themeOf(props.store.theme.value.preset)
+	const cell = target.kind === "table" ? state.value.editingCell || { row: 0, col: 0 } : null
+	if (target.kind === "table" && !cell) return
 	session.id = id
+	session.cell = cell
+	const source = cell ? target.table.cells[cell.row]?.[cell.col] : target.text
 	session.base = {
-		align: target.text?.align || (target.kind === "text" ? "left" : "center"),
-		size: target.text?.size || 16,
-		color: target.text?.color || theme.text,
+		align: source?.align || (target.kind === "text" || cell ? "left" : "center"),
+		size: source?.size || 16,
+		color: source?.color || theme.text,
 	}
+	if (cell) state.value.tableCell = { id, ...cell }
 	gesture = props.store.beginGesture([id])
 	editor.value = new Editor({
 		extensions: [
@@ -138,7 +175,9 @@ function begin(id) {
 			TextStyle,
 			Color,
 		],
-		content: toProseMirror(target.text),
+		content: toProseMirror(
+			cell ? (target.table.cells[cell.row]?.[cell.col] ?? null) : target.text,
+		),
 		onUpdate: sync,
 		onTransaction: () => tick.value++,
 	})
@@ -151,7 +190,10 @@ function finish() {
 	const target = props.store.getObject(session.id)
 	let text = currentText()
 	const empty = isEmptyText(text)
-	if (target?.kind === "text" && empty) {
+	if (session.cell) {
+		syncCell(text)
+		gesture.commit("Edit cell")
+	} else if (target?.kind === "text" && empty) {
 		// An empty text box is not worth keeping. If it was only just created, forget it entirely.
 		gesture.cancel()
 		if (state.value.editingNew) props.store.discardLastStep()
@@ -166,20 +208,33 @@ function finish() {
 	ended.destroy()
 	editor.value = null
 	session.id = null
+	session.cell = null
 	state.value.editingNew = false
 }
 
 watch(
-	() => state.value.editingId,
-	(id, previous) => {
-		if (previous && session.id) finish()
+	() => [state.value.editingId, state.value.editingCell?.row, state.value.editingCell?.col],
+	([id]) => {
+		if (session.id) finish()
 		if (id) begin(id)
+		else state.value.editingCell = null
 	},
 	{ immediate: true },
 )
 onBeforeUnmount(() => session.id && finish())
 
 const stop = () => (state.value.editingId = null)
+
+// Tab and Shift+Tab walk through a table's cells, left to right and top to bottom.
+function nextCell(backwards) {
+	const o = object.value
+	if (!session.cell || !o?.table) return
+	const cols = o.table.colW.length
+	const rows = o.table.rowH.length
+	const at = session.cell.row * cols + session.cell.col + (backwards ? -1 : 1)
+	const wrapped = (at + rows * cols) % (rows * cols)
+	state.value.editingCell = { row: Math.floor(wrapped / cols), col: wrapped % cols }
+}
 const toggle = (command) => editor.value.chain().focus()[command]().run()
 const setColor = (color) =>
 	color
@@ -300,6 +355,7 @@ const sizeOptions = computed(() =>
 				class="oqiva-text-editor absolute flex flex-col overflow-visible"
 				:style="areaStyle"
 				@keydown.esc.stop.prevent="stop"
+				@keydown.tab.stop.prevent="nextCell($event.shiftKey)"
 			>
 				<EditorContent :editor="editor" />
 			</div>

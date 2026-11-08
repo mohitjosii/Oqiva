@@ -5,7 +5,7 @@ import { useRoute, useRouter } from "vue-router"
 import BoardTitle from "@/components/BoardTitle.vue"
 import ErrorState from "@/components/ErrorState.vue"
 import { useAsync } from "@/composables/useAsync"
-import { api } from "@/data/api"
+import { api, upload } from "@/data/api"
 import { findWorkspace, homeWorkspace } from "@/data/session"
 import BoardEditor from "@/engine/BoardEditor.vue"
 import { parseDocument } from "@/engine/model/schema"
@@ -68,6 +68,18 @@ const prepared = computed(() => {
 						}),
 					getRevision: () => api("board.get_revision", { board: boardName.value }),
 				},
+				images: {
+					upload: (file) =>
+						upload("board.upload_image", { board: boardName.value }, file),
+				},
+				thumbnails: {
+					save: (blob) =>
+						upload("board.save_thumbnail", { board: boardName.value }, blob),
+				},
+				exports: {
+					prepare: (format, scope) =>
+						api("export.prepare", { board: boardName.value, format, scope }),
+				},
 			},
 		}
 	} catch (error) {
@@ -115,6 +127,7 @@ const failed = computed(() => board.error.value || content.error.value)
 	<div class="flex h-screen flex-col bg-surface-gray-1">
 		<header
 			class="flex items-center gap-2 border-b border-outline-gray-2 bg-surface-white px-3 py-2"
+			data-print="hide"
 		>
 			<Button icon="chevron-left" variant="ghost" title="Back to workspace" @click="goBack" />
 			<BoardTitle

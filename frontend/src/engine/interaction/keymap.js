@@ -6,6 +6,10 @@ export const SHORTCUTS = [
 	{ group: "Edit", keys: ["Ctrl/Cmd", "Z"], label: "Undo" },
 	{ group: "Edit", keys: ["Ctrl/Cmd", "Shift", "Z"], label: "Redo" },
 	{ group: "Edit", keys: ["Ctrl/Cmd", "D"], label: "Duplicate" },
+	{ group: "Edit", keys: ["Ctrl/Cmd", "C"], label: "Copy" },
+	{ group: "Edit", keys: ["Ctrl/Cmd", "X"], label: "Cut" },
+	{ group: "Edit", keys: ["Ctrl/Cmd", "V"], label: "Paste (also a picture from the clipboard)" },
+	{ group: "Edit", keys: ["Alt", "Drag"], label: "Move without snapping to guides" },
 	{ group: "Edit", keys: ["Delete"], label: "Delete selection" },
 	{ group: "Edit", keys: ["Arrows"], label: "Nudge by 1 (Shift: 10)" },
 	{ group: "Edit", keys: ["Double-click"], label: "Edit text, or add a shape on empty canvas" },
@@ -17,6 +21,10 @@ export const SHORTCUTS = [
 	{ group: "Tools", keys: ["R"], label: "Rectangle" },
 	{ group: "Tools", keys: ["O"], label: "Ellipse" },
 	{ group: "Tools", keys: ["T"], label: "Text box" },
+	{ group: "Tools", keys: ["L"], label: "Line or arrow (last one used)" },
+	{ group: "Lines", keys: ["Click a hover arrow"], label: "Add a connected copy" },
+	{ group: "Lines", keys: ["Drag an end"], label: "Move or re-attach a line end" },
+	{ group: "File", keys: ["Ctrl/Cmd", "P"], label: "Print the board" },
 	{ group: "View", keys: ["Ctrl/Cmd", "+"], label: "Zoom in" },
 	{ group: "View", keys: ["Ctrl/Cmd", "-"], label: "Zoom out" },
 	{ group: "View", keys: ["Ctrl/Cmd", "0"], label: "Zoom to 100%" },
@@ -26,11 +34,20 @@ export const SHORTCUTS = [
 	{ group: "Help", keys: ["?"], label: "Show these shortcuts" },
 ]
 
-const TOOL_KEYS = { v: "select", h: "hand", r: "rectangle", o: "ellipse", t: "text" }
+const TOOL_KEYS = {
+	v: "select",
+	h: "hand",
+	r: "rectangle",
+	o: "ellipse",
+	t: "text",
+	l: "connector",
+}
 const ARROWS = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }
 
 // Commands that only look around or select, which a read-only viewer may use.
 const VIEW_ONLY = new Set([
+	"copy",
+	"print",
 	"zoomIn",
 	"zoomOut",
 	"zoomReset",
@@ -41,15 +58,23 @@ const VIEW_ONLY = new Set([
 	"tool",
 ])
 
+// Inputs that take no typed text (a slider, a checkbox) must not swallow shortcuts such as undo.
+const NON_TEXT_INPUTS = new Set([
+	"range",
+	"checkbox",
+	"radio",
+	"button",
+	"submit",
+	"reset",
+	"color",
+	"image",
+])
+
 export function isTypingTarget(target) {
 	if (!target) return false
 	const tag = target.tagName
-	return (
-		tag === "INPUT" ||
-		tag === "TEXTAREA" ||
-		tag === "SELECT" ||
-		Boolean(target.isContentEditable)
-	)
+	if (tag === "INPUT") return !NON_TEXT_INPUTS.has(String(target.type || "text").toLowerCase())
+	return tag === "TEXTAREA" || tag === "SELECT" || Boolean(target.isContentEditable)
 }
 
 function lookup(event) {
@@ -62,6 +87,9 @@ function lookup(event) {
 		if (lower === "y") return { name: "redo" }
 		if (lower === "a") return { name: "selectAll" }
 		if (lower === "d") return { name: "duplicate" }
+		if (lower === "c") return { name: "copy" }
+		if (lower === "p") return { name: "print" }
+		if (lower === "x") return { name: "cut" }
 		if (key === "=" || key === "+") return { name: "zoomIn" }
 		if (key === "-" || key === "_") return { name: "zoomOut" }
 		if (key === "0") return { name: "zoomReset" }

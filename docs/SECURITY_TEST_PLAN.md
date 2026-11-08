@@ -84,3 +84,20 @@ Every case must return **404** (`DoesNotExistError`), never 403 and never data. 
 - **T8.3** The trash purge job removes a board trashed 31 days ago along with its versions, comments, links, grants, favourites, views and DocShares. A board trashed 29 days ago is kept.
 - **T8.4** Personal workspace: exactly one per user, even under concurrent first visits (the unique `personal_of` constraint). It can't be deleted.
 - **T8.5** Version retention: after 60 Auto versions, 50 remain, and Named and pinned versions survive.
+
+## 9. Pictures, thumbnails and export (Phase 4)
+Where each is tested is noted in brackets. `test_files.py` is the backend file, `phase4.e2e.mjs` the browser run.
+
+- **T9.1** An uploaded SVG, HTML, script or executable is refused whatever its name or claimed type, and the refusal is recorded in the audit log. Only PNG, JPEG, GIF and WebP are accepted, recognised by their first bytes. [`TestSniffing`, `TestUpload`]
+- **T9.2** The name the browser sends never reaches the disk: files get random names. [`TestUpload`]
+- **T9.3** A picture over `upload_max_bytes` is refused. A workspace over `workspace_storage_bytes` cannot add more; deleting a file gives the space back; storage is counted per workspace. [`TestUpload`]
+- **T9.4** Only people who may edit a board can upload to it or set its thumbnail; a stranger gets a not-found, a viewer a forbidden. [`TestUpload`, `TestThumbnail`]
+- **T9.5** A picture's file can be fetched by those who may view its board and by nobody else. [`TestUpload` (file permission); browser run, a second signed-in person is refused]
+- **T9.6** A document with a picture address that is not a private file of a board the saver may view (a public file, an outside URL, `..`, a `data:` URI, a file of a hidden board, a file attached to nothing) is refused at save. [`TestImagesInDocuments`, `TestRichObjects`]
+- **T9.7** Lines, pictures and tables with malformed or out-of-range data are refused at save, as are repeated ids and non-hex colours; an object kind from a newer version is still kept. [`TestRichObjects`]
+- **T9.8** A thumbnail must be a PNG of at most 256 KB; replacing it deletes the previous file; setting it does not change the board's modified time. [`TestThumbnail`]
+- **T9.9** `export.prepare` needs `board:export` (a Guest needs a share), refuses unknown formats and scopes, writes an audit entry with the user, board, format and scope, gives a file name with only letters, digits, dashes and spaces, and is limited to 20 a minute per user. [`TestExport`]
+- **T9.9a** Purging a board deletes its pictures and thumbnail files and gives the storage back. [`TestPurge`]
+- **T9.10** The audit log cannot be written outside a service, and entries older than 365 days are pruned. [`TestAuditLog`]
+- **T9.11** An exported SVG contains no link to a private file and no script; text, labels and picture descriptions are escaped. [`export.test.js`, browser run]
+

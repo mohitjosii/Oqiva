@@ -41,6 +41,37 @@ def shape(object_id="a", **over):
 	return item
 
 
+def connector(connector_id="c1", **over):
+	item = {
+		"id": connector_id,
+		"from": {"objectId": "a", "anchor": "e"},
+		"to": {"x": 300, "y": 40},
+		"geometry": "straight",
+		"heads": {"start": "none", "end": "arrow"},
+		"bend": 0,
+		"style": {"stroke": "#475569", "strokeWidth": 2, "dash": "solid", "opacity": 1},
+		"label": None,
+		"z": 1,
+	}
+	item.update(over)
+	return item
+
+
+def table(rows=2, cols=2, **over):
+	item = shape(
+		"t1",
+		kind="table",
+		table={
+			"rowH": [40] * rows,
+			"colW": [100] * cols,
+			"cells": [[None] * cols for _ in range(rows)],
+			"fills": [[None] * cols for _ in range(rows)],
+		},
+	)
+	item.update(over)
+	return item
+
+
 def doc(*objects, **over):
 	body = {
 		"schemaVersion": 1,
@@ -55,6 +86,114 @@ def doc(*objects, **over):
 	return json.dumps(body)
 
 
+class TestRichObjects(IntegrationTestCase):
+	"""Lines, pictures and tables are checked as strictly as shapes."""
+
+	def parse(self, *objects, connectors=()):
+		return document_service.parse_document(doc(*objects, connectors=list(connectors)))
+
+	def bad(self, *objects, connectors=()):
+		with self.assertRaises(OqivaError):
+			self.parse(*objects, connectors=connectors)
+
+	def test_accepts_a_line_in_every_shape_and_with_free_or_attached_ends(self):
+		lines = [
+			connector("c1"),
+			connector("c2", geometry="elbow", to={"objectId": "a", "anchor": "nw"}),
+			connector("c3", geometry="curved", bend=-120.5, label={"text": "yes"}),
+			connector(
+				"c4",
+				heads={"start": "dot", "end": "open"},
+				style={"stroke": "#FF0000", "strokeWidth": 4, "dash": "dotted", "opacity": 0.5},
+			),
+		]
+		self.assertEqual(self.parse(shape("a"), connectors=lines)[1], 5)
+
+	def test_refuses_lines_that_are_not_well_formed(self):
+		for change in (
+			{"id": "bad id!"},
+			{"from": "a"},
+			{"from": {"objectId": "a", "anchor": "up"}},
+			{"to": {"x": "left", "y": 3}},
+			{"to": {"x": 1e9, "y": 0}},
+			{"geometry": "zigzag"},
+			{"heads": {"end": "rocket"}},
+			{"heads": "arrow"},
+			{"bend": 1e6},
+			{"bend": "far"},
+			{"z": float("inf")},
+			{"style": {"stroke": "url(#x)"}},
+			{"style": {"dash": "wavy"}},
+			{"style": {"opacity": 2}},
+			{"label": {"text": "x" * 201}},
+			{"label": "yes"},
+			{"label": {"text": 5}},
+		):
+			self.bad(shape("a"), connectors=[connector(**change)])
+
+	def test_a_line_id_may_not_repeat_or_clash_with_a_shape(self):
+		self.bad(shape("a"), connectors=[connector("c1"), connector("c1")])
+		self.bad(shape("a"), connectors=[connector("a")])
+
+	def test_accepts_flips_and_groups_and_refuses_bad_ones(self):
+		self.assertEqual(self.parse(shape("a", flipX=True, flipY=False, groupId="g_1"))[1], 1)
+		for change in ({"flipX": 1}, {"flipY": "yes"}, {"groupId": "bad id"}, {"groupId": 5}):
+			self.bad(shape("a", **change))
+
+	def test_accepts_a_picture_from_the_files_folder_only(self):
+		from oqiva.tests.test_files import image
+
+		self.assertEqual(self.parse(image("i", "/private/files/abc123.png"))[1], 1)
+		for src in (
+			"/files/abc.png",
+			"https://example.com/x.png",
+			"//example.com/x.png",
+			"/private/files/../secret.png",
+			"/private/files/a b.png",
+			"javascript:alert(1)",
+			"data:image/png;base64,AAAA",
+			"/private/files/" + "a" * 300 + ".png",
+			None,
+			5,
+		):
+			self.bad(image("i", src))
+		self.bad(image("i", "/private/files/a.png", alt="x" * 201))
+
+	def test_accepts_a_table_and_refuses_one_whose_cells_do_not_fit(self):
+		self.assertEqual(self.parse(table(3, 4))[1], 1)
+		self.bad(table(rows=0))
+		self.bad(table(rows=31))
+		self.bad(table(cols=21))
+		self.bad(table(table={"rowH": [40], "colW": [100], "cells": [[None, None]], "fills": [[None]]}))
+		self.bad(table(table={"rowH": [40], "colW": [100], "cells": [[None]], "fills": [[None], [None]]}))
+		self.bad(table(table={"rowH": [5], "colW": [100], "cells": [[None]], "fills": [[None]]}))
+		self.bad(table(table={"rowH": [40], "colW": [100], "cells": [[None]], "fills": [["red"]]}))
+		self.bad(table(table="a table"))
+
+	def test_a_tables_cells_are_checked_like_any_text(self):
+		cell = {"align": "left", "size": 16, "color": "#000000", "paragraphs": [{"runs": [{"t": "ok"}]}]}
+		good = table(1, 1)
+		good["table"]["cells"] = [[cell]]
+		self.assertEqual(self.parse(good)[1], 1)
+		bad = table(1, 1)
+		bad["table"]["cells"] = [[{**cell, "color": "url(#x)"}]]
+		self.bad(bad)
+
+	def test_a_table_cannot_hold_an_unbounded_amount_of_text(self):
+		cell = {
+			"align": "left",
+			"size": 16,
+			"color": "#000000",
+			"paragraphs": [{"runs": [{"t": "x" * 9000}]}],
+		}
+		big = table(3, 3)
+		big["table"]["cells"] = [[cell] * 3 for _ in range(3)]  # 81,000 characters across nine cells
+		self.bad(big)
+
+	def test_still_keeps_an_object_kind_from_a_newer_version(self):
+		self.assertEqual(self.parse({"id": "n1", "kind": "hologram", "anything": [1, 2]})[1], 1)
+
+
 class TestValidation(RestoresSettings, IntegrationTestCase):
 	def parse(self, raw, **kwargs):
 		return document_service.parse_document(raw, **kwargs)
@@ -62,7 +201,7 @@ class TestValidation(RestoresSettings, IntegrationTestCase):
 	def test_accepts_an_empty_document_and_real_shapes(self):
 		"""Success: a blank board and one with shapes, text and a connector list are valid."""
 		self.assertEqual(self.parse(doc())[1], 0)
-		parsed, count = self.parse(doc(shape("a"), shape("b", kind="text"), connectors=[{"id": "c1"}]))
+		parsed, count = self.parse(doc(shape("a"), shape("b", kind="text"), connectors=[connector("c1")]))
 		self.assertEqual(count, 3)
 		self.assertEqual(parsed["schemaVersion"], 1)
 
@@ -164,7 +303,7 @@ class TestValidation(RestoresSettings, IntegrationTestCase):
 		"""Success: everything drawable counts, not only shapes."""
 		raw = doc(
 			shape("a"),
-			connectors=[{"id": "c1"}, {"id": "c2"}],
+			connectors=[connector("c1"), connector("c2")],
 			mindmaps=[{"id": "m", "nodes": [{}, {}, {}]}],
 			flowcharts=[{"id": "f", "nodes": [{}]}],
 		)

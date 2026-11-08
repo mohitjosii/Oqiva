@@ -11,6 +11,11 @@ INVITE_ROLES = ("Admin", "Member", "Guest")
 PROJECT_COLORS = ("gray", "blue", "green", "orange", "red", "violet", "teal", "pink")
 
 BOARD_DOCTYPE = "Oqiva Board"
+AUDIT_DOCTYPE = "Oqiva Audit Log"
+THUMBNAIL_MAX_BYTES = 256 * 1024
+AUDIT_RETENTION_DAYS = 365
+EXPORT_FORMATS = ("png", "jpeg", "svg", "pdf", "print")
+EXPORT_SCOPES = ("board", "selection")
 
 # Defaults for Oqiva Settings. Read through utils.settings.get_setting so a missing
 # row (fresh install, or a value an admin blanked) still gives a safe limit.
@@ -20,6 +25,7 @@ SETTINGS_DEFAULTS = {
 	"max_document_bytes": 5 * 1024 * 1024,
 	"max_boards_per_workspace": 2000,
 	"workspace_storage_bytes": 2 * 1024**3,
+	"upload_max_bytes": 10 * 1024 * 1024,
 	"trash_retention_days": 30,
 	"auto_version_interval_min": 10,
 	"version_retention": 50,

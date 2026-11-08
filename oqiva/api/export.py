@@ -1,0 +1,14 @@
+"""Export endpoint."""
+
+import frappe
+from frappe.rate_limiter import rate_limit
+
+from oqiva.api import current_user
+from oqiva.services import export_service
+
+
+@frappe.whitelist(methods=["POST"])
+@rate_limit(limit=20, seconds=60, methods=["POST"], ip_based=False, user_based=True)
+def prepare(board: str, format: str, scope: str = "board") -> dict:
+	"""Check that the caller may export, record it, and return a safe file name."""
+	return export_service.prepare(current_user(), board, format, scope)

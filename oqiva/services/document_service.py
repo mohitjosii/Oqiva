@@ -22,13 +22,22 @@ from oqiva.exceptions import (
 	OqivaLimitExceeded,
 	OqivaStaleRevision,
 )
+from oqiva.services import file_service
 from oqiva.utils.settings import get_setting
 
 SUPPORTED_SCHEMA = 1
 ID = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 COLOR = re.compile(r"^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$")
 LIST_KEYS = ("objects", "connectors", "mindmaps", "flowcharts")
-KNOWN_KINDS = ("shape", "text")
+KNOWN_KINDS = ("shape", "text", "image", "table")
+IMAGE_SRC = re.compile(r"^/private/files/[A-Za-z0-9._%()+~-]{1,200}$")
+GEOMETRIES = ("straight", "elbow", "curved")
+HEADS = ("none", "arrow", "open", "dot")
+ANCHORS = ("n", "ne", "e", "se", "s", "sw", "w", "nw")
+DASHES = ("solid", "dashed", "dotted")
+TABLE_MAX_ROWS = 30
+TABLE_MAX_COLS = 20
+TABLE_MAX_CELL_CHARS = 50_000  # all the text in one table together
 GRIDS = ("off", "dense", "sparse")
 MODES = ("infinite", "preset")
 MAX_TEXT_CHARS = 10_000
@@ -92,6 +101,36 @@ def _check_text(object_id: str, text) -> None:
 		_bad(object_id, _("the text is too long."))
 
 
+def _check_table(object_id: str, table) -> None:
+	if not isinstance(table, dict):
+		_bad(object_id, _("a table needs its cells."))
+	row_heights, col_widths = table.get("rowH"), table.get("colW")
+	for name, sizes, most in (("rows", row_heights, TABLE_MAX_ROWS), ("columns", col_widths, TABLE_MAX_COLS)):
+		if not isinstance(sizes, list) or not 1 <= len(sizes) <= most:
+			_bad(object_id, _("a table has between 1 and {0} {1}.").format(most, name))
+		if not all(_number(size, 20, 2000) for size in sizes):
+			_bad(object_id, _("a table's {0} are out of range.").format(name))
+	for name in ("cells", "fills"):
+		grid = table.get(name)
+		if (
+			not isinstance(grid, list)
+			or len(grid) != len(row_heights)
+			or any(not isinstance(row, list) or len(row) != len(col_widths) for row in grid)
+		):
+			_bad(object_id, _("a table's {0} do not match its rows and columns.").format(name))
+	for row in table["fills"]:
+		for fill in row:
+			_check_color(object_id, "cell fill", fill)
+	chars = 0
+	for row in table["cells"]:
+		for cell in row:
+			_check_text(object_id, cell)
+			if cell:
+				chars += sum(len(run["t"]) for paragraph in cell["paragraphs"] for run in paragraph["runs"])
+	if chars > TABLE_MAX_CELL_CHARS:
+		_bad(object_id, _("the table's text is too long."))
+
+
 def _check_object(item, seen: set) -> None:
 	if not isinstance(item, dict) or not isinstance(item.get("id"), str) or not ID.match(item["id"]):
 		raise OqivaError(_("An object has a missing or invalid id."))
@@ -113,6 +152,60 @@ def _check_object(item, seen: set) -> None:
 			_bad(object_id, _("{0} is missing or out of range.").format(field))
 	_check_style(object_id, item.get("style"))
 	_check_text(object_id, item.get("text"))
+	for flip in ("flipX", "flipY"):
+		if flip in item and not isinstance(item[flip], bool):
+			_bad(object_id, _("{0} must be true or false.").format(flip))
+	if "groupId" in item and not (isinstance(item["groupId"], str) and ID.match(item["groupId"])):
+		_bad(object_id, _("the group id is not valid."))
+	if item["kind"] == "image":
+		if not isinstance(item.get("src"), str) or not IMAGE_SRC.match(item["src"]):
+			_bad(object_id, _("a picture must come from this board's files."))
+		if "alt" in item and not (isinstance(item["alt"], str) and len(item["alt"]) <= 200):
+			_bad(object_id, _("the picture description is too long."))
+	if item["kind"] == "table":
+		_check_table(object_id, item.get("table"))
+
+
+def _check_end(connector_id: str, end) -> None:
+	if not isinstance(end, dict):
+		_bad(connector_id, _("a line end must be an object."))
+	if "objectId" in end:
+		if (
+			not (isinstance(end["objectId"], str) and ID.match(end["objectId"]))
+			or end.get("anchor") not in ANCHORS
+		):
+			_bad(connector_id, _("a line end is attached to something invalid."))
+	elif not (_number(end.get("x"), -1e6, 1e6) and _number(end.get("y"), -1e6, 1e6)):
+		_bad(connector_id, _("a free line end needs a position."))
+
+
+def _check_connector(item, seen: set) -> None:
+	if not isinstance(item, dict) or not isinstance(item.get("id"), str) or not ID.match(item["id"]):
+		raise OqivaError(_("A line has a missing or invalid id."))
+	connector_id = item["id"]
+	if connector_id in seen:
+		_bad(connector_id, _("the id is used twice."))
+	seen.add(connector_id)
+	_check_end(connector_id, item.get("from"))
+	_check_end(connector_id, item.get("to"))
+	if item.get("geometry", "straight") not in GEOMETRIES:
+		_bad(connector_id, _("the line shape is not recognised."))
+	heads = item.get("heads", {})
+	if not isinstance(heads, dict) or any(heads.get(end, "none") not in HEADS for end in ("start", "end")):
+		_bad(connector_id, _("an arrowhead is not recognised."))
+	if "bend" in item and not _number(item["bend"], -5000, 5000):
+		_bad(connector_id, _("bend is out of range."))
+	if not _number(item.get("z", 0), -1e9, 1e9):
+		_bad(connector_id, _("z is out of range."))
+	style = item.get("style")
+	_check_style(connector_id, style)
+	if isinstance(style, dict) and style.get("dash", "solid") not in DASHES:
+		_bad(connector_id, _("the dash style is not recognised."))
+	label = item.get("label")
+	if label is not None and not (
+		isinstance(label, dict) and isinstance(label.get("text"), str) and len(label["text"]) <= 200
+	):
+		_bad(connector_id, _("a line label is not valid."))
 
 
 def _check_canvas(canvas) -> None:
@@ -159,6 +252,8 @@ def parse_document(raw: str, enforce_limits: bool = True) -> tuple[dict, int]:
 	seen: set = set()
 	for item in document["objects"]:
 		_check_object(item, seen)
+	for item in document["connectors"]:
+		_check_connector(item, seen)
 	count = _count(document)
 	if enforce_limits and count > get_setting("max_objects_per_board"):
 		raise OqivaLimitExceeded(_("This board has too many objects."))
@@ -191,6 +286,7 @@ def load_document(user: str, board: str) -> dict:
 		"limits": {
 			"max_objects_per_board": get_setting("max_objects_per_board"),
 			"max_document_bytes": get_setting("max_document_bytes"),
+			"upload_max_bytes": get_setting("upload_max_bytes"),
 		},
 	}
 
@@ -215,6 +311,7 @@ def save_document(user: str, board: str, document: str, base_revision: int, save
 	if not isinstance(save_id, str) or not ID.match(save_id):
 		raise OqivaError(_("A save needs an id."))
 	parsed, count = parse_document(document)
+	file_service.check_images(user, parsed)
 	# The row lock is what makes "check the revision, then write" one step. Without it two
 	# saves could both read revision N and both write N+1.
 	current = frappe.db.get_value(

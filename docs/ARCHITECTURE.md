@@ -532,3 +532,29 @@ Decisions and behaviour worth knowing:
 - **Settings are numbers.** Frappe returns a Long Int setting as text, so `get_setting` converts every value. A test found this when a size comparison failed.
 - **Tests that change settings put them back** (`RestoresSettings`), because Frappe rolls back only when a test class ends.
 - **The one test that commits** (`TestConcurrentSaves`) deletes only the rows it made, and only `@oqiva.test` users.
+
+## 22. Implementation notes for Phase 4 (connectors, right palette, export)
+
+| Area | Files | What it does |
+|---|---|---|
+| Lines | `geometry/connectors.js`, `model/connectorTools.js`, `render/ConnectorView.vue`, `render/connectorPaths.js` | Anchors, snapping, fan-out, straight, elbow and curved routes, hit testing, a cached path per line |
+| One drawing path | `render/nodes.js`, `render/SvgTree.js` | Every object and line is described as plain data, drawn on screen by `SvgTree` and turned into a string by `serializeNode` for export |
+| Store | `store/createStore.js`, `store/clone.js`, `store/arrange.js`, `store/tableOps.js` | Two lists (objects, lines) under one set of operations; pure functions for z-order, align, distribute, size, rotate, flip, groups and tables |
+| Interaction | `interaction/{controller,actions,palette,clipboard,guides,images,placement,tables}.js` | Line tools and handles, hover arrows, palette rules and actions, clipboard, smart guides, edge auto-pan, picture insertion |
+| Export | `export/{scene,svg,pictures,raster,files,exporter,thumbnail}.js` | What an export holds, the SVG, embedding pictures, PNG/JPEG/PDF, download and print, thumbnails |
+| UI | `ui/{RightPalette,PaletteTile,ColorSwatches,ExportMenu,LineLabelEditor,TableSizePicker}.vue` | The panel on the right, the colour grid, the Export menu, line labels, the table size picker |
+| Backend | `services/{file_service,export_service,audit_service}.py`, `api/export.py`, Oqiva Audit Log | Picture and thumbnail storage, quota, export check and audit, validation of lines, pictures and tables in `document_service.py` |
+
+Things worth knowing:
+
+- **Gestures cover both lists.** A drag that moves shapes and free lines is one undo step. Deleting a shape removes its lines in the same step.
+- **Guides** compare the dragged box with the boxes of the other objects on screen (and the page of a preset board) within 6 screen pixels; they let go as soon as the pointer moves on, and Alt turns them off.
+- **Auto-pan** is one animation-frame loop that does nothing unless a drag is under way. The controller stays free of timers: the canvas calls `autoPanTick(elapsed)`.
+- **Clipboard** is held in memory and survives moving between boards in one tab. Pasting a picture from the system clipboard goes through the browser's paste event, because that is the only way to receive a file.
+- **Keyboard and overlays.** While a menu, popover or dialog is open the editor ignores its own shortcuts, so Escape closes the menu instead of clearing the selection behind it (found in a browser run: the editor's handler ran first and marked the key as handled).
+- **Form controls.** A slider or checkbox does not count as typing, so Ctrl+Z still undoes after dragging one.
+- **Recent colours** are kept in this browser's local storage, never in the document.
+- **Server validation** now covers lines (ids, ends, shapes, arrowheads, bend, style, label), pictures (address must be a private file path) and tables (rows 1-30, columns 1-20, cell text and fills, 50,000 characters in all), as well as flips and groups. The client drops what it cannot draw; the server refuses it.
+- **Tests that touch files** delete the File rows they make, which also removes the files from disk.
+- **Browser run.** `e2e/phase4.e2e.mjs` covers lines, the palette, clipboard, guides, auto-pan, pictures, tables, every export format (it reads the downloaded bytes back), print, thumbnails and the home tile. A fresh pair of test users is best for each full run, because the workspace menu grows with every run.
+

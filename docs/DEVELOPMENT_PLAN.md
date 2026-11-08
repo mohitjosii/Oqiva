@@ -96,7 +96,7 @@
 >
 > **Not built yet, with where it goes:**
 > - Scrollbars on the preset-size canvas (P3.03). Panning is clamped to the page and what lies outside it, but there are no scrollbar thumbs. Moved to P6.04 with the minimap.
-> - Flip horizontal and vertical (P3.06). It arrives with the right palette's Transform tiles (P4.04).
+> - Flip horizontal and vertical (P3.06). Done in Phase 4 with the right palette's Transform tiles (P4.04).
 > - Text that shrinks to fit (P3.07, DF-T4). It is needed for sticky notes and table cells, so it moves to P6.03 and P4.08.
 > - `crdt_state` in the save call. It arrives with realtime in P5.01.
 > - Size and polygon-side changes after a shape is drawn. Those are palette actions (P4.05).
@@ -124,7 +124,22 @@
 
 ---
 
-## Phase 4: Connectors, right palette, export (about 5 weeks)
+## Phase 4: Connectors, right palette, export (about 5 weeks) ✅ (built 2026-11-08, awaiting review gate)
+
+> **Status.** Tasks P4.01 to P4.10 are done, with the gaps listed below. Checks: 151 backend tests (133 + 18), 402 frontend tests (382 of them for the engine), and three browser runs against a private dev server: the new `e2e/phase4.e2e.mjs` (50 steps), `editor.e2e.mjs` (20) and `home.e2e.mjs` (14), all passing; ruff, prettier and the licence check (265 packages) pass. Differences from the plan are in ARCHITECTURE.md section 22 and ADR-012 to ADR-014.
+>
+> **Not done or not verified:**
+> - **Semgrep was not run this phase.** The disk was at 99% and installing it needed about 300 MB, which I did not risk on a machine that also holds the database. Run it before merging (CI does). New Python code uses `frappe.qb`, no string-built SQL, and marks the one scheduled-job commit with `nosemgrep` like the existing jobs.
+> - One run of `home.e2e.mjs` right after the editor run failed one step that I did not catch; it passed on the next three runs. The cause is unknown.
+> - Elbow lines do not steer around other shapes (right angles with one middle turn).
+> - Hover arrows work on shapes only, not on pictures, tables or text boxes.
+> - Tables resize as a whole. There is no dragging of one column or row border, no selecting several cells, no merged cells, and a table cannot be flipped.
+> - PDF holds a picture of the board (2x), not selectable text. Exported text uses the browser's fallback font where Inter is not installed (ADR-012).
+> - The clipboard is inside Oqiva only (plus pictures from the system clipboard). There is no copy to other apps or other browsers.
+> - Deleting a picture object from a board keeps its file until the board is purged (undo needs it). Purging a board does delete its files (ADR-013).
+> - Carried on from Phase 3: scrollbars (P6.04), text that shrinks to fit (P6.03, with sticky notes), `crdt_state` in saves (P5.01). Flip is done.
+>
+> **What changed outside the plan:** a new setting `upload_max_bytes`; a new doctype Oqiva Audit Log with a daily prune; the licence allow-list gains Zlib (ADR-012); `lib.mjs` now sends the site header with every browser request, not only page loads; the editor ignores its shortcuts while a menu or dialog is open (Escape had stopped closing menus); a slider no longer swallows Ctrl+Z.
 | ID | Lane | Task | Refs | Days | Depends |
 |---|---|---|---|---|---|
 | P4.01 | ENG | Anchors (8 per shape, rotate with it, shown only while connecting), the six connector tools, snap to anchor, unattached ends, attached ends follow move, resize and rotate | DF-K1–K3, DF-S4 | 3 | P3.06 |

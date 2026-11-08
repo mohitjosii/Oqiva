@@ -3,9 +3,11 @@
 // It forwards pointer events to the controller and holds no document logic of its own.
 import { computed, onBeforeUnmount, onMounted, ref } from "vue"
 import { objectBounds, rectsIntersect } from "../geometry/bounds"
+import { connectorPath, pathBounds, resolveConnectors } from "../geometry/connectors"
 import { visibleRect } from "../geometry/viewport"
-import { createObject } from "../model/factories"
+import { createConnector, createObject, createTable } from "../model/factories"
 import { GRID_SIZES, pageSize } from "../model/schema"
+import ConnectorView from "./ConnectorView.vue"
 import ShapeView from "./ShapeView.vue"
 import SelectionOverlay from "./SelectionOverlay.vue"
 
@@ -14,6 +16,7 @@ const props = defineProps({
 	controller: { type: Object, required: true },
 	fonts: { type: Number, default: 0 },
 })
+const emit = defineEmits(["files"])
 
 const root = ref(null)
 const state = computed(() => props.store.state)
@@ -26,7 +29,17 @@ const PAGE_BG = "#e9ebef"
 const GRID_DOT = "#c3c8d0"
 
 let observer = null
+let frame = 0
+let lastFrame = 0
+// Scrolls the view while something is dragged near its edge. One frame loop, doing nothing
+// unless a drag is under way.
+function tick(now) {
+	if (lastFrame) props.controller.autoPanTick(Math.min(now - lastFrame, 50))
+	lastFrame = now
+	frame = requestAnimationFrame(tick)
+}
 onMounted(() => {
+	frame = requestAnimationFrame(tick)
 	props.controller.bounds = () => root.value.getBoundingClientRect()
 	observer = new ResizeObserver(([entry]) => {
 		const { width, height } = entry.contentRect
@@ -36,19 +49,49 @@ onMounted(() => {
 	const box = root.value.getBoundingClientRect()
 	state.value.size = { width: box.width, height: box.height }
 })
-onBeforeUnmount(() => observer?.disconnect())
+onBeforeUnmount(() => {
+	observer?.disconnect()
+	cancelAnimationFrame(frame)
+})
 
 // Only objects that touch the screen are mounted, which is what keeps big boards smooth.
-const visible = computed(() => {
+const cullArea = computed(() => {
 	const view = visibleRect(viewport.value, state.value.size)
 	const margin = CULL_MARGIN_PX / viewport.value.scale
-	const area = {
+	return {
 		x: view.x - margin,
 		y: view.y - margin,
 		w: view.w + margin * 2,
 		h: view.h + margin * 2,
 	}
-	return props.store.objects.value.filter((object) => rectsIntersect(objectBounds(object), area))
+})
+const visible = computed(() =>
+	props.store.objects.value.filter((object) =>
+		rectsIntersect(objectBounds(object), cullArea.value),
+	),
+)
+
+// Lines on screen, each with its worked-out path.
+const paths = computed(() => props.controller.paths.value)
+const visibleConnectors = computed(() =>
+	props.store.connectors.value.filter((connector) => {
+		const path = paths.value.get(connector.id)
+		return path && rectsIntersect(pathBounds(path), cullArea.value)
+	}),
+)
+
+// The line being drawn, shown dashed until it is let go.
+const previewConnector = computed(() => {
+	const preview = state.value.connectorPreview
+	if (!preview) return null
+	const connector = {
+		...createConnector({ ...preview, theme: props.store.theme.value.preset, z: 0 }),
+		id: "preview",
+		style: { stroke: "#2563eb", strokeWidth: 2, dash: "dashed", opacity: 0.9 },
+	}
+	const byId = new Map(props.store.objects.value.map((object) => [object.id, object]))
+	const resolved = resolveConnectors([connector], byId).get("preview")
+	return resolved ? { connector, path: connectorPath(connector, resolved) } : null
 })
 
 const worldTransform = computed(
@@ -80,6 +123,17 @@ const gridArea = computed(() => {
 const previewObject = computed(() => {
 	const preview = state.value.preview
 	if (!preview) return null
+	if (preview.tool === "table") {
+		const { tableRows: rows, tableCols: cols } = state.value.toolOptions
+		const table = createTable({
+			rows,
+			cols,
+			rect: preview.rect,
+			theme: props.store.theme.value.preset,
+			z: 0,
+		})
+		return { ...table, id: "preview", style: { ...table.style, fill: null, dash: "dashed" } }
+	}
 	const object = createObject(preview.tool, preview.rect, {
 		theme: props.store.theme.value.preset,
 		z: 0,
@@ -100,6 +154,11 @@ function pointerDown(event) {
 	root.value.setPointerCapture?.(event.pointerId)
 	props.controller.pointerDown(event)
 }
+function drop(event) {
+	const files = [...(event.dataTransfer?.files || [])]
+	if (files.length && !state.value.readonly)
+		emit("files", files, props.controller.boardPoint(event))
+}
 function pointerUp(event) {
 	root.value.releasePointerCapture?.(event.pointerId)
 	props.controller.pointerUp(event)
@@ -119,6 +178,8 @@ function pointerUp(event) {
 		@dblclick="controller.doubleClick($event)"
 		@wheel.prevent="controller.wheel($event)"
 		@contextmenu.prevent
+		@dragover.prevent
+		@drop.prevent="drop"
 	>
 		<svg class="absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg">
 			<defs>
@@ -157,11 +218,30 @@ function pointerUp(event) {
 					:object="object"
 					:detail="detail"
 					:hide-text="object.id === state.editingId"
+					:editing-cell="object.id === state.editingId ? state.editingCell : null"
 					:fonts="fonts"
 				/>
 				<ShapeView v-if="previewObject" :object="previewObject" />
 			</g>
-			<SelectionOverlay :store="store" />
+			<g :transform="worldTransform" data-testid="connectors">
+				<ConnectorView
+					v-for="connector in visibleConnectors"
+					:key="connector.id"
+					:connector="connector"
+					:path="paths.get(connector.id)"
+					:detail="detail"
+					:background="pageFill"
+					:hide-label="connector.id === state.editingId"
+					:fonts="fonts"
+				/>
+				<ConnectorView
+					v-if="previewConnector"
+					:connector="previewConnector.connector"
+					:path="previewConnector.path"
+					:detail="false"
+				/>
+			</g>
+			<SelectionOverlay :store="store" :paths="controller.paths" />
 		</svg>
 		<slot />
 	</div>

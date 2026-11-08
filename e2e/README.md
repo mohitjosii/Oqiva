@@ -20,6 +20,11 @@ their credentials in a JSON file:
 
 ## Run
 
+Three runs: `home.e2e.mjs` (the home area), `editor.e2e.mjs` (the canvas editor) and
+`phase4.e2e.mjs` (lines, palette, clipboard, pictures, tables, export). Use a fresh pair of
+throwaway users when you can: each run creates a workspace, and the workspace menu grows with
+every one. `png.mjs` makes the small pictures the runs upload.
+
 ```bash
 OQIVA_E2E_CREDS=/path/to/creds.json node home.e2e.mjs
 ```
