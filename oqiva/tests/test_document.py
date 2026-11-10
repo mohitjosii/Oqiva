@@ -310,7 +310,7 @@ class TestValidation(RestoresSettings, IntegrationTestCase):
 			mindmaps=[
 				mind_map(mind_node("root", None, 0), mind_node("n1", "root", 0), mind_node("n2", "root", 1))
 			],
-			flowcharts=[{"id": "f", "nodes": [{}]}],
+			flowcharts=[flow_chart(flow_node("f1", 0, 0))],
 		)
 		self.assertEqual(self.parse(raw)[1], 7)
 
@@ -717,3 +717,90 @@ class TestMindMaps(IntegrationTestCase):
 		self.addCleanup(frappe.db.set_single_value, "Oqiva Settings", "max_objects_per_board", 3000)
 		with self.assertRaises(OqivaLimitExceeded):
 			self.parse(mind_map(root, *kids))
+
+
+def flow_node(node_id, x=0, y=0, type="process", **over):
+	item = {"id": node_id, "type": type, "text": "Step", "x": x, "y": y, "manual": False}
+	item.update(over)
+	return item
+
+
+def flow_chart(*nodes, edges=(), chart_id="fc1", **over):
+	item = {
+		"id": chart_id,
+		"direction": "TB",
+		"numbered": False,
+		"nodes": list(nodes) or [flow_node("n1")],
+		"edges": list(edges),
+	}
+	item.update(over)
+	return item
+
+
+class TestFlowcharts(IntegrationTestCase):
+	"""A flowchart is typed steps with positions and connections between two different steps."""
+
+	def parse(self, *charts, objects=()):
+		return document_service.parse_document(doc(*objects, flowcharts=list(charts)))
+
+	def bad(self, *charts, objects=()):
+		with self.assertRaises(OqivaError):
+			self.parse(*charts, objects=objects)
+
+	def edge(self, edge_id, source, target, **over):
+		return {"id": edge_id, "from": source, "to": target, "label": "", "order": 0, **over}
+
+	def test_accepts_a_chart_with_every_step_type_and_labelled_connections(self):
+		chart = flow_chart(
+			flow_node("s", 0, 0, "terminator", text="Start"),
+			flow_node("d", 0, 120, "decision", text="OK?"),
+			flow_node("a", 0, 240, "process"),
+			flow_node("b", 200, 120, "io"),
+			flow_node("j", 200, 240, "junction", text=""),
+			edges=[
+				self.edge("e1", "s", "d"),
+				self.edge("e2", "d", "a", label="Yes"),
+				self.edge("e3", "d", "b", label="No", order=1),
+				self.edge("e4", "a", "j"),
+				self.edge("e5", "b", "j"),
+			],
+			direction="LR",
+			numbered=True,
+		)
+		document, count = self.parse(chart, objects=(shape("s1"),))
+		self.assertEqual(count, 6)
+		self.assertEqual(document["flowcharts"][0]["direction"], "LR")
+
+	def test_refuses_bad_steps_and_connections(self):
+		n1, n2 = flow_node("n1"), flow_node("n2", 0, 100)
+		for chart in (
+			flow_chart(flow_node("n1", type="star")),
+			flow_chart(flow_node("n1", text="x" * 201)),
+			flow_chart(flow_node("n1", x="left")),
+			flow_chart(flow_node("n1", y=1e9)),
+			flow_chart(flow_node("n1", manual="yes")),
+			flow_chart(n1, flow_node("n1")),  # a repeated id
+			flow_chart(n1, n2, edges=[self.edge("e", "n1", "n1")]),  # a loop
+			flow_chart(n1, n2, edges=[self.edge("e", "n1", "ghost")]),
+			flow_chart(n1, n2, edges=[self.edge("e", "n1", "n2"), self.edge("f", "n1", "n2")]),
+			flow_chart(n1, n2, edges=[self.edge("e", "n1", "n2", label="l" * 61)]),
+			flow_chart(n1, n2, edges=[self.edge("e", "n1", "n2", order=-1)]),
+			flow_chart(n1, n2, edges=[self.edge("n1", "n1", "n2")]),  # the id belongs to a step
+			flow_chart(n1, direction="diagonal"),
+			flow_chart(n1, numbered="yes"),
+		):
+			self.bad(chart)
+
+	def test_step_text_size_is_checked(self):
+		"""Success: a size from 8 to 200 is accepted. Boundary: outside that, or not a number, is refused."""
+		for size in (8, 40, 200):
+			self.parse(flow_chart(flow_node("n1", 0, 0, fontSize=size)))
+		for size in (7, 201, "big", True):
+			self.bad(flow_chart(flow_node("n1", 0, 0, fontSize=size)))
+
+	def test_refuses_ids_used_by_shapes_or_other_charts_and_too_many_things(self):
+		self.bad(flow_chart(flow_node("s1")), objects=(shape("s1"),))
+		self.bad(flow_chart(), flow_chart(flow_node("n1"), chart_id="fc2"))  # step id n1 twice
+		with self.assertRaises(OqivaLimitExceeded):
+			self.parse(*[flow_chart(flow_node(f"x{i}"), chart_id=f"c{i}") for i in range(51)])
+		self.bad(flow_chart(*[flow_node(f"n{i}") for i in range(501)]))

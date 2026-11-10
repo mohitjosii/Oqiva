@@ -286,19 +286,19 @@ await step("the templates page lists the templates, and one makes a board", asyn
 	await page.goto(page.url().replace(/\/board\/.*/, "/"))
 	await page.getByRole("link", { name: "Templates" }).first().click()
 	await page.getByRole("heading", { name: "Templates" }).first().waitFor()
-	await poll(async () => (await page.locator('article[aria-labelledby^="template-"]').count()) >= 19, "19 template cards")
+	await poll(async () => (await page.locator('article[aria-labelledby^="template-"]').count()) >= 37, "37 template cards")
 	await shot(page, "p6-7-templates")
 	await page.getByLabel(/Search templates/i).fill("kanban")
 	await expectCount(page.locator('article[aria-labelledby^="template-"]'), 1, "kanban card")
 	await page.locator('article[aria-labelledby^="template-"]').getByRole("button", { name: /Use template/ }).click()
 	await page.waitForURL(/\/oqiva\/board\//)
 	await canvas.waitFor()
-	await poll(async () => (await shapes.count()) === 7, "the kanban board's 7 objects")
+	await poll(async () => (await shapes.count()) === 21, "the kanban board's 21 objects")
 	await shot(page, "p6-8-kanban")
 })
 
 await step("every template opens as an editable board", async () => {
-	const names = ["Dashboard wireframe", "Mobile app flow", "Entity relationships", "Sign-in screen", "Retrospective", "Web application architecture", "Incident response", "Customer journey"]
+	const names = ["Dashboard wireframe", "Mobile app flow", "Entity relationship diagram", "Sign-in screen", "Sprint retrospective", "Web application architecture", "Business model canvas", "Customer journey map", "Project charter", "Meeting notes"]
 	for (const [i, name] of names.entries()) {
 		await page.goto(page.url().replace(/\/board\/.*/, "/"))
 		await page.getByRole("link", { name: "Templates" }).first().click()

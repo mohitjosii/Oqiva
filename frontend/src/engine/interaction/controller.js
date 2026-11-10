@@ -17,6 +17,7 @@ import {
 	connectorHit,
 	connectorPath,
 	CONNECTABLE_KINDS,
+	distanceToSegment,
 	isAttached,
 	nearestAnchor,
 	pathIntersectsRect,
@@ -47,6 +48,10 @@ import { expandToGroups } from "../store/arrange"
 import { cellAt, scaleTable, setTrackSize, withTable } from "../store/tableOps"
 import { createMapLayouts, sized } from "../modes/mindmap/layouts"
 import { runMindmapCommand } from "../modes/mindmap/commands"
+import { runFlowCommand } from "../modes/flowchart/commands"
+import { createFlowLayouts, layoutBounds } from "../modes/flowchart/layouts"
+import { applyFlowChange } from "../modes/flowchart/storeOps"
+import * as flowOps from "../modes/flowchart/ops"
 import { applyChange as applyMapChange } from "../modes/mindmap/storeOps"
 import * as mapTree from "../modes/mindmap/tree"
 import { paintOnto } from "./actions"
@@ -73,6 +78,72 @@ export class CanvasController {
 		this.paths = createConnectorPaths(store)
 		// Where every mind map's nodes are, worked out from the trees and kept up to date.
 		this.maps = createMapLayouts(store, sized(measure), () => store.state.fontsTick)
+		// The same for flowcharts: node sizes and where every arrow runs.
+		this.flows = createFlowLayouts(store, measure, () => store.state.fontsTick)
+		// Where the maps and charts are, for fitting the view to the board and for the minimap.
+		store.extraBounds = () => [
+			...[...this.maps.value.values()].map((layout) => layout.bounds),
+			...[...this.flows.value.values()].map((layout) => layoutBounds(layout)).filter(Boolean),
+		]
+	}
+
+	// The flowchart step under a board point: {layout, node, box}, or null. The topmost (last drawn) wins.
+	flowAt(point, slop = 0) {
+		let found = null
+		for (const layout of this.flows.value.values()) {
+			for (const node of layout.nodes) {
+				const size = layout.sizes.get(node.id)
+				if (!size) continue
+				if (
+					point.x >= node.x - size.w / 2 - slop &&
+					point.x <= node.x + size.w / 2 + slop &&
+					point.y >= node.y - size.h / 2 - slop &&
+					point.y <= node.y + size.h / 2 + slop
+				)
+					found = {
+						layout,
+						node,
+						box: {
+							x: node.x - size.w / 2,
+							y: node.y - size.h / 2,
+							w: size.w,
+							h: size.h,
+						},
+					}
+			}
+		}
+		return found
+	}
+
+	// The arrow of a flowchart nearest a board point (within ``slop``), or null.
+	flowEdgeAt(point, slop) {
+		let best = null
+		for (const layout of this.flows.value.values()) {
+			for (const edge of layout.edges) {
+				const route = layout.routes.get(edge.id)
+				if (!route) continue
+				for (let i = 1; i < route.points.length; i++) {
+					const d = distanceToSegment(point, route.points[i - 1], route.points[i])
+					if (d <= slop && (!best || d < best.d)) best = { layout, edge, d }
+				}
+			}
+		}
+		return best
+	}
+
+	// Flowchart commands from a button, the type picker or the pointer. They share the keyboard's code.
+	flowHost() {
+		return {
+			measure: (text, size) => this.measure(text, { size }),
+			ask: this.ask,
+			// bring a step that landed off screen (or under the tool bars) into view
+			reveal: (point) =>
+				this.revealRect({ x: point.x - 110, y: point.y - 90, w: 220, h: 230 }),
+		}
+	}
+
+	flowCommand(command) {
+		return runFlowCommand(this.store, command, this.flowHost())
 	}
 
 	// The mind map node under a board point: {layout, node, box}, or null.
@@ -150,6 +221,45 @@ export class CanvasController {
 				const view = visibleRect(this.state.viewport, this.state.size)
 				return { x: view.x + view.w / 2, y: view.y + view.h / 2 }
 			},
+		}
+	}
+
+	// A flowchart step let go: spliced into the arrow under it, or simply left where it was dropped
+	// (which marks it as placed by hand, so Tidy up is what brings it back into the layout).
+	dropFlowNode(drag, feedback) {
+		const chartId = drag.chartId
+		const chart = this.store.getChart(chartId)
+		const nodes = this.store.nodesOfChart(chartId)
+		const edges = this.store.edgesOfChart(chartId)
+		const measure = this.flowHost().measure
+		const change = feedback.spliceEdge
+			? flowOps.spliceNodeOnEdge(chart, nodes, edges, drag.id, feedback.spliceEdge, {
+					measure,
+				})
+			: flowOps.moveNodes(nodes, [drag.id], Math.round(feedback.dx), Math.round(feedback.dy))
+		return applyFlowChange(this.store, chartId, change, {
+			label: feedback.spliceEdge ? "Insert step" : "Move",
+			select: [drag.id],
+			selectUndo: [drag.id],
+		})
+	}
+
+	// The end of an arrow pulled out of a "+" handle: onto another step it connects them, onto empty
+	// canvas it asks what to make there, and a plain click asks what to add next.
+	finishFlowLink(drag, event) {
+		const feedback = this.state.flowDrag
+		this.state.flowDrag = null
+		const screen = this.screenPoint(event)
+		const pointer = this.boardPoint(event)
+		if (drag.moved && feedback?.target) {
+			this.flowCommand({ name: "fl.connect", from: drag.from, to: feedback.target })
+			return
+		}
+		this.state.flowPicker = {
+			from: drag.from,
+			side: drag.side,
+			point: { x: screen.x, y: screen.y },
+			at: drag.moved ? { x: Math.round(pointer.x), y: Math.round(pointer.y) } : null,
 		}
 	}
 
@@ -330,6 +440,40 @@ export class CanvasController {
 			this.mapCommand({ name: "mm.child" })
 			return
 		}
+		const flowAdd = event.target?.closest?.("[data-flowadd]")
+		if (flowAdd && !this.state.readonly) {
+			this.store.select([flowAdd.dataset.flowadd])
+			this.state.flowPicker = null
+			this.drag = {
+				type: "flowlink",
+				chartId: this.store.getFlowNode(flowAdd.dataset.flowadd)?.chartId,
+				from: flowAdd.dataset.flowadd,
+				side: flowAdd.dataset.side,
+				start: point,
+				startScreen: screen,
+				moved: false,
+			}
+			return
+		}
+		const flowSlop = HIT_TOLERANCE_PX / this.state.viewport.scale
+		const hitFlow = this.flowAt(point, flowSlop)
+		if (hitFlow && !this.state.painter) return this.pressFlowNode(event, point, screen, hitFlow)
+		const flowEdgeId = event.target?.closest?.("[data-flowedge]")?.dataset.flowedge
+		const flowEdge = flowEdgeId
+			? { edge: this.store.getFlowEdge(flowEdgeId) }
+			: this.flowEdgeAt(point, flowSlop * 3)
+		if (flowEdge?.edge && !this.state.painter) {
+			const id = flowEdge.edge.id
+			if (event.shiftKey && this.state.selection.every((x) => this.store.getFlowEdge(x)))
+				this.store.select(
+					this.state.selection.includes(id)
+						? this.state.selection.filter((x) => x !== id)
+						: [...this.state.selection, id],
+				)
+			else this.store.select([id])
+			this.state.flowPicker = null
+			return
+		}
 		const hitNode = this.nodeAt(point, HIT_TOLERANCE_PX / this.state.viewport.scale)
 		if (hitNode && !this.state.painter) return this.pressNode(event, point, screen, hitNode)
 		const handle = event.target?.dataset?.handle
@@ -409,6 +553,33 @@ export class CanvasController {
 			type: "marquee",
 			start: point,
 			base: event.shiftKey ? [...this.state.selection] : [],
+		}
+	}
+
+	// A press on a flowchart step: select it (Shift adds or removes), and get ready to drag it.
+	pressFlowNode(event, point, screen, { layout, node }) {
+		const selected = this.state.selection
+		this.state.flowPicker = null
+		if (event.shiftKey) {
+			const onlySteps = selected.every((id) => this.store.getFlowNode(id))
+			this.store.select(
+				selected.includes(node.id)
+					? selected.filter((id) => id !== node.id)
+					: onlySteps
+						? [...selected, node.id]
+						: [node.id],
+			)
+			return
+		}
+		if (!selected.includes(node.id) || selected.length > 1) this.store.select([node.id])
+		if (this.state.readonly) return
+		this.drag = {
+			type: "flownode",
+			chartId: layout.chart.id,
+			id: node.id,
+			start: point,
+			startScreen: screen,
+			moved: false,
 		}
 	}
 
@@ -504,6 +675,46 @@ export class CanvasController {
 						point,
 						target: this.mapDropTarget(drag.layout, drag.id, point),
 					}
+				}
+				break
+			}
+			case "flownode": {
+				if (
+					!drag.moved &&
+					Math.hypot(screen.x - drag.startScreen.x, screen.y - drag.startScreen.y) <
+						CLICK_SLOP_PX
+				)
+					break
+				drag.moved = true
+				const layout = this.flows.value.get(drag.chartId)
+				const dx = point.x - drag.start.x
+				const dy = point.y - drag.start.y
+				// A step with no arrows of its own, dragged over an arrow, would split it.
+				let spliceEdge = null
+				if (layout && !layout.edges.some((e) => e.from === drag.id || e.to === drag.id)) {
+					const hit = this.flowEdgeAt(point, 10 / this.state.viewport.scale)
+					if (hit && hit.layout.chart.id === drag.chartId) spliceEdge = hit.edge.id
+				}
+				this.state.flowDrag = { chartId: drag.chartId, nodeId: drag.id, dx, dy, spliceEdge }
+				break
+			}
+			case "flowlink": {
+				if (
+					!drag.moved &&
+					Math.hypot(screen.x - drag.startScreen.x, screen.y - drag.startScreen.y) <
+						CLICK_SLOP_PX
+				)
+					break
+				drag.moved = true
+				const hit = this.flowAt(point, 6 / this.state.viewport.scale)
+				this.state.flowDrag = {
+					chartId: drag.chartId,
+					from: drag.from,
+					point,
+					target:
+						hit && hit.node.id !== drag.from && hit.layout.chart.id === drag.chartId
+							? hit.node.id
+							: null,
 				}
 				break
 			}
@@ -897,6 +1108,16 @@ export class CanvasController {
 				}
 				break
 			}
+			case "flownode": {
+				const feedback = this.state.flowDrag
+				this.state.flowDrag = null
+				if (!drag.moved || !feedback) break
+				this.dropFlowNode(drag, feedback)
+				break
+			}
+			case "flowlink":
+				this.finishFlowLink(drag, event)
+				break
 			case "marquee":
 				this.state.marquee = null
 				break
@@ -1112,6 +1333,7 @@ export class CanvasController {
 		this.state.guides = []
 		this.state.dragging = false
 		this.state.mapDrag = null
+		this.state.flowDrag = null
 		this.lastMove = null
 		this.clearConnectHints()
 		if (drag?.gesture) drag.gesture.cancel()
@@ -1126,6 +1348,16 @@ export class CanvasController {
 			this.store.select([line.id])
 			this.state.editingNew = false
 			this.state.editingId = line.id
+			return
+		}
+		// A double-click on a flowchart step or arrow edits its text, and never makes a shape under it.
+		const flowStep = this.flowAt(point, tolerance)
+		const flowLine = flowStep ? null : this.flowEdgeAt(point, tolerance * 3)
+		if (flowStep || flowLine) {
+			const id = flowStep ? flowStep.node.id : flowLine.edge.id
+			this.store.select([id])
+			this.state.editingFlowNew = false
+			this.state.editingFlowId = id
 			return
 		}
 		// A double-click on a mind map node edits its text, and never makes a shape under it.

@@ -1,12 +1,13 @@
 {
 	"slug": "data-pipeline",
 	"name": "Data pipeline",
-	"description": "Sources, a queue, processing and where the data ends up.",
+	"description": "Five stages from sources to dashboards, with quality checks, ownership and alerting rules.",
 	"category": "Engineering",
 	"tags": [
 		"data",
 		"pipeline",
-		"etl"
+		"etl",
+		"analytics"
 	],
 	"sort_order": 61,
 	"document": {
@@ -22,32 +23,33 @@
 		},
 		"objects": [
 			{
-				"id": "app",
-				"kind": "shape",
+				"id": "t1",
+				"kind": "text",
 				"shape": "rectangle",
 				"x": 0,
-				"y": 0,
-				"w": 180,
-				"h": 100,
+				"y": -130,
+				"w": 1700,
+				"h": 44,
 				"rotation": 0,
 				"z": 1,
 				"style": {
-					"fill": "#EDE9FE",
-					"stroke": "#8B5CF6",
-					"strokeWidth": 2,
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
 					"dash": "solid",
 					"opacity": 1,
 					"radius": 8
 				},
 				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#5B21B6",
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "App events"
+									"t": "Data pipeline",
+									"b": 1
 								}
 							]
 						}
@@ -55,32 +57,32 @@
 				}
 			},
 			{
-				"id": "files",
-				"kind": "shape",
+				"id": "t2",
+				"kind": "text",
 				"shape": "rectangle",
 				"x": 0,
-				"y": 160,
-				"w": 170,
-				"h": 110,
+				"y": -86,
+				"w": 1700,
+				"h": 26,
 				"rotation": 0,
 				"z": 2,
 				"style": {
-					"fill": "#DCFCE7",
-					"stroke": "#22C55E",
-					"strokeWidth": 2,
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
 					"dash": "solid",
 					"opacity": 1,
 					"radius": 8
 				},
 				"text": {
-					"align": "center",
+					"align": "left",
 					"size": 16,
-					"color": "#166534",
+					"color": "#64748B",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Files"
+									"t": "From source systems to dashboards. Name an owner and a freshness target for every stage, so people know whom to ask and how old the data can be."
 								}
 							]
 						}
@@ -88,51 +90,39 @@
 				}
 			},
 			{
-				"id": "queue",
-				"kind": "shape",
+				"id": "f3",
+				"kind": "frame",
 				"shape": "rectangle",
-				"x": 260,
+				"x": 0,
 				"y": 0,
-				"w": 190,
-				"h": 70,
+				"w": 310,
+				"h": 420,
 				"rotation": 0,
 				"z": 3,
 				"style": {
-					"fill": "#FFEDD5",
-					"stroke": "#F97316",
-					"strokeWidth": 2,
+					"fill": "#F8FAFC",
+					"stroke": "#64748B",
+					"strokeWidth": 1.5,
 					"dash": "solid",
 					"opacity": 1,
-					"radius": 8
+					"radius": 10
 				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#9A3412",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Event queue"
-								}
-							]
-						}
-					]
-				}
+				"text": null,
+				"name": "Sources"
 			},
 			{
-				"id": "ingest",
+				"id": "s4",
 				"kind": "shape",
 				"shape": "rectangle",
-				"x": 520,
-				"y": 0,
-				"w": 190,
-				"h": 90,
+				"x": 25,
+				"y": 60,
+				"w": 260,
+				"h": 80,
 				"rotation": 0,
 				"z": 4,
 				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#111827",
+					"fill": "#F1F5F9",
+					"stroke": "#64748B",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1,
@@ -140,13 +130,13 @@
 				},
 				"text": {
 					"align": "center",
-					"size": 16,
-					"color": "#111827",
+					"size": 15,
+					"color": "#1E293B",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Ingest"
+									"t": "Product database"
 								}
 							]
 						}
@@ -154,18 +144,18 @@
 				}
 			},
 			{
-				"id": "clean",
+				"id": "s5",
 				"kind": "shape",
 				"shape": "rectangle",
-				"x": 780,
-				"y": 0,
-				"w": 190,
-				"h": 90,
+				"x": 25,
+				"y": 170,
+				"w": 260,
+				"h": 80,
 				"rotation": 0,
 				"z": 5,
 				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#111827",
+					"fill": "#F1F5F9",
+					"stroke": "#64748B",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1,
@@ -173,13 +163,13 @@
 				},
 				"text": {
 					"align": "center",
-					"size": 16,
-					"color": "#111827",
+					"size": 15,
+					"color": "#1E293B",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Clean and join"
+									"t": "Payments provider"
 								}
 							]
 						}
@@ -187,18 +177,18 @@
 				}
 			},
 			{
-				"id": "lake",
+				"id": "s6",
 				"kind": "shape",
-				"shape": "cylinder",
-				"x": 1040,
-				"y": 0,
-				"w": 160,
-				"h": 110,
+				"shape": "rectangle",
+				"x": 25,
+				"y": 280,
+				"w": 260,
+				"h": 80,
 				"rotation": 0,
 				"z": 6,
 				"style": {
-					"fill": "#DCFCE7",
-					"stroke": "#22C55E",
+					"fill": "#F1F5F9",
+					"stroke": "#64748B",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1,
@@ -206,13 +196,13 @@
 				},
 				"text": {
 					"align": "center",
-					"size": 16,
-					"color": "#166534",
+					"size": 15,
+					"color": "#1E293B",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Data lake"
+									"t": "Marketing tools"
 								}
 							]
 						}
@@ -220,50 +210,38 @@
 				}
 			},
 			{
-				"id": "wh",
-				"kind": "shape",
-				"shape": "cylinder",
-				"x": 1040,
-				"y": 160,
-				"w": 160,
-				"h": 110,
+				"id": "f7",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 340,
+				"y": 0,
+				"w": 310,
+				"h": 420,
 				"rotation": 0,
 				"z": 7,
 				"style": {
-					"fill": "#EDE9FE",
-					"stroke": "#8B5CF6",
-					"strokeWidth": 2,
+					"fill": "#F8FAFC",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1.5,
 					"dash": "solid",
 					"opacity": 1,
-					"radius": 8
+					"radius": 10
 				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#5B21B6",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Warehouse"
-								}
-							]
-						}
-					]
-				}
+				"text": null,
+				"name": "Ingest"
 			},
 			{
-				"id": "bi",
+				"id": "s8",
 				"kind": "shape",
-				"shape": "ellipse",
-				"x": 1300,
-				"y": 160,
-				"w": 130,
-				"h": 110,
+				"shape": "rectangle",
+				"x": 365,
+				"y": 60,
+				"w": 260,
+				"h": 80,
 				"rotation": 0,
 				"z": 8,
 				"style": {
-					"fill": "#FFFFFF",
+					"fill": "#DBEAFE",
 					"stroke": "#3B82F6",
 					"strokeWidth": 2,
 					"dash": "solid",
@@ -272,13 +250,679 @@
 				},
 				"text": {
 					"align": "center",
-					"size": 16,
+					"size": 15,
 					"color": "#1E3A8A",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Reports"
+									"t": "Change capture (continuous)"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s9",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 365,
+				"y": 170,
+				"w": 260,
+				"h": 80,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#DBEAFE",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Daily API pulls"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f10",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 680,
+				"y": 0,
+				"w": 310,
+				"h": 420,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Store"
+			},
+			{
+				"id": "s11",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 705,
+				"y": 60,
+				"w": 260,
+				"h": 80,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Raw files (data lake)"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s12",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 705,
+				"y": 170,
+				"w": 260,
+				"h": 80,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Warehouse (clean tables)"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f13",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 1020,
+				"y": 0,
+				"w": 310,
+				"h": 420,
+				"rotation": 0,
+				"z": 13,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#22C55E",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Transform"
+			},
+			{
+				"id": "s14",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1045,
+				"y": 60,
+				"w": 260,
+				"h": 80,
+				"rotation": 0,
+				"z": 14,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Cleaning and joins"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s15",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1045,
+				"y": 170,
+				"w": 260,
+				"h": 80,
+				"rotation": 0,
+				"z": 15,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Business metrics"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f16",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 1360,
+				"y": 0,
+				"w": 310,
+				"h": 420,
+				"rotation": 0,
+				"z": 16,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#F59E0B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Serve"
+			},
+			{
+				"id": "s17",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1385,
+				"y": 60,
+				"w": 260,
+				"h": 80,
+				"rotation": 0,
+				"z": 17,
+				"style": {
+					"fill": "#FEF3C7",
+					"stroke": "#F59E0B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#78350F",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Dashboards"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s18",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1385,
+				"y": 170,
+				"w": 260,
+				"h": 80,
+				"rotation": 0,
+				"z": 18,
+				"style": {
+					"fill": "#FEF3C7",
+					"stroke": "#F59E0B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#78350F",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Weekly email report"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s19",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1385,
+				"y": 280,
+				"w": 260,
+				"h": 80,
+				"rotation": 0,
+				"z": 19,
+				"style": {
+					"fill": "#FEF3C7",
+					"stroke": "#F59E0B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#78350F",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Data science notebooks"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f24",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 470,
+				"w": 840,
+				"h": 330,
+				"rotation": 0,
+				"z": 24,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Quality checks"
+			},
+			{
+				"id": "t25",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 520,
+				"w": 780,
+				"h": 184,
+				"rotation": 0,
+				"z": 25,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						260,
+						350,
+						170
+					],
+					"rowH": [
+						46,
+						46,
+						46,
+						46
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Check",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Rule",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Owner",
+												"b": 1
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Freshness"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Orders table updated within 30 minutes"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Data team"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Completeness"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "No null customer ids"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Data team"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Volume"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Row count within ±20% of yesterday"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Platform"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "f26",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 880,
+				"y": 470,
+				"w": 800,
+				"h": 330,
+				"rotation": 0,
+				"z": 26,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#F59E0B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Ownership and alerts"
+			},
+			{
+				"id": "t27",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 905,
+				"y": 520,
+				"w": 750,
+				"h": 85,
+				"rotation": 0,
+				"z": 27,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• "
+								},
+								{
+									"t": "Owner of each stage",
+									"b": 1
+								},
+								{
+									"t": " is named in the stage title"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Failures post to #data-alerts and page the owner after 2 retries"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• A dashboard is only “certified” when its checks pass"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Backfills are announced in the channel first"
 								}
 							]
 						}
@@ -288,13 +932,13 @@
 		],
 		"connectors": [
 			{
-				"id": "line-1",
+				"id": "l20",
 				"from": {
-					"objectId": "app",
+					"objectId": "s4",
 					"anchor": "e"
 				},
 				"to": {
-					"objectId": "queue",
+					"objectId": "s8",
 					"anchor": "w"
 				},
 				"geometry": "elbow",
@@ -304,22 +948,22 @@
 				},
 				"bend": 0,
 				"style": {
-					"stroke": "#2563EB",
+					"stroke": "#475569",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1
 				},
 				"label": null,
-				"z": 1
+				"z": 20
 			},
 			{
-				"id": "line-2",
+				"id": "l21",
 				"from": {
-					"objectId": "files",
+					"objectId": "s8",
 					"anchor": "e"
 				},
 				"to": {
-					"objectId": "ingest",
+					"objectId": "s11",
 					"anchor": "w"
 				},
 				"geometry": "elbow",
@@ -329,22 +973,22 @@
 				},
 				"bend": 0,
 				"style": {
-					"stroke": "#2563EB",
+					"stroke": "#475569",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1
 				},
 				"label": null,
-				"z": 2
+				"z": 21
 			},
 			{
-				"id": "line-3",
+				"id": "l22",
 				"from": {
-					"objectId": "queue",
+					"objectId": "s11",
 					"anchor": "e"
 				},
 				"to": {
-					"objectId": "ingest",
+					"objectId": "s14",
 					"anchor": "w"
 				},
 				"geometry": "elbow",
@@ -354,47 +998,22 @@
 				},
 				"bend": 0,
 				"style": {
-					"stroke": "#2563EB",
+					"stroke": "#475569",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1
 				},
 				"label": null,
-				"z": 3
+				"z": 22
 			},
 			{
-				"id": "line-4",
+				"id": "l23",
 				"from": {
-					"objectId": "ingest",
+					"objectId": "s14",
 					"anchor": "e"
 				},
 				"to": {
-					"objectId": "clean",
-					"anchor": "w"
-				},
-				"geometry": "straight",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 4
-			},
-			{
-				"id": "line-5",
-				"from": {
-					"objectId": "clean",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "lake",
+					"objectId": "s17",
 					"anchor": "w"
 				},
 				"geometry": "elbow",
@@ -404,63 +1023,13 @@
 				},
 				"bend": 0,
 				"style": {
-					"stroke": "#2563EB",
+					"stroke": "#475569",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1
 				},
 				"label": null,
-				"z": 5
-			},
-			{
-				"id": "line-6",
-				"from": {
-					"objectId": "clean",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "wh",
-					"anchor": "w"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 6
-			},
-			{
-				"id": "line-7",
-				"from": {
-					"objectId": "wh",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "bi",
-					"anchor": "w"
-				},
-				"geometry": "straight",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 7
+				"z": 23
 			}
 		],
 		"mindmaps": [],

@@ -1,0 +1,1150 @@
+{
+	"slug": "technical-design-doc",
+	"name": "Technical design document",
+	"description": "Context, goals, a proposed architecture diagram, alternatives with decisions, risks and a rollout plan.",
+	"category": "Engineering",
+	"tags": [
+		"design doc",
+		"rfc",
+		"architecture",
+		"engineering"
+	],
+	"sort_order": 64,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -130,
+				"w": 1600,
+				"h": 44,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Technical design document",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1600,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Context, the proposal, the alternatives and the risks. Share early, and write down what you decided not to do."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f3",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 780,
+				"h": 270,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Context and problem"
+			},
+			{
+				"id": "t4",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 50,
+				"w": 730,
+				"h": 47,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Report exports run inside the web request and time out for large accounts (more than 50,000 rows). Support receives about 30 tickets a month about it."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t5",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 150,
+				"w": 730,
+				"h": 24,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Status:",
+									"b": 1
+								},
+								{
+									"t": " Draft   "
+								},
+								{
+									"t": "Author:",
+									"b": 1
+								},
+								{
+									"t": " Mei   "
+								},
+								{
+									"t": "Reviewers:",
+									"b": 1
+								},
+								{
+									"t": " Priya, Sam   "
+								},
+								{
+									"t": "Decision by:",
+									"b": 1
+								},
+								{
+									"t": " 30 May"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f6",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 820,
+				"y": 0,
+				"w": 780,
+				"h": 270,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Goals and non-goals"
+			},
+			{
+				"id": "t7",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 845,
+				"y": 50,
+				"w": 730,
+				"h": 65,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Goals",
+									"b": 1
+								},
+								{
+									"t": "  • Exports of 1M rows finish and are delivered by email"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• No impact on the web app's response time"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Non-goals",
+									"b": 1
+								},
+								{
+									"t": "  • New export formats • Scheduling exports"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f8",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 310,
+				"w": 1600,
+				"h": 430,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Proposed design"
+			},
+			{
+				"id": "s9",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 40,
+				"y": 380,
+				"w": 200,
+				"h": 90,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#DBEAFE",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Web app"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Request export"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s10",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 330,
+				"y": 380,
+				"w": 200,
+				"h": 90,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#FEF3C7",
+					"stroke": "#F59E0B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#78350F",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Job queue"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "(Redis)"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s11",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 620,
+				"y": 380,
+				"w": 200,
+				"h": 90,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Export worker"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Streams rows in pages"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s12",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 910,
+				"y": 380,
+				"w": 200,
+				"h": 90,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": "#F1F5F9",
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "File storage"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "(expires in 7 days)"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s13",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1200,
+				"y": 380,
+				"w": 200,
+				"h": 90,
+				"rotation": 0,
+				"z": 13,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Email"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Download link"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t18",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 40,
+				"y": 520,
+				"w": 1500,
+				"h": 44,
+				"rotation": 0,
+				"z": 18,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "1. The user requests an export and sees “We’ll email you”.   2. A job with the filters is queued.   3. A worker streams rows in pages of 5,000 and writes a file.   4. The user gets a time-limited link."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t19",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 40,
+				"y": 620,
+				"w": 1500,
+				"h": 24,
+				"rotation": 0,
+				"z": 19,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "API change:",
+									"b": 1
+								},
+								{
+									"t": " POST /exports returns 202 and an export id; GET /exports/{id} returns the status. "
+								},
+								{
+									"t": "Data:",
+									"b": 1
+								},
+								{
+									"t": " one new table, exports(id, user, status, file, created_at)."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f20",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 780,
+				"w": 1600,
+				"h": 350,
+				"rotation": 0,
+				"z": 20,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Alternatives considered"
+			},
+			{
+				"id": "t21",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 830,
+				"w": 1547,
+				"h": 200,
+				"rotation": 0,
+				"z": 21,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						324,
+						511,
+						511,
+						201
+					],
+					"rowH": [
+						50,
+						50,
+						50,
+						50
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Option",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Good",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Not so good",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Decision",
+												"b": 1
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Raise the request timeout"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "One-line change"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Blocks a web worker; does not fix 1M rows"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Rejected"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Pre-compute exports nightly"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Fast to download"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Stale data; wasted work"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Rejected"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Background job + email (proposed)"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Scales; no web impact"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "New moving parts to run"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Chosen"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							null,
+							null,
+							"#FECACA"
+						],
+						[
+							null,
+							null,
+							null,
+							"#FECACA"
+						],
+						[
+							null,
+							null,
+							null,
+							"#BBF7D0"
+						]
+					]
+				}
+			},
+			{
+				"id": "f22",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 1170,
+				"w": 780,
+				"h": 230,
+				"rotation": 0,
+				"z": 22,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#F59E0B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Risks and open questions"
+			},
+			{
+				"id": "t23",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 1220,
+				"w": 730,
+				"h": 65,
+				"rotation": 0,
+				"z": 23,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• Large files and storage cost: set a 7-day expiry"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Retries must not send two emails"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Who is allowed to export which data?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f24",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 820,
+				"y": 1170,
+				"w": 780,
+				"h": 230,
+				"rotation": 0,
+				"z": 24,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Rollout plan"
+			},
+			{
+				"id": "t25",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 845,
+				"y": 1220,
+				"w": 730,
+				"h": 85,
+				"rotation": 0,
+				"z": 25,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "1. Behind a feature flag for staff (week 1)"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "2. Ten pilot customers (week 2)"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "3. Everyone; remove the old path (week 4)"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Rollback:",
+									"b": 1
+								},
+								{
+									"t": " turn the flag off; the old export still works."
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [
+			{
+				"id": "l14",
+				"from": {
+					"objectId": "s9",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "s10",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 14
+			},
+			{
+				"id": "l15",
+				"from": {
+					"objectId": "s10",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "s11",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 15
+			},
+			{
+				"id": "l16",
+				"from": {
+					"objectId": "s11",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "s12",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 16
+			},
+			{
+				"id": "l17",
+				"from": {
+					"objectId": "s12",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "s13",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 17
+			}
+		],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

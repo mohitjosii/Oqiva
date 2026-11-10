@@ -265,6 +265,10 @@ describe("palette actions on a board", () => {
 		expect(colored.color).toBe("#2563EB")
 		expect(colored.paragraphs[0].runs.every((run) => run.c === undefined)).toBe(true) // run colours no longer override
 		expect(stylePatch(item, { target: "textSize", value: 24 }).text.size).toBe(24)
+		// any size can be typed, and is held between 8 and 200
+		expect(stylePatch(item, { target: "textSize", value: 37 }).text.size).toBe(37)
+		expect(stylePatch(item, { target: "textSize", value: 3 }).text.size).toBe(8)
+		expect(stylePatch(item, { target: "textSize", value: 999 }).text.size).toBe(200)
 		expect(stylePatch(item, { target: "textAlign", value: "left" }).text.align).toBe("left")
 		expect(
 			stylePatch(item, { target: "bold", value: true }).text.paragraphs[0].runs.every(

@@ -1,12 +1,13 @@
 {
 	"slug": "swot-analysis",
 	"name": "SWOT analysis",
-	"description": "Strengths, weaknesses, opportunities and threats in four boxes.",
+	"description": "Strengths, weaknesses, opportunities and threats with prompts, plus a table that turns the findings into actions.",
 	"category": "Business",
 	"tags": [
 		"swot",
 		"strategy",
-		"analysis"
+		"analysis",
+		"planning"
 	],
 	"sort_order": 71,
 	"document": {
@@ -22,18 +23,85 @@
 		},
 		"objects": [
 			{
-				"id": "frame-1",
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -130,
+				"w": 1500,
+				"h": 44,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "SWOT analysis",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1500,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Strengths and weaknesses are inside the organisation; opportunities and threats are outside it. Be specific and honest."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f3",
 				"kind": "frame",
 				"shape": "rectangle",
 				"x": 0,
 				"y": 0,
-				"w": 480,
-				"h": 320,
+				"w": 720,
+				"h": 400,
 				"rotation": 0,
-				"z": 1,
+				"z": 3,
 				"style": {
 					"fill": "#F8FAFC",
-					"stroke": "#94A3B8",
+					"stroke": "#22C55E",
 					"strokeWidth": 1.5,
 					"dash": "solid",
 					"opacity": 1,
@@ -43,18 +111,117 @@
 				"name": "Strengths"
 			},
 			{
-				"id": "frame-2",
+				"id": "t4",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 45,
+				"w": 670,
+				"h": 23,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "What do we do better than others? What do customers praise?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n5",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 40,
+				"y": 110,
+				"w": 290,
+				"h": 140,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Fast, simple product"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n6",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 370,
+				"y": 110,
+				"w": 290,
+				"h": 140,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Loyal early customers"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f7",
 				"kind": "frame",
 				"shape": "rectangle",
-				"x": 520,
+				"x": 740,
 				"y": 0,
-				"w": 480,
-				"h": 320,
+				"w": 720,
+				"h": 400,
 				"rotation": 0,
-				"z": 2,
+				"z": 7,
 				"style": {
 					"fill": "#F8FAFC",
-					"stroke": "#94A3B8",
+					"stroke": "#EF4444",
 					"strokeWidth": 1.5,
 					"dash": "solid",
 					"opacity": 1,
@@ -64,18 +231,117 @@
 				"name": "Weaknesses"
 			},
 			{
-				"id": "frame-3",
+				"id": "t8",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 765,
+				"y": 45,
+				"w": 670,
+				"h": 23,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Where are we short of skills, money or time?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n9",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 780,
+				"y": 110,
+				"w": 290,
+				"h": 140,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#FBCFE8",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Small team"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n10",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1110,
+				"y": 110,
+				"w": 290,
+				"h": 140,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#FBCFE8",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "No sales process yet"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f11",
 				"kind": "frame",
 				"shape": "rectangle",
 				"x": 0,
-				"y": 380,
-				"w": 480,
-				"h": 320,
+				"y": 420,
+				"w": 720,
+				"h": 400,
 				"rotation": 0,
-				"z": 3,
+				"z": 11,
 				"style": {
 					"fill": "#F8FAFC",
-					"stroke": "#94A3B8",
+					"stroke": "#3B82F6",
 					"strokeWidth": 1.5,
 					"dash": "solid",
 					"opacity": 1,
@@ -85,18 +351,117 @@
 				"name": "Opportunities"
 			},
 			{
-				"id": "frame-4",
+				"id": "t12",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 465,
+				"w": 670,
+				"h": 23,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "What trends or gaps could we use?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n13",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 40,
+				"y": 530,
+				"w": 290,
+				"h": 140,
+				"rotation": 0,
+				"z": 13,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Teams moving to remote work"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n14",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 370,
+				"y": 530,
+				"w": 290,
+				"h": 140,
+				"rotation": 0,
+				"z": 14,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Competitor raised prices"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f15",
 				"kind": "frame",
 				"shape": "rectangle",
-				"x": 520,
-				"y": 380,
-				"w": 480,
-				"h": 320,
+				"x": 740,
+				"y": 420,
+				"w": 720,
+				"h": 400,
 				"rotation": 0,
-				"z": 4,
+				"z": 15,
 				"style": {
 					"fill": "#F8FAFC",
-					"stroke": "#94A3B8",
+					"stroke": "#F59E0B",
 					"strokeWidth": 1.5,
 					"dash": "solid",
 					"opacity": 1,
@@ -106,32 +471,32 @@
 				"name": "Threats"
 			},
 			{
-				"id": "s",
-				"kind": "note",
+				"id": "t16",
+				"kind": "text",
 				"shape": "rectangle",
-				"x": 30,
-				"y": 40,
-				"w": 200,
-				"h": 120,
+				"x": 765,
+				"y": 465,
+				"w": 670,
+				"h": 23,
 				"rotation": 0,
-				"z": 5,
+				"z": 16,
 				"style": {
-					"fill": "#86EFAC",
+					"fill": null,
 					"stroke": null,
 					"strokeWidth": 0,
 					"dash": "solid",
 					"opacity": 1,
-					"radius": 2
+					"radius": 8
 				},
 				"text": {
 					"align": "left",
-					"size": 18,
-					"color": "#14532D",
+					"size": 14,
+					"color": "#64748B",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "What do we do well?"
+									"t": "What could hurt us? What are rivals doing?"
 								}
 							]
 						}
@@ -139,17 +504,17 @@
 				}
 			},
 			{
-				"id": "w",
+				"id": "n17",
 				"kind": "note",
 				"shape": "rectangle",
-				"x": 550,
-				"y": 40,
-				"w": 200,
-				"h": 120,
+				"x": 780,
+				"y": 530,
+				"w": 290,
+				"h": 140,
 				"rotation": 0,
-				"z": 6,
+				"z": 17,
 				"style": {
-					"fill": "#FDBA74",
+					"fill": "#FED7AA",
 					"stroke": null,
 					"strokeWidth": 0,
 					"dash": "solid",
@@ -158,13 +523,13 @@
 				},
 				"text": {
 					"align": "left",
-					"size": 18,
+					"size": 16,
 					"color": "#7C2D12",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Where do we fall short?"
+									"t": "Large vendors add similar features"
 								}
 							]
 						}
@@ -172,17 +537,17 @@
 				}
 			},
 			{
-				"id": "o",
+				"id": "n18",
 				"kind": "note",
 				"shape": "rectangle",
-				"x": 30,
-				"y": 420,
-				"w": 200,
-				"h": 120,
+				"x": 1110,
+				"y": 530,
+				"w": 290,
+				"h": 140,
 				"rotation": 0,
-				"z": 7,
+				"z": 18,
 				"style": {
-					"fill": "#93C5FD",
+					"fill": "#FED7AA",
 					"stroke": null,
 					"strokeWidth": 0,
 					"dash": "solid",
@@ -191,13 +556,13 @@
 				},
 				"text": {
 					"align": "left",
-					"size": 18,
-					"color": "#1E3A8A",
+					"size": 16,
+					"color": "#7C2D12",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "What could we try?"
+									"t": "Rising hosting costs"
 								}
 							]
 						}
@@ -205,35 +570,256 @@
 				}
 			},
 			{
-				"id": "t",
-				"kind": "note",
+				"id": "f19",
+				"kind": "frame",
 				"shape": "rectangle",
-				"x": 550,
-				"y": 420,
-				"w": 200,
-				"h": 120,
+				"x": 0,
+				"y": 860,
+				"w": 1460,
+				"h": 300,
 				"rotation": 0,
-				"z": 8,
+				"z": 19,
 				"style": {
-					"fill": "#F9A8D4",
-					"stroke": null,
-					"strokeWidth": 0,
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
 					"dash": "solid",
 					"opacity": 1,
-					"radius": 2
+					"radius": 10
 				},
-				"text": {
-					"align": "left",
-					"size": 18,
-					"color": "#831843",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "What could go wrong?"
-								}
-							]
-						}
+				"text": null,
+				"name": "So what? Turn it into actions"
+			},
+			{
+				"id": "t20",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 910,
+				"w": 1407,
+				"h": 138,
+				"rotation": 0,
+				"z": 20,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						353,
+						687,
+						196,
+						171
+					],
+					"rowH": [
+						46,
+						46,
+						46
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Strategy",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Action",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Owner",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "By when",
+												"b": 1
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Use strengths on opportunities"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Launch the team plan aimed at remote teams"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Dana"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Q3"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Fix weaknesses that meet threats"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Hire a first salesperson; document the sales process"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Ravi"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Q4"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null
+						]
 					]
 				}
 			}

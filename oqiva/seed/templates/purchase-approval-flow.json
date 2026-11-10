@@ -1,0 +1,326 @@
+{
+	"slug": "purchase-approval-flow",
+	"name": "Purchase approval",
+	"description": "A purchase request routed by amount: the manager decides small purchases; larger ones also need finance, and the biggest the executive team.",
+	"category": "Flowcharts",
+	"tags": [
+		"approval",
+		"purchasing",
+		"finance",
+		"workflow",
+		"process"
+	],
+	"sort_order": 14,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -120,
+				"w": 1200,
+				"h": 40,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Purchase approval",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -70,
+				"w": 1400,
+				"h": 24,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Who needs to say yes before money is spent. Adjust the amounts to your company's policy. Any approver can say no: tell the requester why."
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": [
+			{
+				"id": "chart1",
+				"direction": "TB",
+				"numbered": false,
+				"nodes": [
+					{
+						"id": "start",
+						"type": "terminator",
+						"text": "Request submitted",
+						"x": 129,
+						"y": 100,
+						"manual": false
+					},
+					{
+						"id": "check",
+						"type": "process",
+						"text": "Check the budget and get two quotes",
+						"x": 129,
+						"y": 231,
+						"manual": false
+					},
+					{
+						"id": "m",
+						"type": "process",
+						"text": "Manager reviews the request",
+						"x": 129,
+						"y": 365,
+						"manual": false
+					},
+					{
+						"id": "d1",
+						"type": "decision",
+						"text": "Is it over $500?",
+						"x": 129,
+						"y": 527,
+						"manual": false
+					},
+					{
+						"id": "a1",
+						"type": "process",
+						"text": "The manager’s approval is enough",
+						"x": 129,
+						"y": 690,
+						"manual": false
+					},
+					{
+						"id": "po1",
+						"type": "io",
+						"text": "Issue the purchase order",
+						"x": 100,
+						"y": 852,
+						"manual": false
+					},
+					{
+						"id": "e1",
+						"type": "terminator",
+						"text": "Done",
+						"x": 100,
+						"y": 1014,
+						"manual": false
+					},
+					{
+						"id": "f",
+						"type": "process",
+						"text": "Finance checks the budget",
+						"x": 417,
+						"y": 690,
+						"manual": false
+					},
+					{
+						"id": "d2",
+						"type": "decision",
+						"text": "Is it over $5,000?",
+						"x": 447,
+						"y": 852,
+						"manual": false
+					},
+					{
+						"id": "a2",
+						"type": "process",
+						"text": "Finance’s approval is enough",
+						"x": 447,
+						"y": 1014,
+						"manual": false
+					},
+					{
+						"id": "po2",
+						"type": "io",
+						"text": "Issue the purchase order",
+						"x": 432,
+						"y": 1148,
+						"manual": false
+					},
+					{
+						"id": "e2",
+						"type": "terminator",
+						"text": "Done",
+						"x": 432,
+						"y": 1278,
+						"manual": false
+					},
+					{
+						"id": "x",
+						"type": "process",
+						"text": "The executive team approves",
+						"x": 753,
+						"y": 1014,
+						"manual": false
+					},
+					{
+						"id": "po3",
+						"type": "io",
+						"text": "Issue the purchase order",
+						"x": 767,
+						"y": 1148,
+						"manual": false
+					},
+					{
+						"id": "e3",
+						"type": "terminator",
+						"text": "Done",
+						"x": 767,
+						"y": 1278,
+						"manual": false
+					}
+				],
+				"edges": [
+					{
+						"id": "start-check",
+						"from": "start",
+						"to": "check",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "check-m",
+						"from": "check",
+						"to": "m",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "m-d1",
+						"from": "m",
+						"to": "d1",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "d1-a1",
+						"from": "d1",
+						"to": "a1",
+						"label": "No",
+						"order": 0
+					},
+					{
+						"id": "d1-f",
+						"from": "d1",
+						"to": "f",
+						"label": "Yes",
+						"order": 1
+					},
+					{
+						"id": "a1-po1",
+						"from": "a1",
+						"to": "po1",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "po1-e1",
+						"from": "po1",
+						"to": "e1",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "f-d2",
+						"from": "f",
+						"to": "d2",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "d2-a2",
+						"from": "d2",
+						"to": "a2",
+						"label": "No",
+						"order": 0
+					},
+					{
+						"id": "d2-x",
+						"from": "d2",
+						"to": "x",
+						"label": "Yes",
+						"order": 1
+					},
+					{
+						"id": "a2-po2",
+						"from": "a2",
+						"to": "po2",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "po2-e2",
+						"from": "po2",
+						"to": "e2",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "x-po3",
+						"from": "x",
+						"to": "po3",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "po3-e3",
+						"from": "po3",
+						"to": "e3",
+						"label": "",
+						"order": 0
+					}
+				]
+			}
+		]
+	}
+}

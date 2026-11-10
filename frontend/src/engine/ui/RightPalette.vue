@@ -11,6 +11,7 @@ import { NOTE_COLORS, sanitizeLink } from "../model/schema"
 import { SHAPE_TOOLS } from "../model/shapes"
 import BarMenu from "./BarMenu.vue"
 import ColorSwatches from "./ColorSwatches.vue"
+import FontSizeField from "./FontSizeField.vue"
 import PaletteTile from "./PaletteTile.vue"
 
 const props = defineProps({
@@ -19,7 +20,6 @@ const props = defineProps({
 	links: { type: Object, default: null }, // {searchBoards(query)} from the page
 })
 
-const SIZES = [12, 14, 16, 18, 20, 24, 32, 48, 64]
 const WIDTHS = [1, 2, 3, 4, 6, 8]
 const state = computed(() => props.store.state)
 const objects = computed(() => props.store.selectedObjects())
@@ -166,13 +166,6 @@ const alignOptions = computed(() =>
 		})),
 )
 
-const sizeOptions = computed(() =>
-	SIZES.map((size) => ({
-		label: `${size}`,
-		icon: size === textSize.value ? "check" : null,
-		onClick: () => style("textSize", size),
-	})),
-)
 const widthOptions = computed(() =>
 	WIDTHS.map((width) => ({
 		label: `${width} px`,
@@ -814,15 +807,10 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 		>
 			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Text</h3>
 			<div class="mb-1 flex flex-wrap items-center gap-0.5">
-				<Dropdown :options="sizeOptions">
-					<button
-						type="button"
-						class="rounded border border-outline-gray-2 px-2 py-0.5 text-xs text-ink-gray-8 hover:bg-surface-gray-2"
-						data-testid="text-size"
-					>
-						{{ textSize === undefined ? "Mixed" : textSize }}
-					</button>
-				</Dropdown>
+				<FontSizeField
+					:model-value="textSize === undefined ? null : textSize"
+					@update:model-value="(size) => style('textSize', size)"
+				/>
 				<PaletteTile
 					icon="lucide-bold"
 					title="Bold"

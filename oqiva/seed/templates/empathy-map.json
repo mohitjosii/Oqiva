@@ -1,0 +1,740 @@
+{
+	"slug": "empathy-map",
+	"name": "Empathy map",
+	"description": "Says, thinks, does and feels around a persona, with pains and gains underneath, to turn research into insight.",
+	"category": "Product",
+	"tags": [
+		"empathy map",
+		"ux",
+		"research",
+		"persona"
+	],
+	"sort_order": 85,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -130,
+				"w": 1500,
+				"h": 44,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Empathy map",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1500,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Put yourself in your user's shoes. Fill the four quadrants from real interviews and observations, one note per finding."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f3",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 600,
+				"h": 380,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Says"
+			},
+			{
+				"id": "t4",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 45,
+				"w": 550,
+				"h": 23,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "What do they say out loud?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n5",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 40,
+				"y": 110,
+				"w": 240,
+				"h": 150,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "“I lose track of which version is latest.”"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n6",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 310,
+				"y": 110,
+				"w": 240,
+				"h": 150,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "“I just need to show this to my boss.”"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f7",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 620,
+				"y": 0,
+				"w": 600,
+				"h": 380,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Thinks"
+			},
+			{
+				"id": "t8",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 645,
+				"y": 45,
+				"w": 550,
+				"h": 23,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "What occupies their mind?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n9",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 660,
+				"y": 110,
+				"w": 240,
+				"h": 150,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#DDD6FE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Will this take too long to learn?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n10",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 930,
+				"y": 110,
+				"w": 240,
+				"h": 150,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#DDD6FE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Am I the only one doing it this way?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f11",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 400,
+				"w": 600,
+				"h": 380,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#22C55E",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Does"
+			},
+			{
+				"id": "t12",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 445,
+				"w": 550,
+				"h": 23,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "What do you see them do?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n13",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 40,
+				"y": 510,
+				"w": 240,
+				"h": 150,
+				"rotation": 0,
+				"z": 13,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Copies shapes between slides"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n14",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 310,
+				"y": 510,
+				"w": 240,
+				"h": 150,
+				"rotation": 0,
+				"z": 14,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Takes screenshots to share"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f15",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 620,
+				"y": 400,
+				"w": 600,
+				"h": 380,
+				"rotation": 0,
+				"z": 15,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#EC4899",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Feels"
+			},
+			{
+				"id": "t16",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 645,
+				"y": 445,
+				"w": 550,
+				"h": 23,
+				"rotation": 0,
+				"z": 16,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "What emotions come up?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n17",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 660,
+				"y": 510,
+				"w": 240,
+				"h": 150,
+				"rotation": 0,
+				"z": 17,
+				"style": {
+					"fill": "#FBCFE8",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Frustrated when files conflict"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n18",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 930,
+				"y": 510,
+				"w": 240,
+				"h": 150,
+				"rotation": 0,
+				"z": 18,
+				"style": {
+					"fill": "#FBCFE8",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Proud when a plan lands well"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s19",
+				"kind": "shape",
+				"shape": "ellipse",
+				"x": 490,
+				"y": 350,
+				"w": 260,
+				"h": 100,
+				"rotation": 0,
+				"z": 19,
+				"style": {
+					"fill": "#1E293B",
+					"stroke": "#1E293B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#FFFFFF",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Maya",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Product manager, 34"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f20",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 820,
+				"w": 600,
+				"h": 260,
+				"rotation": 0,
+				"z": 20,
+				"style": {
+					"fill": "#FEF2F2",
+					"stroke": "#EF4444",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Pains"
+			},
+			{
+				"id": "t21",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 870,
+				"w": 550,
+				"h": 44,
+				"rotation": 0,
+				"z": 21,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• Too many tools and versions"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Feedback scattered across email and chat"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f22",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 620,
+				"y": 820,
+				"w": 600,
+				"h": 260,
+				"rotation": 0,
+				"z": 22,
+				"style": {
+					"fill": "#F0FDF4",
+					"stroke": "#22C55E",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Gains"
+			},
+			{
+				"id": "t23",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 645,
+				"y": 870,
+				"w": 550,
+				"h": 44,
+				"rotation": 0,
+				"z": 23,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• One place everyone can see"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Looks professional with little effort"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

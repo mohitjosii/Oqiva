@@ -2,6 +2,7 @@
 
 import { copySelection, cutSelection } from "./clipboard"
 import { runMindmapCommand } from "../modes/mindmap/commands"
+import { runFlowCommand } from "../modes/flowchart/commands"
 import { contentBounds, fitView, zoomIn, zoomOut, zoomTo } from "./view"
 
 export function runCommand(store, controller, command, ui = {}) {
@@ -55,6 +56,7 @@ export function runCommand(store, controller, command, ui = {}) {
 			// The mind map's own commands (mm.child, mm.sibling, ...). They may ask a question first, so
 			// they can finish later.
 			if (command.name.startsWith("mm.")) return runMindmapCommand(store, command, ui.mindmap)
+			if (command.name.startsWith("fl.")) return runFlowCommand(store, command, ui.flowchart)
 			return undefined
 	}
 }

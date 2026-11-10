@@ -1,0 +1,1106 @@
+{
+	"slug": "prd-one-pager",
+	"name": "Product requirements (one page)",
+	"description": "Problem, audience, goals and non-goals, prioritised requirements, open questions and a launch checklist on one canvas.",
+	"category": "Product",
+	"tags": [
+		"prd",
+		"requirements",
+		"product",
+		"spec"
+	],
+	"sort_order": 81,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -130,
+				"w": 1600,
+				"h": 44,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Product requirements (one page)",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1600,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Write for someone who has not been in the room. Keep it short enough to be read and specific enough to be built."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f3",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 780,
+				"h": 220,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Problem"
+			},
+			{
+				"id": "t4",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 50,
+				"w": 730,
+				"h": 47,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Teams can draw a flow, but cannot show it to a customer without exporting a picture. Feedback then arrives by email, out of context, and gets lost."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f5",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 820,
+				"y": 0,
+				"w": 780,
+				"h": 220,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Who it is for"
+			},
+			{
+				"id": "t6",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 845,
+				"y": 50,
+				"w": 730,
+				"h": 47,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Primary:",
+									"b": 1
+								},
+								{
+									"t": " product managers and designers who share work with stakeholders."
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Secondary:",
+									"b": 1
+								},
+								{
+									"t": " customers and clients who only need to look and comment."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f7",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 260,
+				"w": 780,
+				"h": 250,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#22C55E",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Goals"
+			},
+			{
+				"id": "t8",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 310,
+				"w": 730,
+				"h": 69,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• A stakeholder can open a link and leave a comment in under a minute"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Fewer than 5% of comments are about things already fixed"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• No account needed to view"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f9",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 820,
+				"y": 260,
+				"w": 780,
+				"h": 250,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#EF4444",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Non-goals"
+			},
+			{
+				"id": "t10",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 845,
+				"y": 310,
+				"w": 730,
+				"h": 69,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• Real-time video or voice"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Full project-management features"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Editing by people who only view"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f11",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 550,
+				"w": 1600,
+				"h": 420,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Requirements"
+			},
+			{
+				"id": "t12",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 600,
+				"w": 1525,
+				"h": 330,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						110,
+						790,
+						160,
+						230,
+						235
+					],
+					"rowH": [
+						55,
+						55,
+						55,
+						55,
+						55,
+						55
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "#",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "As a… I want to… so that…",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Priority",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Owner",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Status",
+												"b": 1
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "R1"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Viewer: open a shared link without signing in, so I can look straight away"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Must"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Aisha"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Designed"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "R2"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Viewer: click on any shape and add a comment, so my feedback is in context"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Must"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Marcus"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "In build"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "R3"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Editor: get an email when someone comments, so I do not have to check"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Should"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Priya"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Not started"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "R4"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Editor: mark a comment resolved, so I can tell what is left"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Should"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Marcus"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Not started"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "R5"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Viewer: reply to a thread, so we can discuss"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Could"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "—"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Backlog"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							null,
+							"#BBF7D0",
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							"#BBF7D0",
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							"#FDE68A",
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							"#FDE68A",
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							"#E2E8F0",
+							null,
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "f13",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 1010,
+				"w": 780,
+				"h": 280,
+				"rotation": 0,
+				"z": 13,
+				"style": {
+					"fill": "#FFFBEB",
+					"stroke": "#F59E0B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Open questions"
+			},
+			{
+				"id": "n14",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 1060,
+				"w": 225,
+				"h": 150,
+				"rotation": 0,
+				"z": 14,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Should viewers see each other's comments?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n15",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 270,
+				"y": 1060,
+				"w": 225,
+				"h": 150,
+				"rotation": 0,
+				"z": 15,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "How long do share links last?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n16",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 515,
+				"y": 1060,
+				"w": 225,
+				"h": 150,
+				"rotation": 0,
+				"z": 16,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Do we need an approval step?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f17",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 820,
+				"y": 1010,
+				"w": 780,
+				"h": 280,
+				"rotation": 0,
+				"z": 17,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Launch checklist"
+			},
+			{
+				"id": "t18",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 845,
+				"y": 1060,
+				"w": 730,
+				"h": 134,
+				"rotation": 0,
+				"z": 18,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ Design reviewed with two customers"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "☐ Security review of public links"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "☐ Help article and a short video"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "☐ Metrics dashboard in place"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "☐ Support team briefed"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "☐ Rollback plan agreed"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

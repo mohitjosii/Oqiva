@@ -1,12 +1,14 @@
 {
 	"slug": "er-diagram",
-	"name": "Entity relationships",
-	"description": "Three tables and how they refer to each other.",
+	"name": "Entity relationship diagram",
+	"description": "A seven-table shop schema with primary and foreign keys and one-to-many links, ready to rename and extend.",
 	"category": "Engineering",
 	"tags": [
 		"database",
 		"er diagram",
-		"data model"
+		"data model",
+		"schema",
+		"sql"
 	],
 	"sort_order": 62,
 	"document": {
@@ -22,18 +24,85 @@
 		},
 		"objects": [
 			{
-				"id": "users",
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -130,
+				"w": 1600,
+				"h": 44,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Entity relationship diagram",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1600,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "An online shop's data model. Each table lists its columns; lines show how tables refer to each other (1 = one, N = many). PK = primary key, FK = foreign key."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t3",
 				"kind": "table",
 				"shape": "rectangle",
 				"x": 0,
 				"y": 0,
 				"w": 300,
-				"h": 144,
+				"h": 170,
 				"rotation": 0,
-				"z": 1,
+				"z": 3,
 				"style": {
 					"fill": "#FFFFFF",
-					"stroke": "#2563EB",
+					"stroke": "#3B82F6",
 					"strokeWidth": 1,
 					"dash": "solid",
 					"opacity": 1,
@@ -42,26 +111,28 @@
 				"text": null,
 				"table": {
 					"colW": [
-						150,
-						150
+						165,
+						135
 					],
 					"rowH": [
-						36,
-						36,
-						36,
-						36
+						34,
+						34,
+						34,
+						34,
+						34
 					],
 					"cells": [
 						[
 							{
 								"align": "left",
-								"size": 15,
-								"color": "#1E293B",
+								"size": 14,
+								"color": "#FFFFFF",
 								"paragraphs": [
 									{
 										"runs": [
 											{
-												"t": "users"
+												"t": "customers",
+												"b": 1
 											}
 										]
 									}
@@ -72,13 +143,13 @@
 						[
 							{
 								"align": "left",
-								"size": 15,
+								"size": 14,
 								"color": "#1E293B",
 								"paragraphs": [
 									{
 										"runs": [
 											{
-												"t": "id"
+												"t": "id  PK"
 											}
 										]
 									}
@@ -86,8 +157,8 @@
 							},
 							{
 								"align": "left",
-								"size": 15,
-								"color": "#64748B",
+								"size": 14,
+								"color": "#1E293B",
 								"paragraphs": [
 									{
 										"runs": [
@@ -102,7 +173,7 @@
 						[
 							{
 								"align": "left",
-								"size": 15,
+								"size": 14,
 								"color": "#1E293B",
 								"paragraphs": [
 									{
@@ -116,8 +187,38 @@
 							},
 							{
 								"align": "left",
-								"size": 15,
-								"color": "#64748B",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "text, unique"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "name"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
 								"paragraphs": [
 									{
 										"runs": [
@@ -132,13 +233,13 @@
 						[
 							{
 								"align": "left",
-								"size": 15,
+								"size": 14,
 								"color": "#1E293B",
 								"paragraphs": [
 									{
 										"runs": [
 											{
-												"t": "name"
+												"t": "created_at"
 											}
 										]
 									}
@@ -146,13 +247,13 @@
 							},
 							{
 								"align": "left",
-								"size": 15,
-								"color": "#64748B",
+								"size": 14,
+								"color": "#1E293B",
 								"paragraphs": [
 									{
 										"runs": [
 											{
-												"t": "text"
+												"t": "timestamp"
 											}
 										]
 									}
@@ -162,8 +263,12 @@
 					],
 					"fills": [
 						[
-							"#DBEAFE",
-							"#DBEAFE"
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							null
 						],
 						[
 							null,
@@ -181,18 +286,18 @@
 				}
 			},
 			{
-				"id": "orders",
+				"id": "t4",
 				"kind": "table",
 				"shape": "rectangle",
-				"x": 420,
-				"y": 0,
+				"x": 0,
+				"y": 300,
 				"w": 300,
-				"h": 144,
+				"h": 170,
 				"rotation": 0,
-				"z": 2,
+				"z": 4,
 				"style": {
 					"fill": "#FFFFFF",
-					"stroke": "#2563EB",
+					"stroke": "#3B82F6",
 					"strokeWidth": 1,
 					"dash": "solid",
 					"opacity": 1,
@@ -201,26 +306,28 @@
 				"text": null,
 				"table": {
 					"colW": [
-						150,
-						150
+						165,
+						135
 					],
 					"rowH": [
-						36,
-						36,
-						36,
-						36
+						34,
+						34,
+						34,
+						34,
+						34
 					],
 					"cells": [
 						[
 							{
 								"align": "left",
-								"size": 15,
-								"color": "#1E293B",
+								"size": 14,
+								"color": "#FFFFFF",
 								"paragraphs": [
 									{
 										"runs": [
 											{
-												"t": "orders"
+												"t": "addresses",
+												"b": 1
 											}
 										]
 									}
@@ -231,13 +338,13 @@
 						[
 							{
 								"align": "left",
-								"size": 15,
+								"size": 14,
 								"color": "#1E293B",
 								"paragraphs": [
 									{
 										"runs": [
 											{
-												"t": "id"
+												"t": "id  PK"
 											}
 										]
 									}
@@ -245,8 +352,8 @@
 							},
 							{
 								"align": "left",
-								"size": 15,
-								"color": "#64748B",
+								"size": 14,
+								"color": "#1E293B",
 								"paragraphs": [
 									{
 										"runs": [
@@ -261,13 +368,13 @@
 						[
 							{
 								"align": "left",
-								"size": 15,
+								"size": 14,
 								"color": "#1E293B",
 								"paragraphs": [
 									{
 										"runs": [
 											{
-												"t": "user_id"
+												"t": "customer_id  FK"
 											}
 										]
 									}
@@ -275,8 +382,8 @@
 							},
 							{
 								"align": "left",
-								"size": 15,
-								"color": "#64748B",
+								"size": 14,
+								"color": "#1E293B",
 								"paragraphs": [
 									{
 										"runs": [
@@ -291,7 +398,233 @@
 						[
 							{
 								"align": "left",
-								"size": 15,
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "line1, city, postcode"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "text"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "is_default"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "bool"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "t5",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 480,
+				"y": 0,
+				"w": 300,
+				"h": 204,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#22C55E",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						165,
+						135
+					],
+					"rowH": [
+						34,
+						34,
+						34,
+						34,
+						34,
+						34
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "orders",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							null
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "id  PK"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "customer_id  FK"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "status"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "text"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
 								"color": "#1E293B",
 								"paragraphs": [
 									{
@@ -305,8 +638,268 @@
 							},
 							{
 								"align": "left",
-								"size": 15,
-								"color": "#64748B",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "decimal"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "placed_at"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "timestamp"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#22C55E",
+							"#22C55E"
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "t6",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 480,
+				"y": 330,
+				"w": 300,
+				"h": 204,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#22C55E",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						165,
+						135
+					],
+					"rowH": [
+						34,
+						34,
+						34,
+						34,
+						34,
+						34
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "order_items",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							null
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "id  PK"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "order_id  FK"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "product_id  FK"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "quantity"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "unit_price"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
 								"paragraphs": [
 									{
 										"runs": [
@@ -321,8 +914,16 @@
 					],
 					"fills": [
 						[
-							"#DBEAFE",
-							"#DBEAFE"
+							"#22C55E",
+							"#22C55E"
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
 						],
 						[
 							null,
@@ -340,18 +941,18 @@
 				}
 			},
 			{
-				"id": "items",
+				"id": "t7",
 				"kind": "table",
 				"shape": "rectangle",
-				"x": 840,
-				"y": 0,
+				"x": 960,
+				"y": 330,
 				"w": 300,
-				"h": 144,
+				"h": 204,
 				"rotation": 0,
-				"z": 3,
+				"z": 7,
 				"style": {
 					"fill": "#FFFFFF",
-					"stroke": "#2563EB",
+					"stroke": "#8B5CF6",
 					"strokeWidth": 1,
 					"dash": "solid",
 					"opacity": 1,
@@ -360,26 +961,29 @@
 				"text": null,
 				"table": {
 					"colW": [
-						150,
-						150
+						165,
+						135
 					],
 					"rowH": [
-						36,
-						36,
-						36,
-						36
+						34,
+						34,
+						34,
+						34,
+						34,
+						34
 					],
 					"cells": [
 						[
 							{
 								"align": "left",
-								"size": 15,
-								"color": "#1E293B",
+								"size": 14,
+								"color": "#FFFFFF",
 								"paragraphs": [
 									{
 										"runs": [
 											{
-												"t": "order_items"
+												"t": "products",
+												"b": 1
 											}
 										]
 									}
@@ -390,13 +994,13 @@
 						[
 							{
 								"align": "left",
-								"size": 15,
+								"size": 14,
 								"color": "#1E293B",
 								"paragraphs": [
 									{
 										"runs": [
 											{
-												"t": "id"
+												"t": "id  PK"
 											}
 										]
 									}
@@ -404,8 +1008,8 @@
 							},
 							{
 								"align": "left",
-								"size": 15,
-								"color": "#64748B",
+								"size": 14,
+								"color": "#1E293B",
 								"paragraphs": [
 									{
 										"runs": [
@@ -420,37 +1024,7 @@
 						[
 							{
 								"align": "left",
-								"size": 15,
-								"color": "#1E293B",
-								"paragraphs": [
-									{
-										"runs": [
-											{
-												"t": "order_id"
-											}
-										]
-									}
-								]
-							},
-							{
-								"align": "left",
-								"size": 15,
-								"color": "#64748B",
-								"paragraphs": [
-									{
-										"runs": [
-											{
-												"t": "int"
-											}
-										]
-									}
-								]
-							}
-						],
-						[
-							{
-								"align": "left",
-								"size": 15,
+								"size": 14,
 								"color": "#1E293B",
 								"paragraphs": [
 									{
@@ -464,8 +1038,38 @@
 							},
 							{
 								"align": "left",
-								"size": 15,
-								"color": "#64748B",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "text, unique"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "name"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
 								"paragraphs": [
 									{
 										"runs": [
@@ -476,12 +1080,80 @@
 									}
 								]
 							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "price"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "decimal"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "category_id  FK"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int"
+											}
+										]
+									}
+								]
+							}
 						]
 					],
 					"fills": [
 						[
-							"#DBEAFE",
-							"#DBEAFE"
+							"#8B5CF6",
+							"#8B5CF6"
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
 						],
 						[
 							null,
@@ -497,17 +1169,504 @@
 						]
 					]
 				}
+			},
+			{
+				"id": "t8",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 960,
+				"y": 0,
+				"w": 300,
+				"h": 136,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						165,
+						135
+					],
+					"rowH": [
+						34,
+						34,
+						34,
+						34
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "categories",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							null
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "id  PK"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "name"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "text"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "parent_id  FK"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int, nullable"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#8B5CF6",
+							"#8B5CF6"
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "t9",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 480,
+				"y": 660,
+				"w": 300,
+				"h": 204,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#F59E0B",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						165,
+						135
+					],
+					"rowH": [
+						34,
+						34,
+						34,
+						34,
+						34,
+						34
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "payments",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							null
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "id  PK"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "order_id  FK"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "method"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "text"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "amount"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "decimal"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "paid_at"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "timestamp"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#F59E0B",
+							"#F59E0B"
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "n16",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1300,
+				"y": 0,
+				"w": 260,
+				"h": 190,
+				"rotation": 0,
+				"z": 16,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "How to read it"
+								}
+							]
+						},
+						{
+							"runs": []
+						},
+						{
+							"runs": [
+								{
+									"t": "Every FK points at another table's PK. Add a table by copying one and changing the name and columns."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n17",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1300,
+				"y": 220,
+				"w": 260,
+				"h": 150,
+				"rotation": 0,
+				"z": 17,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Ideas to extend"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Reviews"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Discount codes"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Shipping methods"
+								}
+							]
+						}
+					]
+				}
 			}
 		],
 		"connectors": [
 			{
-				"id": "line-1",
+				"id": "l10",
 				"from": {
-					"objectId": "users",
+					"objectId": "t3",
 					"anchor": "e"
 				},
 				"to": {
-					"objectId": "orders",
+					"objectId": "t5",
 					"anchor": "w"
 				},
 				"geometry": "straight",
@@ -517,25 +1676,25 @@
 				},
 				"bend": 0,
 				"style": {
-					"stroke": "#2563EB",
+					"stroke": "#475569",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1
 				},
 				"label": {
-					"text": "1 to many"
+					"text": "1 → N"
 				},
-				"z": 1
+				"z": 10
 			},
 			{
-				"id": "line-2",
+				"id": "l11",
 				"from": {
-					"objectId": "orders",
-					"anchor": "e"
+					"objectId": "t3",
+					"anchor": "s"
 				},
 				"to": {
-					"objectId": "items",
-					"anchor": "w"
+					"objectId": "t4",
+					"anchor": "n"
 				},
 				"geometry": "straight",
 				"heads": {
@@ -544,15 +1703,123 @@
 				},
 				"bend": 0,
 				"style": {
-					"stroke": "#2563EB",
+					"stroke": "#475569",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1
 				},
 				"label": {
-					"text": "1 to many"
+					"text": "1 → N"
 				},
-				"z": 2
+				"z": 11
+			},
+			{
+				"id": "l12",
+				"from": {
+					"objectId": "t5",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "t6",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "1 → N"
+				},
+				"z": 12
+			},
+			{
+				"id": "l13",
+				"from": {
+					"objectId": "t7",
+					"anchor": "w"
+				},
+				"to": {
+					"objectId": "t6",
+					"anchor": "e"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "1 → N"
+				},
+				"z": 13
+			},
+			{
+				"id": "l14",
+				"from": {
+					"objectId": "t8",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "t7",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "1 → N"
+				},
+				"z": 14
+			},
+			{
+				"id": "l15",
+				"from": {
+					"objectId": "t5",
+					"anchor": "sw"
+				},
+				"to": {
+					"objectId": "t9",
+					"anchor": "nw"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "1 → N"
+				},
+				"z": 15
 			}
 		],
 		"mindmaps": [],

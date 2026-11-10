@@ -5,6 +5,7 @@
 import { DEFAULT_THEME, THEMES, isColor } from "./themes"
 import { ID_PATTERN } from "./ids"
 import { ICON_PATTERN, isEmoji } from "./icons"
+import { sanitizeFlowcharts } from "../modes/flowchart/document"
 import { sanitizeMindmaps } from "../modes/mindmap/document"
 
 export const SCHEMA_VERSION = 1
@@ -350,6 +351,14 @@ export function parseDocument(input) {
 	connectors.sort((a, b) => a.z - b.z)
 	const maps = sanitizeMindmaps(raw.mindmaps, new Set([...objectIds, ...connectorIds]))
 	issues.push(...maps.issues)
+	const taken = new Set([...objectIds, ...connectorIds])
+	for (const m of maps.mindmaps) {
+		taken.add(m.id)
+		for (const n of m.nodes) taken.add(n.id)
+		for (const l of m.crosslinks) taken.add(l.id)
+	}
+	const charts = sanitizeFlowcharts(raw.flowcharts, taken)
+	issues.push(...charts.issues)
 	const document = {
 		...raw,
 		schemaVersion: SCHEMA_VERSION,
@@ -358,7 +367,7 @@ export function parseDocument(input) {
 		objects,
 		connectors,
 		mindmaps: maps.mindmaps,
-		flowcharts: Array.isArray(raw.flowcharts) ? raw.flowcharts : [],
+		flowcharts: charts.flowcharts,
 	}
 	return { document, issues }
 }

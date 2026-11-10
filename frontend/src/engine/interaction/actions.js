@@ -210,7 +210,10 @@ export function textStylePatch(text, action) {
 		case "textColor":
 			return withRuns({ ...text, color: action.value }, (run) => without(run, "c"))
 		case "textSize":
-			return { ...text, size: action.value }
+			return {
+				...text,
+				size: Math.min(200, Math.max(8, Math.round(Number(action.value) || 16))),
+			}
 		case "textAlign":
 			return { ...text, align: action.value }
 		case "bold":

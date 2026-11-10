@@ -7,6 +7,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { CanvasController } from "./interaction/controller"
 import { commandFor, isTypingTarget } from "./interaction/keymap"
 import { runCommand } from "./interaction/commands"
+import { flowOwnsKeys } from "./modes/flowchart/commands"
 import { nodesOwnKeys } from "./modes/mindmap/commands"
 import { createMapFromOutline } from "./modes/mindmap/storeOps"
 import { looksLikeOutline, parseOutline, treeToChange } from "./modes/mindmap/paste"
@@ -37,6 +38,9 @@ import ExportMenu from "./ui/ExportMenu.vue"
 import ShortcutsDialog from "./ui/ShortcutsDialog.vue"
 import LineLabelEditor from "./ui/LineLabelEditor.vue"
 import RightPalette from "./ui/RightPalette.vue"
+import FlowchartBar from "./ui/FlowchartBar.vue"
+import FlowEditor from "./ui/FlowEditor.vue"
+import FlowTypePicker from "./ui/FlowTypePicker.vue"
 import MapNodeEditor from "./ui/MapNodeEditor.vue"
 import MindMapBar from "./ui/MindMapBar.vue"
 import OutlinePanel from "./ui/OutlinePanel.vue"
@@ -262,10 +266,13 @@ function onKeydown(event) {
 		return
 	}
 	const command = commandFor(event, {
-		editing: Boolean(store.state.editingId || store.state.editingNodeId),
+		editing: Boolean(
+			store.state.editingId || store.state.editingNodeId || store.state.editingFlowId,
+		),
 		readonly: store.state.readonly,
 		canComment: store.state.canComment,
 		mindmap: nodesOwnKeys(store),
+		flowchart: flowOwnsKeys(store),
 	})
 	if (!command) return
 	if (command.name === "print" && !canExport) return // leave the browser's own print alone
@@ -274,6 +281,7 @@ function onKeydown(event) {
 		toggleShortcuts: () => (showShortcuts.value = !showShortcuts.value),
 		print: () => runExport({ format: "print" }),
 		mindmap: controller.mapHost(),
+		flowchart: controller.flowHost(),
 	})
 }
 const addImage = (file, center) => insertImage(store, props.host, file, { center, notify: say })
@@ -388,6 +396,8 @@ defineExpose({ flush: () => autosave.flush(), store, autosave, unsaved })
 		<BoardCanvas :store="store" :controller="controller" :fonts="fonts" @files="addFiles">
 			<TextEditorOverlay :store="store" :measure="measureText" />
 			<MapNodeEditor :store="store" :controller="controller" />
+			<FlowEditor :store="store" :controller="controller" />
+			<FlowTypePicker :store="store" :controller="controller" />
 			<LineLabelEditor :store="store" :paths="controller.paths" />
 			<CommentPins v-if="comments" :store="store" />
 			<LinkBadges :store="store" :links="host.links" />
@@ -395,6 +405,7 @@ defineExpose({ flush: () => autosave.flush(), store, autosave, unsaved })
 		</BoardCanvas>
 		<ShapeLibrary :store="store" :controller="controller" />
 		<MindMapBar :store="store" :controller="controller" />
+		<FlowchartBar :store="store" :controller="controller" />
 		<OutlinePanel :store="store" :controller="controller" />
 		<template v-if="host.versions">
 			<button

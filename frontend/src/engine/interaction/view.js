@@ -9,7 +9,7 @@ import { pageSize } from "../model/schema"
 
 const PAN_SLACK = 80
 
-// The box around every object and line (a free line can lie outside every shape).
+// The box around every object, line, mind map and flowchart (a free line can lie outside every shape).
 export function contentBounds(store) {
 	const objects = store.objects.value
 	const byId = new Map(objects.map((object) => [object.id, object]))
@@ -18,7 +18,9 @@ export function contentBounds(store) {
 	const lines = connectors
 		.filter((connector) => resolved.has(connector.id))
 		.map((connector) => pathBounds(connectorPath(connector, resolved.get(connector.id))))
-	const boxes = [...(objects.length ? [boundsOfObjects(objects)] : []), ...lines]
+	// Mind maps and flowcharts are laid out by the controller, which tells the store where they are.
+	const drawn = store.extraBounds ? store.extraBounds() : []
+	const boxes = [...(objects.length ? [boundsOfObjects(objects)] : []), ...lines, ...drawn]
 	return boxes.length ? unionBounds(boxes) : null
 }
 

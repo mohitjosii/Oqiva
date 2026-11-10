@@ -5,7 +5,7 @@
 import StarterKit from "@tiptap/starter-kit"
 import { Color, TextStyle } from "@tiptap/extension-text-style"
 import { Editor, EditorContent } from "@tiptap/vue-3"
-import { Button, Dropdown } from "frappe-ui"
+import { Button } from "frappe-ui"
 import { computed, nextTick, onBeforeUnmount, reactive, ref, shallowRef, watch } from "vue"
 import { objectBounds } from "../geometry/bounds"
 import { toScreen } from "../geometry/viewport"
@@ -17,13 +17,13 @@ import { autoHeight } from "../text/fit"
 import { createNote, emptyText } from "../model/factories"
 import { CELL_PADDING, cellRect, growRow, setCellText, withTable } from "../store/tableOps"
 import { fromProseMirror, isEmptyText, toProseMirror } from "../text/richText"
+import FontSizeField from "./FontSizeField.vue"
 
 const props = defineProps({
 	store: { type: Object, required: true },
 	measure: { type: Function, required: true },
 })
 
-const SIZES = [12, 14, 16, 18, 20, 24, 32, 48, 64]
 const SWATCHES = [
 	["Default", null],
 	["Black", "#111827"],
@@ -279,14 +279,6 @@ function setBase(patch) {
 	sync()
 	editor.value?.commands.focus()
 }
-
-const sizeOptions = computed(() =>
-	SIZES.map((size) => ({
-		label: `${size}`,
-		icon: size === session.base.size ? "check" : null,
-		onClick: () => setBase({ size }),
-	})),
-)
 </script>
 
 <template>
@@ -343,14 +335,11 @@ const sizeOptions = computed(() =>
 				@click="setColor(value)"
 			/>
 			<span class="mx-1 h-5 w-px bg-outline-gray-2" aria-hidden="true" />
-			<Dropdown :options="sizeOptions">
-				<Button
-					size="sm"
-					variant="ghost"
-					:label="`${session.base.size}`"
-					iconRight="chevron-down"
-				/>
-			</Dropdown>
+			<FontSizeField
+				:model-value="session.base.size"
+				testid="editor-text-size"
+				@update:model-value="(size) => setBase({ size })"
+			/>
 			<Button
 				icon="align-left"
 				size="sm"

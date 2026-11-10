@@ -11,6 +11,7 @@ import { GRID_SIZES, pageSize } from "../model/schema"
 import ConnectorView from "./ConnectorView.vue"
 import ShapeView from "./ShapeView.vue"
 import SelectionOverlay from "./SelectionOverlay.vue"
+import FlowchartLayer from "./FlowchartLayer.vue"
 import MindMapLayer from "./MindMapLayer.vue"
 
 const props = defineProps({
@@ -237,6 +238,15 @@ function pointerUp(event) {
 				<ShapeView v-if="previewObject" :object="previewObject" />
 			</g>
 			<MindMapLayer
+				:store="store"
+				:controller="controller"
+				:transform="worldTransform"
+				:cull-area="cullArea"
+				:detail="detail"
+				:background="pageFill"
+				:fonts="fonts"
+			/>
+			<FlowchartLayer
 				:store="store"
 				:controller="controller"
 				:transform="worldTransform"

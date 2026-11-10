@@ -1,12 +1,14 @@
 {
 	"slug": "incident-response",
-	"name": "Incident response",
-	"description": "From the alert to the follow-up review.",
+	"name": "Incident response runbook",
+	"description": "A runbook for the on-call engineer: acknowledge, assess severity, assemble roles, mitigate, communicate and learn.",
 	"category": "Engineering",
 	"tags": [
-		"process",
+		"incident",
 		"oncall",
-		"engineering"
+		"runbook",
+		"engineering",
+		"sre"
 	],
 	"sort_order": 60,
 	"document": {
@@ -22,32 +24,33 @@
 		},
 		"objects": [
 			{
-				"id": "alert",
-				"kind": "shape",
+				"id": "t1",
+				"kind": "text",
 				"shape": "rectangle",
 				"x": 0,
-				"y": 0,
-				"w": 150,
-				"h": 70,
+				"y": -120,
+				"w": 1200,
+				"h": 40,
 				"rotation": 0,
 				"z": 1,
 				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#EF4444",
-					"strokeWidth": 2,
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
 					"dash": "solid",
 					"opacity": 1,
-					"radius": 35
+					"radius": 8
 				},
 				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#991B1B",
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Alert fires"
+									"t": "Incident response runbook",
+									"b": 1
 								}
 							]
 						}
@@ -55,263 +58,32 @@
 				}
 			},
 			{
-				"id": "ack",
-				"kind": "shape",
+				"id": "t2",
+				"kind": "text",
 				"shape": "rectangle",
-				"x": 260,
-				"y": 0,
-				"w": 190,
-				"h": 90,
+				"x": 0,
+				"y": -70,
+				"w": 1400,
+				"h": 24,
 				"rotation": 0,
 				"z": 2,
 				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#111827",
-					"strokeWidth": 2,
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
 					"dash": "solid",
 					"opacity": 1,
 					"radius": 8
 				},
 				"text": {
-					"align": "center",
+					"align": "left",
 					"size": 16,
-					"color": "#111827",
+					"color": "#64748B",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Acknowledge"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "sev",
-				"kind": "shape",
-				"shape": "diamond",
-				"x": 520,
-				"y": 0,
-				"w": 190,
-				"h": 120,
-				"rotation": 0,
-				"z": 3,
-				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#F97316",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#9A3412",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Severity high?"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "page",
-				"kind": "shape",
-				"shape": "rectangle",
-				"x": 780,
-				"y": 0,
-				"w": 190,
-				"h": 90,
-				"rotation": 0,
-				"z": 4,
-				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#EF4444",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#991B1B",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Page the lead"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "comms",
-				"kind": "shape",
-				"shape": "document",
-				"x": 1040,
-				"y": 0,
-				"w": 170,
-				"h": 100,
-				"rotation": 0,
-				"z": 5,
-				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#111827",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#111827",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Update the status page"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "triage",
-				"kind": "shape",
-				"shape": "rectangle",
-				"x": 520,
-				"y": 160,
-				"w": 190,
-				"h": 90,
-				"rotation": 0,
-				"z": 6,
-				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#111827",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#111827",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Triage"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "fix",
-				"kind": "shape",
-				"shape": "rectangle",
-				"x": 780,
-				"y": 160,
-				"w": 190,
-				"h": 90,
-				"rotation": 0,
-				"z": 7,
-				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#111827",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#111827",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Fix or roll back"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "verify",
-				"kind": "shape",
-				"shape": "diamond",
-				"x": 1040,
-				"y": 160,
-				"w": 190,
-				"h": 120,
-				"rotation": 0,
-				"z": 8,
-				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#F97316",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#9A3412",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Fixed?"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "review",
-				"kind": "shape",
-				"shape": "rectangle",
-				"x": 1300,
-				"y": 160,
-				"w": 150,
-				"h": 70,
-				"rotation": 0,
-				"z": 9,
-				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#22C55E",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 35
-				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#166534",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Write the review"
+									"t": "What to do from the first alert to the review. Print it, pin it, and practise it before you need it."
 								}
 							]
 						}
@@ -319,267 +91,265 @@
 				}
 			}
 		],
-		"connectors": [
-			{
-				"id": "line-1",
-				"from": {
-					"objectId": "alert",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "ack",
-					"anchor": "w"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 1
-			},
-			{
-				"id": "line-2",
-				"from": {
-					"objectId": "ack",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "sev",
-					"anchor": "w"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 2
-			},
-			{
-				"id": "line-3",
-				"from": {
-					"objectId": "sev",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "page",
-					"anchor": "w"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": {
-					"text": "yes"
-				},
-				"z": 3
-			},
-			{
-				"id": "line-4",
-				"from": {
-					"objectId": "sev",
-					"anchor": "s"
-				},
-				"to": {
-					"objectId": "triage",
-					"anchor": "n"
-				},
-				"geometry": "straight",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": {
-					"text": "no"
-				},
-				"z": 4
-			},
-			{
-				"id": "line-5",
-				"from": {
-					"objectId": "page",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "comms",
-					"anchor": "w"
-				},
-				"geometry": "straight",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 5
-			},
-			{
-				"id": "line-6",
-				"from": {
-					"objectId": "page",
-					"anchor": "s"
-				},
-				"to": {
-					"objectId": "triage",
-					"anchor": "e"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 6
-			},
-			{
-				"id": "line-7",
-				"from": {
-					"objectId": "triage",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "fix",
-					"anchor": "w"
-				},
-				"geometry": "straight",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 7
-			},
-			{
-				"id": "line-8",
-				"from": {
-					"objectId": "fix",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "verify",
-					"anchor": "w"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 8
-			},
-			{
-				"id": "line-9",
-				"from": {
-					"objectId": "verify",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "review",
-					"anchor": "w"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": {
-					"text": "yes"
-				},
-				"z": 9
-			},
-			{
-				"id": "line-10",
-				"from": {
-					"objectId": "verify",
-					"anchor": "s"
-				},
-				"to": {
-					"objectId": "triage",
-					"anchor": "s"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "dashed",
-					"opacity": 1
-				},
-				"label": {
-					"text": "no"
-				},
-				"z": 10
-			}
-		],
+		"connectors": [],
 		"mindmaps": [],
-		"flowcharts": []
+		"flowcharts": [
+			{
+				"id": "chart1",
+				"direction": "TB",
+				"numbered": false,
+				"nodes": [
+					{
+						"id": "start",
+						"type": "terminator",
+						"text": "Alert fires",
+						"x": 121,
+						"y": 100,
+						"manual": false
+					},
+					{
+						"id": "ack",
+						"type": "process",
+						"text": "Acknowledge within 5 minutes",
+						"x": 121,
+						"y": 230,
+						"manual": false
+					},
+					{
+						"id": "d1",
+						"type": "decision",
+						"text": "Is customer impact real?",
+						"x": 121,
+						"y": 392,
+						"manual": false
+					},
+					{
+						"id": "fp",
+						"type": "process",
+						"text": "Note it as a false alarm and tune the alert",
+						"x": 506,
+						"y": 582,
+						"manual": false
+					},
+					{
+						"id": "sev",
+						"type": "decision",
+						"text": "Is the whole service down?",
+						"x": 121,
+						"y": 582,
+						"manual": false
+					},
+					{
+						"id": "sev1",
+						"type": "process",
+						"text": "Declare SEV-1: open a chat room and bridge call",
+						"x": 100,
+						"y": 745,
+						"manual": false
+					},
+					{
+						"id": "sev2",
+						"type": "process",
+						"text": "Declare SEV-2: work it in the team channel",
+						"x": 407,
+						"y": 745,
+						"manual": false
+					},
+					{
+						"id": "roles",
+						"type": "process",
+						"text": "Assign roles: incident lead, communications, operations",
+						"x": 253,
+						"y": 880,
+						"manual": false
+					},
+					{
+						"id": "mit",
+						"type": "process",
+						"text": "Mitigate first: roll back, fail over or switch off the feature",
+						"x": 253,
+						"y": 1025,
+						"manual": false
+					},
+					{
+						"id": "status",
+						"type": "io",
+						"text": "Post a status update (every 30 minutes)",
+						"x": 253,
+						"y": 1170,
+						"manual": false
+					},
+					{
+						"id": "d2",
+						"type": "decision",
+						"text": "Is the service restored?",
+						"x": 253,
+						"y": 1332,
+						"manual": false
+					},
+					{
+						"id": "root",
+						"type": "process",
+						"text": "Find the root cause once things are stable",
+						"x": 253,
+						"y": 1495,
+						"manual": false
+					},
+					{
+						"id": "close",
+						"type": "process",
+						"text": "Close the incident and tell customers it is resolved",
+						"x": 253,
+						"y": 1630,
+						"manual": false
+					},
+					{
+						"id": "pm",
+						"type": "process",
+						"text": "Schedule a blameless postmortem within 5 days",
+						"x": 253,
+						"y": 1765,
+						"manual": false
+					},
+					{
+						"id": "end",
+						"type": "terminator",
+						"text": "Done",
+						"x": 253,
+						"y": 1895,
+						"manual": false
+					},
+					{
+						"id": "end0",
+						"type": "terminator",
+						"text": "No action",
+						"x": 676,
+						"y": 745,
+						"manual": false
+					}
+				],
+				"edges": [
+					{
+						"id": "start-ack",
+						"from": "start",
+						"to": "ack",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "ack-d1",
+						"from": "ack",
+						"to": "d1",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "d1-sev",
+						"from": "d1",
+						"to": "sev",
+						"label": "Yes",
+						"order": 0
+					},
+					{
+						"id": "d1-fp",
+						"from": "d1",
+						"to": "fp",
+						"label": "No",
+						"order": 1
+					},
+					{
+						"id": "fp-end0",
+						"from": "fp",
+						"to": "end0",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "sev-sev1",
+						"from": "sev",
+						"to": "sev1",
+						"label": "Yes",
+						"order": 0
+					},
+					{
+						"id": "sev-sev2",
+						"from": "sev",
+						"to": "sev2",
+						"label": "No",
+						"order": 1
+					},
+					{
+						"id": "sev1-roles",
+						"from": "sev1",
+						"to": "roles",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "sev2-roles",
+						"from": "sev2",
+						"to": "roles",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "roles-mit",
+						"from": "roles",
+						"to": "mit",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "mit-status",
+						"from": "mit",
+						"to": "status",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "status-d2",
+						"from": "status",
+						"to": "d2",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "d2-root",
+						"from": "d2",
+						"to": "root",
+						"label": "Yes",
+						"order": 0
+					},
+					{
+						"id": "d2-mit",
+						"from": "d2",
+						"to": "mit",
+						"label": "No",
+						"order": 1
+					},
+					{
+						"id": "root-close",
+						"from": "root",
+						"to": "close",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "close-pm",
+						"from": "close",
+						"to": "pm",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "pm-end",
+						"from": "pm",
+						"to": "end",
+						"label": "",
+						"order": 0
+					}
+				]
+			}
+		]
 	}
 }

@@ -4,9 +4,12 @@
 
 import { connectorPath, resolveConnectors } from "../geometry/connectors"
 import { layoutMap } from "../modes/mindmap/layout"
+import { layoutChart } from "../modes/flowchart/layouts"
 import { sized } from "../modes/mindmap/layouts"
 import { connectorNode, el, FONT, objectNode, serializeNode } from "../render/nodes"
+import { flowScene } from "../render/flowchartScene"
 import { mapScene } from "../render/mindmapScene"
+import { stepNumbers } from "../modes/flowchart/numbering"
 
 // Shown where a picture could not be fetched.
 export const MISSING_PICTURE =
@@ -68,7 +71,21 @@ export function buildSvg(items, area, { background = null, measure, images = nul
 			},
 		),
 	)
-	body.splice(items.objects.length, 0, ...maps)
+	// Flowcharts too: steps, routed arrows and labels, exactly as on the board.
+	const charts = (items.charts || []).map((c) =>
+		flowScene(layoutChart(c.chart, c.nodes, c.edges, measure), {
+			measure: (text, size) => measure(text, { size }),
+			detail: true,
+			selected: new Set(),
+			editingId: null,
+			background: background || "#FFFFFF",
+			numbers: c.chart.numbered ? stepNumbers(c.chart, c.nodes, c.edges) : null,
+			drag: null,
+			spliceEdge: null,
+			interactive: false,
+		}),
+	)
+	body.splice(items.objects.length, 0, ...maps, ...charts)
 	children.push(el("g", { "clip-path": `url(#${clip})`, "font-family": FONT }, body))
 	const root = el(
 		"svg",

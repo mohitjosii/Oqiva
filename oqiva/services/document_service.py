@@ -58,6 +58,13 @@ MAP_LABEL = 100
 MAP_LAYOUTS = ("both", "right")
 HEX6 = re.compile(r"^#[0-9a-fA-F]{6}$")
 MARKER_ICON = re.compile(r"^[a-z0-9-]{1,40}$")
+FLOW_TYPES = ("terminator", "process", "decision", "io", "junction")
+FLOW_DIRECTIONS = ("TB", "LR")
+FLOW_MAX_CHARTS = 50
+FLOW_MAX_NODES = 500
+FLOW_MAX_EDGES = 800
+FLOW_TEXT = 200
+FLOW_LABEL = 60
 
 
 def _number(value, low: float, high: float) -> bool:
@@ -353,6 +360,70 @@ def _check_mindmaps(maps: list, seen: set) -> None:
 				_bad(link["id"], _("the label is too long."))
 
 
+def _check_flowcharts(charts: list, seen: set) -> None:
+	"""A flowchart is nodes with a type and a position, and edges between two different nodes of it."""
+	if len(charts) > FLOW_MAX_CHARTS:
+		raise OqivaLimitExceeded(_("This board has too many flowcharts."))
+	for chart in charts:
+		if not isinstance(chart, dict) or not isinstance(chart.get("id"), str) or not ID.match(chart["id"]):
+			raise OqivaError(_("A flowchart has a missing or invalid id."))
+		chart_id = chart["id"]
+		if chart_id in seen:
+			_bad(chart_id, _("the id is used twice."))
+		seen.add(chart_id)
+		if chart.get("direction", "TB") not in FLOW_DIRECTIONS:
+			_bad(chart_id, _("the direction is not recognised."))
+		if chart.get("numbered", False) not in (True, False):
+			_bad(chart_id, _("numbered must be true or false."))
+		nodes = chart.get("nodes")
+		if not isinstance(nodes, list) or not 1 <= len(nodes) <= FLOW_MAX_NODES:
+			_bad(chart_id, _("a flowchart has between 1 and {0} steps.").format(FLOW_MAX_NODES))
+		ids = set()
+		for node in nodes:
+			if not isinstance(node, dict) or not isinstance(node.get("id"), str) or not ID.match(node["id"]):
+				raise OqivaError(_("A flowchart step has a missing or invalid id."))
+			node_id = node["id"]
+			if node_id in seen:
+				_bad(node_id, _("the id is used twice."))
+			seen.add(node_id)
+			ids.add(node_id)
+			if node.get("type") not in FLOW_TYPES:
+				_bad(node_id, _("the step type is not recognised."))
+			text = node.get("text", "")
+			if not (isinstance(text, str) and len(text) <= FLOW_TEXT):
+				_bad(node_id, _("the text is too long."))
+			for field in ("x", "y"):
+				if not _number(node.get(field), -1e6, 1e6):
+					_bad(node_id, _("{0} is missing or out of range.").format(field))
+			if node.get("manual", False) not in (True, False):
+				_bad(node_id, _("manual must be true or false."))
+			size = node.get("fontSize")
+			if size is not None and not _number(size, 8, 200):
+				_bad(node_id, _("the font size must be between 8 and 200."))
+		edges = chart.get("edges", [])
+		if not isinstance(edges, list) or len(edges) > FLOW_MAX_EDGES:
+			_bad(chart_id, _("the connections are not valid."))
+		pairs = set()
+		for edge in edges:
+			if not isinstance(edge, dict) or not isinstance(edge.get("id"), str) or not ID.match(edge["id"]):
+				raise OqivaError(_("A flowchart connection has a missing or invalid id."))
+			edge_id = edge["id"]
+			if edge_id in seen:
+				_bad(edge_id, _("the id is used twice."))
+			seen.add(edge_id)
+			if edge.get("from") not in ids or edge.get("to") not in ids or edge["from"] == edge["to"]:
+				_bad(edge_id, _("a connection joins two different steps of the flowchart."))
+			if (edge["from"], edge["to"]) in pairs:
+				_bad(edge_id, _("two steps are connected twice."))
+			pairs.add((edge["from"], edge["to"]))
+			label = edge.get("label", "")
+			if not (isinstance(label, str) and len(label) <= FLOW_LABEL):
+				_bad(edge_id, _("the label is too long."))
+			order = edge.get("order", 0)
+			if not (isinstance(order, int) and not isinstance(order, bool) and 0 <= order <= 1000):
+				_bad(edge_id, _("the order is not valid."))
+
+
 def check_crdt_state(crdt_state) -> str:
 	"""The collaboration state sent with a save: base64 text of at most twice the document limit.
 
@@ -407,6 +478,7 @@ def parse_document(raw: str, enforce_limits: bool = True) -> tuple[dict, int]:
 	for item in document["connectors"]:
 		_check_connector(item, seen)
 	_check_mindmaps(document["mindmaps"], seen)
+	_check_flowcharts(document["flowcharts"], seen)
 	count = _count(document)
 	if enforce_limits and count > get_setting("max_objects_per_board"):
 		raise OqivaLimitExceeded(_("This board has too many objects."))

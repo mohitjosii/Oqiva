@@ -439,11 +439,14 @@ The DocType's `document`, `schema_version`, `object_count` and a small `preview`
                   heads:{start,end}, style, label?, controlPoint? } ],
   mindmaps:   [ { id, origin, rootId, nodes:[{id,parentId,order,text,collapsed,color,marker,note}],
                   crosslinks:[…] } ],
-  flowcharts: [ { id, direction: TB|LR, nodes:[{id,type,text,x,y,manual,branches}], edges:[…] } ] }
+  flowcharts: [ { id, direction: TB|LR, numbered, nodes:[{id,type,text,x,y,manual}],
+                  edges:[{id,from,to,label,order}] } ] }
 ```
 Positions in mind maps are derived by the layout engine and never stored. Flowchart nodes store x/y plus a `manual` flag (Tidy clears it). Every item has a stable id. Arrays are keyed by id in the Y.Doc.
 
 **As built (Phase 8).** In the store and the Yjs document the mind maps are three flat lists, `maps`, `mapnodes` and `crosslinks`; `store.snapshot()` nests them back into `mindmaps`. A node is `{id, mapId, parentId, order, text, collapsed, color, marker, note}`; the layout (`modes/mindmap/layout.js`) works out every box from the tree, `layouts.js` keeps it as a computed value per map, and `render/mindmapScene.js` describes how a map is drawn, for the editor and for export alike. The controller holds `maps` (the layouts) and does the node hit test, the drag to re-parent and the drop target; the keyboard maps to `mm.*` commands only while the selection is nodes (`nodesOwnKeys`). The bridge repairs a map after every remote change (`dropBrokenMaps`), and `parseDocument` repairs one on every read (`sanitizeMindmaps`).
+
+**As built (Phase 9).** In the store and the Yjs document a flowchart is three flat lists, `charts`, `flownodes` and `flowedges`; `store.snapshot()` nests them back into `flowcharts`. `modes/flowchart/` holds the pure parts: `model.js` (types, sizes, limits), `ops.js` (every edit as a change set), `layout.js` (Tidy up, where a new step goes, how far a splice shifts what follows), `routing.js` (ports and orthogonal routes), `numbering.js`, `document.js` (clean and repair), `storeOps.js` (a change set as one undo step) and `commands.js` (`fl.*`). `layouts.js` keeps sizes and routes as a computed value per chart, and `render/flowchartScene.js` describes how a chart is drawn, for the editor and for export alike. The controller holds `flows` (the layouts), the step and arrow hit tests, the "+" handle drag, the drop onto an arrow, and tells the store where maps and charts are (`store.extraBounds`) so Fit and the bounds include them; the keyboard maps to `fl.*` only while the selection is steps and arrows (`flowOwnsKeys`). The bridge repairs a chart after every remote change (`dropBrokenCharts`), and `parseDocument` on every read (`sanitizeFlowcharts`).
 
 ---
 

@@ -9,6 +9,7 @@ import { isAttached } from "../geometry/connectors"
 import { createViewport } from "../geometry/viewport"
 import { countObjects } from "../model/schema"
 import { History } from "./history"
+import { flattenFlowcharts, nestFlowcharts } from "../modes/flowchart/document"
 import { flattenMindmaps, nestMindmaps } from "../modes/mindmap/document"
 import { cloneSelection } from "./clone"
 
@@ -24,7 +25,17 @@ function wholePatch(before, after) {
 }
 // Objects and lines keep drawing order (``z``). Mind maps live in three flat lists: the maps, their
 // nodes and their cross-links (the document nests them; see modes/mindmap/document.js).
-const LISTS = ["objects", "connectors", "maps", "mapnodes", "crosslinks"]
+// Flowcharts are three flat lists too: the charts, their nodes and their edges.
+const LISTS = [
+	"objects",
+	"connectors",
+	"maps",
+	"mapnodes",
+	"crosslinks",
+	"charts",
+	"flownodes",
+	"flowedges",
+]
 const BY_Z = new Set(["objects", "connectors"])
 
 function withPatch(item, patch) {
@@ -43,15 +54,20 @@ export function createStore(document, { readonly = false } = {}) {
 		canvas: initialCanvas,
 		theme: initialTheme,
 		mindmaps: initialMindmaps = [],
+		flowcharts: initialFlowcharts = [],
 		...extra
 	} = document
 	const flat = flattenMindmaps(initialMindmaps)
+	const flow = flattenFlowcharts(initialFlowcharts)
 	const data = {
 		objects: [...initialObjects].sort((a, b) => a.z - b.z),
 		connectors: [...initialConnectors].sort((a, b) => a.z - b.z),
 		maps: flat.maps,
 		mapnodes: flat.nodes,
 		crosslinks: flat.crosslinks,
+		charts: flow.charts,
+		flownodes: flow.nodes,
+		flowedges: flow.edges,
 	}
 	const index = Object.fromEntries(LISTS.map((list) => [list, new Map()]))
 	const refs = Object.fromEntries(LISTS.map((list) => [list, shallowRef(data[list])]))
@@ -104,6 +120,10 @@ export function createStore(document, { readonly = false } = {}) {
 		editingNodeNew: false, // that node was just made, so leaving it empty throws it away
 		nodeDraft: null, // {id, text}: what is being typed in that node, so the map follows it
 		fontsTick: 0, // changes when web fonts finish loading, so measured widths are redone
+		editingFlowId: null, // the flowchart node or edge whose text is being typed
+		editingFlowNew: false, // ...and whether it was made a moment ago
+		flowDrag: null, // {nodeId, dx, dy} while a flowchart node is dragged, {from, point} while a connector is
+		flowPicker: null, // the type picker: {from, side, point (screen), at (board point)} or null
 		mapDrag: null, // a node being dragged: {id, point, target}, or a whole map: {mapId, dx, dy}
 		outlineOpen: false, // the outline panel of a mind map is showing
 		focusBranch: false, // dim everything but the selected branch of a mind map
@@ -286,6 +306,9 @@ export function createStore(document, { readonly = false } = {}) {
 		maps: refs.maps,
 		mapNodes: refs.mapnodes,
 		crosslinks: refs.crosslinks,
+		charts: refs.charts,
+		flowNodes: refs.flownodes,
+		flowEdges: refs.flowedges,
 		canvas: canvasRef,
 		theme: themeRef,
 		historyVersion,
@@ -305,6 +328,17 @@ export function createStore(document, { readonly = false } = {}) {
 		getItem: (id) => (void refs.objects.value, void refs.connectors.value, find(id)),
 		getMap: (id) => (void refs.maps.value, index.maps.get(id) || null),
 		getMapNode: (id) => (void refs.mapnodes.value, index.mapnodes.get(id) || null),
+		getChart: (id) => (void refs.charts.value, index.charts.get(id) || null),
+		getFlowNode: (id) => (void refs.flownodes.value, index.flownodes.get(id) || null),
+		getFlowEdge: (id) => (void refs.flowedges.value, index.flowedges.get(id) || null),
+		nodesOfChart: (chartId) => (
+			void refs.flownodes.value,
+			data.flownodes.filter((n) => n.chartId === chartId)
+		),
+		edgesOfChart: (chartId) => (
+			void refs.flowedges.value,
+			data.flowedges.filter((e) => e.chartId === chartId)
+		),
 		getCrosslink: (id) => (void refs.crosslinks.value, index.crosslinks.get(id) || null),
 		// The nodes of one map, in no particular order.
 		nodesOfMap: (mapId) => (
@@ -334,6 +368,7 @@ export function createStore(document, { readonly = false } = {}) {
 			objects: data.objects,
 			connectors: data.connectors,
 			mindmaps: nestMindmaps(data.maps, data.mapnodes, data.crosslinks),
+			flowcharts: nestFlowcharts(data.charts, data.flownodes, data.flowedges),
 		}),
 
 		setReadonly(value) {
@@ -359,6 +394,14 @@ export function createStore(document, { readonly = false } = {}) {
 		selectedConnectors: () => (
 			void refs.connectors.value,
 			ofList(state.selection, "connectors").map((id) => index.connectors.get(id))
+		),
+		selectedFlowNodes: () => (
+			void refs.flownodes.value,
+			ofList(state.selection, "flownodes").map((id) => index.flownodes.get(id))
+		),
+		selectedFlowEdges: () => (
+			void refs.flowedges.value,
+			ofList(state.selection, "flowedges").map((id) => index.flowedges.get(id))
 		),
 		selectedNodes: () => (
 			void refs.mapnodes.value,
@@ -513,12 +556,16 @@ export function createStore(document, { readonly = false } = {}) {
 		// Peers see it as a normal change, and one undo puts everything back. Used to restore a version.
 		replaceContent(next, { label = "Restore version" } = {}) {
 			const flatNext = flattenMindmaps(next.mindmaps)
+			const flowNext = flattenFlowcharts(next.flowcharts)
 			const nextLists = {
 				objects: next.objects,
 				connectors: next.connectors,
 				maps: flatNext.maps,
 				mapnodes: flatNext.nodes,
 				crosslinks: flatNext.crosslinks,
+				charts: flowNext.charts,
+				flownodes: flowNext.nodes,
+				flowedges: flowNext.edges,
 			}
 			return transact(label, () => {
 				for (const list of LISTS) {

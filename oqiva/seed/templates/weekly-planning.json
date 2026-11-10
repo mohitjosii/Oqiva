@@ -1,12 +1,13 @@
 {
 	"slug": "weekly-planning",
 	"name": "Weekly plan",
-	"description": "One column for each day, and a parking lot for later.",
+	"description": "Three priorities, a column for each weekday and a parking lot, with a Friday review prompt.",
 	"category": "Planning",
 	"tags": [
 		"planning",
 		"week",
-		"schedule"
+		"schedule",
+		"personal"
 	],
 	"sort_order": 41,
 	"document": {
@@ -22,15 +23,226 @@
 		},
 		"objects": [
 			{
-				"id": "frame-1",
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -130,
+				"w": 1500,
+				"h": 44,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Weekly plan",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1500,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Pick three priorities first, then spread the rest across the week. Move what slips to the parking lot, not to tomorrow by default."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f3",
 				"kind": "frame",
 				"shape": "rectangle",
 				"x": 0,
 				"y": 0,
-				"w": 260,
-				"h": 480,
+				"w": 1500,
+				"h": 190,
 				"rotation": 0,
-				"z": 1,
+				"z": 3,
+				"style": {
+					"fill": "#FFFBEB",
+					"stroke": "#F59E0B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "This week's three priorities"
+			},
+			{
+				"id": "s4",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 50,
+				"w": 450,
+				"h": 115,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FEF3C7",
+					"stroke": "#F59E0B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#78350F",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "1  Ship the pricing page",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Done when it is live and linked from the website"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s5",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 515,
+				"y": 50,
+				"w": 450,
+				"h": 115,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#FEF3C7",
+					"stroke": "#F59E0B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#78350F",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "2  Prepare the quarterly review",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Slides sent to the team by Thursday noon"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s6",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1005,
+				"y": 50,
+				"w": 450,
+				"h": 115,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#FEF3C7",
+					"stroke": "#F59E0B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#78350F",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "3  Hire: finish interviews",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Two final-round interviews, decision by Friday"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f7",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 230,
+				"w": 235,
+				"h": 520,
+				"rotation": 0,
+				"z": 7,
 				"style": {
 					"fill": "#F8FAFC",
 					"stroke": "#94A3B8",
@@ -43,15 +255,114 @@
 				"name": "Monday"
 			},
 			{
-				"id": "frame-2",
+				"id": "n8",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 17,
+				"y": 280,
+				"w": 200,
+				"h": 105,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "09:30 Team stand-up"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n9",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 17,
+				"y": 405,
+				"w": 200,
+				"h": 105,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Draft pricing copy"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n10",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 17,
+				"y": 530,
+				"w": 200,
+				"h": 105,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "1:1 with Sam"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f11",
 				"kind": "frame",
 				"shape": "rectangle",
-				"x": 290,
-				"y": 0,
-				"w": 260,
-				"h": 480,
+				"x": 250,
+				"y": 230,
+				"w": 235,
+				"h": 520,
 				"rotation": 0,
-				"z": 2,
+				"z": 11,
 				"style": {
 					"fill": "#F8FAFC",
 					"stroke": "#94A3B8",
@@ -64,15 +375,114 @@
 				"name": "Tuesday"
 			},
 			{
-				"id": "frame-3",
+				"id": "n12",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 267,
+				"y": 280,
+				"w": 200,
+				"h": 105,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Pricing page review"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n13",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 267,
+				"y": 405,
+				"w": 200,
+				"h": 105,
+				"rotation": 0,
+				"z": 13,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Interview: 11:00"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n14",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 267,
+				"y": 530,
+				"w": 200,
+				"h": 105,
+				"rotation": 0,
+				"z": 14,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Plan the review deck"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f15",
 				"kind": "frame",
 				"shape": "rectangle",
-				"x": 580,
-				"y": 0,
-				"w": 260,
-				"h": 480,
+				"x": 500,
+				"y": 230,
+				"w": 235,
+				"h": 520,
 				"rotation": 0,
-				"z": 3,
+				"z": 15,
 				"style": {
 					"fill": "#F8FAFC",
 					"stroke": "#94A3B8",
@@ -85,15 +495,114 @@
 				"name": "Wednesday"
 			},
 			{
-				"id": "frame-4",
+				"id": "n16",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 517,
+				"y": 280,
+				"w": 200,
+				"h": 105,
+				"rotation": 0,
+				"z": 16,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Build the review deck"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n17",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 517,
+				"y": 405,
+				"w": 200,
+				"h": 105,
+				"rotation": 0,
+				"z": 17,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Interview: 15:00"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n18",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 517,
+				"y": 530,
+				"w": 200,
+				"h": 105,
+				"rotation": 0,
+				"z": 18,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Inbox zero"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f19",
 				"kind": "frame",
 				"shape": "rectangle",
-				"x": 870,
-				"y": 0,
-				"w": 260,
-				"h": 480,
+				"x": 750,
+				"y": 230,
+				"w": 235,
+				"h": 520,
 				"rotation": 0,
-				"z": 4,
+				"z": 19,
 				"style": {
 					"fill": "#F8FAFC",
 					"stroke": "#94A3B8",
@@ -106,15 +615,114 @@
 				"name": "Thursday"
 			},
 			{
-				"id": "frame-5",
+				"id": "n20",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 767,
+				"y": 280,
+				"w": 200,
+				"h": 105,
+				"rotation": 0,
+				"z": 20,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Send the deck"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n21",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 767,
+				"y": 405,
+				"w": 200,
+				"h": 105,
+				"rotation": 0,
+				"z": 21,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Customer call 14:00"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n22",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 767,
+				"y": 530,
+				"w": 200,
+				"h": 105,
+				"rotation": 0,
+				"z": 22,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Fix the broken link"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f23",
 				"kind": "frame",
 				"shape": "rectangle",
-				"x": 1160,
-				"y": 0,
-				"w": 260,
-				"h": 480,
+				"x": 1000,
+				"y": 230,
+				"w": 235,
+				"h": 520,
 				"rotation": 0,
-				"z": 5,
+				"z": 23,
 				"style": {
 					"fill": "#F8FAFC",
 					"stroke": "#94A3B8",
@@ -127,36 +735,15 @@
 				"name": "Friday"
 			},
 			{
-				"id": "frame-6",
-				"kind": "frame",
-				"shape": "rectangle",
-				"x": 0,
-				"y": 560,
-				"w": 1420,
-				"h": 220,
-				"rotation": 0,
-				"z": 6,
-				"style": {
-					"fill": "#F8FAFC",
-					"stroke": "#94A3B8",
-					"strokeWidth": 1.5,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 10
-				},
-				"text": null,
-				"name": "Parking lot"
-			},
-			{
-				"id": "first",
+				"id": "n24",
 				"kind": "note",
 				"shape": "rectangle",
-				"x": 30,
-				"y": 40,
+				"x": 1017,
+				"y": 280,
 				"w": 200,
-				"h": 140,
+				"h": 105,
 				"rotation": 0,
-				"z": 7,
+				"z": 24,
 				"style": {
 					"fill": "#FEF08A",
 					"stroke": null,
@@ -167,13 +754,203 @@
 				},
 				"text": {
 					"align": "left",
-					"size": 18,
+					"size": 16,
 					"color": "#713F12",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Plan the week"
+									"t": "Publish pricing page"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n25",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1017,
+				"y": 405,
+				"w": 200,
+				"h": 105,
+				"rotation": 0,
+				"z": 25,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Weekly retro"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n26",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1017,
+				"y": 530,
+				"w": 200,
+				"h": 105,
+				"rotation": 0,
+				"z": 26,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Plan next week"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f27",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 1270,
+				"y": 230,
+				"w": 230,
+				"h": 520,
+				"rotation": 0,
+				"z": 27,
+				"style": {
+					"fill": "#F1F5F9",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Parking lot"
+			},
+			{
+				"id": "n28",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1287,
+				"y": 280,
+				"w": 196,
+				"h": 105,
+				"rotation": 0,
+				"z": 28,
+				"style": {
+					"fill": "#DDD6FE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Rewrite the onboarding emails"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n29",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1287,
+				"y": 405,
+				"w": 196,
+				"h": 105,
+				"rotation": 0,
+				"z": 29,
+				"style": {
+					"fill": "#DDD6FE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Look at the analytics setup"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t30",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 780,
+				"w": 1500,
+				"h": 24,
+				"rotation": 0,
+				"z": 30,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Friday review:",
+									"b": 1
+								},
+								{
+									"t": " what did I finish · what slipped and why · what do I carry into next week · what will I stop doing."
 								}
 							]
 						}

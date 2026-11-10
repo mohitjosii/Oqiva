@@ -5,12 +5,22 @@
 
 import * as Y from "yjs"
 import * as buffer from "lib0/buffer"
+import { flattenFlowcharts, nestFlowcharts } from "../modes/flowchart/document"
 import { flattenMindmaps, nestMindmaps } from "../modes/mindmap/document"
 import { parseDocument, sanitizeCanvas, sanitizeTheme } from "../model/schema"
 
 export const LOCAL = Symbol("oqiva-local") // changes this browser made, on their way out
 // Mind maps are three flat lists here, as in the store: the maps, their nodes and their cross-links.
-export const LISTS = ["objects", "connectors", "maps", "mapnodes", "crosslinks"]
+export const LISTS = [
+	"objects",
+	"connectors",
+	"maps",
+	"mapnodes",
+	"crosslinks",
+	"charts",
+	"flownodes",
+	"flowedges",
+]
 
 const clone = (value) => JSON.parse(JSON.stringify(value))
 const sameJson = (a, b) => JSON.stringify(a) === JSON.stringify(b)
@@ -51,12 +61,16 @@ export function seedUpdate(snapshot) {
 		for (const key of Object.keys(snapshot.theme).sort())
 			theme.set(key, clone(snapshot.theme[key]))
 		const flat = flattenMindmaps(snapshot.mindmaps)
+		const flow = flattenFlowcharts(snapshot.flowcharts)
 		const lists = {
 			objects: snapshot.objects,
 			connectors: snapshot.connectors,
 			maps: flat.maps,
 			mapnodes: flat.nodes,
 			crosslinks: flat.crosslinks,
+			charts: flow.charts,
+			flownodes: flow.nodes,
+			flowedges: flow.edges,
 		}
 		for (const list of LISTS) {
 			const map = seed.getMap(list)
@@ -76,6 +90,11 @@ export function snapshotFromDoc(doc, base) {
 		theme: yMapToObject(doc.getMap("theme")),
 		objects: [...doc.getMap("objects").values()].map(yMapToObject),
 		connectors: [...doc.getMap("connectors").values()].map(yMapToObject),
+		flowcharts: nestFlowcharts(
+			[...doc.getMap("charts").values()].map(yMapToObject),
+			[...doc.getMap("flownodes").values()].map(yMapToObject),
+			[...doc.getMap("flowedges").values()].map(yMapToObject),
+		),
 		mindmaps: nestMindmaps(
 			[...doc.getMap("maps").values()].map(yMapToObject),
 			[...doc.getMap("mapnodes").values()].map(yMapToObject),

@@ -1,0 +1,631 @@
+{
+	"slug": "prioritization-matrix",
+	"name": "Prioritisation matrix",
+	"description": "An impact and effort grid that sorts ideas into quick wins, big bets, fill-ins and time sinks.",
+	"category": "Planning",
+	"tags": [
+		"prioritization",
+		"matrix",
+		"impact",
+		"effort",
+		"decision"
+	],
+	"sort_order": 46,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -130,
+				"w": 1500,
+				"h": 44,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Prioritisation matrix: impact and effort",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1500,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Place each idea where it belongs. Do the top-left first, plan the top-right, fit in the bottom-left and drop the bottom-right."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f3",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 80,
+				"y": 0,
+				"w": 540,
+				"h": 360,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Quick wins · do now"
+			},
+			{
+				"id": "n4",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 120,
+				"y": 70,
+				"w": 210,
+				"h": 110,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Fix the confusing error message"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n5",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 360,
+				"y": 70,
+				"w": 210,
+				"h": 110,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Add the missing export button"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f6",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 640,
+				"y": 0,
+				"w": 540,
+				"h": 360,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#DBEAFE",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Big bets · plan carefully"
+			},
+			{
+				"id": "n7",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 680,
+				"y": 70,
+				"w": 210,
+				"h": 110,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Rebuild onboarding"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n8",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 920,
+				"y": 70,
+				"w": 210,
+				"h": 110,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Single sign-on"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f9",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 80,
+				"y": 420,
+				"w": 540,
+				"h": 360,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#FEF3C7",
+					"stroke": "#F59E0B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Fill-ins · if there is time"
+			},
+			{
+				"id": "n10",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 120,
+				"y": 490,
+				"w": 210,
+				"h": 110,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Update the help article"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n11",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 360,
+				"y": 490,
+				"w": 210,
+				"h": 110,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Change the empty-state text"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f12",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 640,
+				"y": 420,
+				"w": 540,
+				"h": 360,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": "#FEE2E2",
+					"stroke": "#EF4444",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Time sinks · avoid"
+			},
+			{
+				"id": "n13",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 680,
+				"y": 490,
+				"w": 210,
+				"h": 110,
+				"rotation": 0,
+				"z": 13,
+				"style": {
+					"fill": "#FBCFE8",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Custom themes"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n14",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 920,
+				"y": 490,
+				"w": 210,
+				"h": 110,
+				"rotation": 0,
+				"z": 14,
+				"style": {
+					"fill": "#FBCFE8",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Rewrite in a new framework"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t15",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": -60,
+				"y": 0,
+				"w": 130,
+				"h": 47,
+				"rotation": 0,
+				"z": 15,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "right",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "High",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "impact",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t16",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": -60,
+				"y": 420,
+				"w": 130,
+				"h": 47,
+				"rotation": 0,
+				"z": 16,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "right",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Low",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "impact",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t17",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 80,
+				"y": 810,
+				"w": 540,
+				"h": 26,
+				"rotation": 0,
+				"z": 17,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Low effort",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t18",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 620,
+				"y": 810,
+				"w": 540,
+				"h": 26,
+				"rotation": 0,
+				"z": 18,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "right",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "High effort",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t19",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 80,
+				"y": 850,
+				"w": 1100,
+				"h": 23,
+				"rotation": 0,
+				"z": 19,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Tip: score impact and effort from 1 to 5 as a team, then place each note. Argue about the placement, not the score."
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

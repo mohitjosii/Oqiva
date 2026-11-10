@@ -61,6 +61,13 @@ function newMap() {
 	toast.info("Type its name, then Tab adds a branch and Enter a sibling.")
 }
 
+// A new flowchart (Start, a step and End, joined) below the rest of the board, ready to type over.
+function newFlowchart() {
+	props.controller.cancel()
+	props.controller.flowCommand({ name: "fl.new" })
+	toast.info("Type the step, then Enter adds the next one. D adds a decision.")
+}
+
 function chooseTable({ rows, cols }) {
 	state.value.toolOptions.tableRows = rows
 	state.value.toolOptions.tableCols = cols
@@ -259,6 +266,13 @@ const settingsOptions = computed(() => [
 			:disabled="readonly"
 			data-testid="mindmap-tool"
 			@click="newMap"
+		/>
+		<ToolButton
+			icon="lucide-workflow"
+			title="New flowchart (Shift+F)"
+			:disabled="readonly"
+			data-testid="flowchart-tool"
+			@click="newFlowchart"
 		/>
 		<ToolButton
 			icon="lucide-frame"
