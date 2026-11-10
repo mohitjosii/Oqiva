@@ -54,6 +54,13 @@ function chooseComment() {
 	toast.info("Click a shape, or any place on the board, to comment on it.")
 }
 
+// A new mind map in the middle of the screen, its central idea ready to type over.
+function newMap() {
+	props.controller.cancel()
+	props.controller.mapCommand({ name: "mm.new" })
+	toast.info("Type its name, then Tab adds a branch and Enter a sibling.")
+}
+
 function chooseTable({ rows, cols }) {
 	state.value.toolOptions.tableRows = rows
 	state.value.toolOptions.tableCols = cols
@@ -245,6 +252,13 @@ const settingsOptions = computed(() => [
 			:disabled="readonly"
 			data-testid="note-tool"
 			@click="chooseTool(state.tool === 'note' ? 'select' : 'note')"
+		/>
+		<ToolButton
+			icon="lucide-network"
+			title="New mind map (M)"
+			:disabled="readonly"
+			data-testid="mindmap-tool"
+			@click="newMap"
 		/>
 		<ToolButton
 			icon="lucide-frame"

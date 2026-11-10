@@ -2,11 +2,16 @@
 // The editor for one board. It builds the store, controller and autosave from what the page
 // gives it (the "host": the loaded document, capabilities and save functions) and never talks
 // to the server itself.
-import { toast } from "frappe-ui"
+import { confirmDialog, toast } from "frappe-ui"
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import { CanvasController } from "./interaction/controller"
 import { commandFor, isTypingTarget } from "./interaction/keymap"
 import { runCommand } from "./interaction/commands"
+import { nodesOwnKeys } from "./modes/mindmap/commands"
+import { createMapFromOutline } from "./modes/mindmap/storeOps"
+import { looksLikeOutline, parseOutline, treeToChange } from "./modes/mindmap/paste"
+import { childrenOf } from "./modes/mindmap/tree"
+import { applyChange as applyMapChange } from "./modes/mindmap/storeOps"
 import { pasteClipboard } from "./interaction/clipboard"
 import { insertImage } from "./interaction/images"
 import { exportBoard } from "./export/exporter"
@@ -32,6 +37,9 @@ import ExportMenu from "./ui/ExportMenu.vue"
 import ShortcutsDialog from "./ui/ShortcutsDialog.vue"
 import LineLabelEditor from "./ui/LineLabelEditor.vue"
 import RightPalette from "./ui/RightPalette.vue"
+import MapNodeEditor from "./ui/MapNodeEditor.vue"
+import MindMapBar from "./ui/MindMapBar.vue"
+import OutlinePanel from "./ui/OutlinePanel.vue"
 import TextEditorOverlay from "./ui/TextEditorOverlay.vue"
 
 const props = defineProps({
@@ -48,7 +56,20 @@ const store = createStore(collabStart ? collabStart.initial : props.host.documen
 	readonly: readonlyAtStart,
 })
 store.setLimits({ maxObjects: props.host.limits.max_objects_per_board })
-const controller = new CanvasController(store, { measure: measureText })
+// Questions the mind map asks before it deletes a branch.
+const ask = (message) =>
+	new Promise((resolve) => {
+		confirmDialog({
+			title: "Are you sure?",
+			message,
+			onConfirm: ({ hideDialog }) => {
+				hideDialog()
+				resolve(true)
+			},
+			onCancel: () => resolve(false),
+		})
+	})
+const controller = new CanvasController(store, { measure: measureText, ask })
 
 const autosave = createAutosave({
 	save: props.host.api.save,
@@ -241,9 +262,10 @@ function onKeydown(event) {
 		return
 	}
 	const command = commandFor(event, {
-		editing: Boolean(store.state.editingId),
+		editing: Boolean(store.state.editingId || store.state.editingNodeId),
 		readonly: store.state.readonly,
 		canComment: store.state.canComment,
+		mindmap: nodesOwnKeys(store),
 	})
 	if (!command) return
 	if (command.name === "print" && !canExport) return // leave the browser's own print alone
@@ -251,6 +273,7 @@ function onKeydown(event) {
 	runCommand(store, controller, command, {
 		toggleShortcuts: () => (showShortcuts.value = !showShortcuts.value),
 		print: () => runExport({ format: "print" }),
+		mindmap: controller.mapHost(),
 	})
 }
 const addImage = (file, center) => insertImage(store, props.host, file, { center, notify: say })
@@ -267,7 +290,40 @@ function onPaste(event) {
 		addImage(file)
 		return
 	}
+	const text = event.clipboardData?.getData("text/plain") || ""
+	if (looksLikeOutline(text) && pasteOutline(text)) {
+		event.preventDefault()
+		return
+	}
 	if (pasteClipboard(store).length) event.preventDefault()
+}
+
+// Indented or bulleted text becomes branches under the selected node, or a new map when nothing
+// is selected.
+function pasteOutline(text) {
+	const outline = parseOutline(text)
+	if (!outline.length) return false
+	const [node, ...rest] = store.selectedNodes()
+	if (node && !rest.length && store.state.selection.length === 1) {
+		const nodes = store.nodesOfMap(node.mapId)
+		const change = treeToChange({
+			mapId: node.mapId,
+			parentId: node.id,
+			startOrder: childrenOf(nodes, node.id).length,
+			tree: outline,
+		})
+		if (node.collapsed)
+			change.update = [...(change.update || []), { id: node.id, patch: { collapsed: false } }]
+		return applyMapChange(store, node.mapId, change, {
+			label: "Paste outline",
+			select: node.id,
+			selectUndo: [node.id],
+		})
+	}
+	if (store.state.selection.length) return false
+	return Boolean(
+		createMapFromOutline(store, controller.mapHost().viewCenter(), outline, treeToChange),
+	)
 }
 const onKeyup = (event) => event.key === " " && controller.setSpaceHeld(false)
 const onBlur = () => controller.setSpaceHeld(false)
@@ -280,6 +336,7 @@ function onBeforeUnload(event) {
 }
 const onFontsLoaded = () => {
 	resetMeasureCache() // widths measured before the fonts arrived used a fallback font
+	store.state.fontsTick++
 	fonts.value++
 }
 
@@ -330,12 +387,15 @@ defineExpose({ flush: () => autosave.flush(), store, autosave, unsaved })
 	<div class="relative h-full w-full overflow-hidden" data-testid="board-editor">
 		<BoardCanvas :store="store" :controller="controller" :fonts="fonts" @files="addFiles">
 			<TextEditorOverlay :store="store" :measure="measureText" />
+			<MapNodeEditor :store="store" :controller="controller" />
 			<LineLabelEditor :store="store" :paths="controller.paths" />
 			<CommentPins v-if="comments" :store="store" />
 			<LinkBadges :store="store" :links="host.links" />
 			<FrameNameEditor :store="store" />
 		</BoardCanvas>
 		<ShapeLibrary :store="store" :controller="controller" />
+		<MindMapBar :store="store" :controller="controller" />
+		<OutlinePanel :store="store" :controller="controller" />
 		<template v-if="host.versions">
 			<button
 				type="button"

@@ -1,0 +1,161 @@
+{
+	"slug": "brainstorm",
+	"name": "Brainstorm",
+	"description": "Start from a question and branch out. Press Tab for a branch and Enter for the next idea.",
+	"category": "Mind maps",
+	"tags": [
+		"mind map",
+		"brainstorm",
+		"ideas"
+	],
+	"sort_order": 31,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [],
+		"connectors": [],
+		"mindmaps": [
+			{
+				"id": "brainstorm-map1",
+				"origin": {
+					"x": 0,
+					"y": 0
+				},
+				"rootId": "brainstorm-map1-n0",
+				"layout": "both",
+				"nodes": [
+					{
+						"id": "brainstorm-map1-n0",
+						"parentId": null,
+						"order": 0,
+						"text": "What should we try next?",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n1",
+						"parentId": "brainstorm-map1-n0",
+						"order": 0,
+						"text": "Quick wins",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n10",
+						"parentId": "brainstorm-map1-n9",
+						"order": 0,
+						"text": "Who is it for?",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n2",
+						"parentId": "brainstorm-map1-n1",
+						"order": 0,
+						"text": "Fix the slow page",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n5",
+						"parentId": "brainstorm-map1-n4",
+						"order": 0,
+						"text": "A new product line",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n8",
+						"parentId": "brainstorm-map1-n7",
+						"order": 0,
+						"text": "Weekly status meeting",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n11",
+						"parentId": "brainstorm-map1-n9",
+						"order": 1,
+						"text": "How will we know it worked?",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n3",
+						"parentId": "brainstorm-map1-n1",
+						"order": 1,
+						"text": "Clearer pricing",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n4",
+						"parentId": "brainstorm-map1-n0",
+						"order": 1,
+						"text": "Big bets",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n6",
+						"parentId": "brainstorm-map1-n4",
+						"order": 1,
+						"text": "A partner programme",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n7",
+						"parentId": "brainstorm-map1-n0",
+						"order": 2,
+						"text": "Things to stop",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n9",
+						"parentId": "brainstorm-map1-n0",
+						"order": 3,
+						"text": "Questions",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					}
+				],
+				"crosslinks": []
+			}
+		],
+		"flowcharts": []
+	}
+}

@@ -85,6 +85,90 @@ def _preview_end(end: dict) -> dict:
 	return {"x": _round(end.get("x", 0)), "y": _round(end.get("y", 0))}
 
 
+BRANCH_COLORS = ("#3B82F6", "#22C55E", "#F97316", "#8B5CF6", "#EC4899", "#14B8A6", "#EAB308", "#EF4444")
+
+
+def _mindmap_preview(entry: dict) -> tuple[list, list]:
+	"""Boxes and lines that sketch a mind map for a thumbnail. The real layout runs in the browser, so
+	this is a rough one: levels step outward, leaves are stacked, parents sit in the middle of their
+	children, first-level branches alternate right and left, and each side is centred on the root."""
+	nodes = {
+		n["id"]: n for n in entry.get("nodes", []) if isinstance(n, dict) and isinstance(n.get("id"), str)
+	}
+	children: dict = {}
+	for node in nodes.values():
+		children.setdefault(node.get("parentId"), []).append(node)
+	for kids in children.values():
+		kids.sort(key=lambda n: (n.get("order", 0), n["id"]))
+	root_id = entry.get("rootId")
+	if root_id not in nodes:
+		return [], []
+	origin = entry.get("origin") if isinstance(entry.get("origin"), dict) else {}
+	ox, oy = origin.get("x", 0), origin.get("y", 0)
+	step_x, row = 190, 44
+	boxes: list = []
+	lines: list = []
+
+	def box(node_id: str, x: float, y: float, width: int, height: int, fill: str) -> dict:
+		return {
+			"id": node_id,
+			"kind": "shape",
+			"shape": "rectangle",
+			"x": ox + x - width / 2,
+			"y": oy + y - height / 2,
+			"w": width,
+			"h": height,
+			"style": {"fill": fill, "stroke": None},
+			"label": (nodes[node_id].get("text") or "")[:LABEL_CHARS] or None,
+		}
+
+	def place(node_id: str, depth: int, side: int, branch: int, cursor: list, out: list) -> float:
+		"""The y of this node's centre; ``cursor`` hands out rows to leaves."""
+		kids = [] if nodes[node_id].get("collapsed") else children.get(node_id, [])
+		if not kids:
+			y = cursor[0]
+			cursor[0] += row
+		else:
+			ys = [place(k["id"], depth + 1, side, branch, cursor, out) for k in kids]
+			y = (ys[0] + ys[-1]) / 2
+			for k in kids:
+				lines.append(
+					{
+						"id": f"{node_id}>{k['id']}",
+						"from": {"objectId": node_id, "anchor": "e" if side == 1 else "w"},
+						"to": {"objectId": k["id"], "anchor": "w" if side == 1 else "e"},
+					}
+				)
+		out.append(
+			box(node_id, side * depth * step_x, y, 130, 32, BRANCH_COLORS[branch % len(BRANCH_COLORS)])
+		)
+		return y
+
+	first_level = children.get(root_id, [])
+	groups: dict = {1: [], -1: []}
+	for index, kid in enumerate(first_level):
+		groups[1 if entry.get("layout") == "right" or index % 2 == 0 else -1].append((index, kid))
+	for side, items in groups.items():
+		if not items:
+			continue
+		cursor, placed = [0.0], []
+		for index, kid in items:
+			place(kid["id"], 1, side, index, cursor, placed)
+			lines.append(
+				{
+					"id": f"{root_id}>{kid['id']}",
+					"from": {"objectId": root_id, "anchor": "e" if side == 1 else "w"},
+					"to": {"objectId": kid["id"], "anchor": "w" if side == 1 else "e"},
+				}
+			)
+		shift = -(cursor[0] - row) / 2  # centre this side on the root
+		for item in placed:
+			item["y"] += shift
+		boxes.extend(placed)
+	boxes.append(box(root_id, 0, 0, 150, 40, "#334155"))
+	return boxes, lines
+
+
 def build_preview(document: dict) -> dict:
 	"""What a thumbnail needs from a document: boxes with colours and a caption, and line ends.
 
@@ -113,6 +197,11 @@ def build_preview(document: dict) -> dict:
 		for c in document.get("connectors", [])[:MAX_PREVIEW_ITEMS]
 		if isinstance(c, dict) and isinstance(c.get("from"), dict) and isinstance(c.get("to"), dict)
 	]
+	for entry in document.get("mindmaps", [])[:5]:
+		if isinstance(entry, dict) and len(objects) < MAX_PREVIEW_ITEMS:
+			boxes, lines = _mindmap_preview(entry)
+			objects.extend(boxes[: MAX_PREVIEW_ITEMS - len(objects)])
+			connectors.extend(lines[: MAX_PREVIEW_ITEMS - len(connectors)])
 	return {"objects": objects, "connectors": connectors}
 
 

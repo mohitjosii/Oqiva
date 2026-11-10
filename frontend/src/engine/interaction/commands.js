@@ -1,6 +1,7 @@
 // What each named command does to the board.
 
 import { copySelection, cutSelection } from "./clipboard"
+import { runMindmapCommand } from "../modes/mindmap/commands"
 import { contentBounds, fitView, zoomIn, zoomOut, zoomTo } from "./view"
 
 export function runCommand(store, controller, command, ui = {}) {
@@ -51,6 +52,9 @@ export function runCommand(store, controller, command, ui = {}) {
 		case "print":
 			return ui.print?.()
 		default:
+			// The mind map's own commands (mm.child, mm.sibling, ...). They may ask a question first, so
+			// they can finish later.
+			if (command.name.startsWith("mm.")) return runMindmapCommand(store, command, ui.mindmap)
 			return undefined
 	}
 }

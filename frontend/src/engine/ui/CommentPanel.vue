@@ -28,7 +28,10 @@ const editText = ref("")
 watch(
 	() => state.value.commentsOpen,
 	(open) => {
-		if (open) state.value.libraryOpen = false
+		if (open) {
+			state.value.libraryOpen = false
+			state.value.outlineOpen = false
+		}
 	},
 )
 

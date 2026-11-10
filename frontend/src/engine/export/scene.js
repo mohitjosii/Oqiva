@@ -4,6 +4,9 @@
 import { boundsOfObjects, growRect, unionBounds } from "../geometry/bounds"
 import { connectorPath, pathBounds, resolveConnectors, isAttached } from "../geometry/connectors"
 import { pageSize } from "../model/schema"
+import { layoutMap } from "../modes/mindmap/layout"
+import { sized } from "../modes/mindmap/layouts"
+import { measureText } from "../text/measure"
 
 export const PADDING = 24
 export const MIN_SIDE = 40
@@ -24,13 +27,29 @@ export function collectItems(store, scope = "board") {
 	const connectors = store.connectors.value
 	// Every object is kept by id, because a line must be placed even when its shape is not exported.
 	const byId = new Map(objects.map((object) => [object.id, object]))
-	if (scope !== "selection") return { objects: [...objects], connectors: [...connectors], byId }
+	// A mind map is exported whole: the map, its nodes and its cross-links.
+	const wholeMap = (map) => ({
+		map,
+		nodes: store.nodesOfMap(map.id),
+		crosslinks: store.crosslinksOfMap(map.id),
+	})
+	if (scope !== "selection")
+		return {
+			objects: [...objects],
+			connectors: [...connectors],
+			byId,
+			maps: store.maps.value.map(wholeMap),
+		}
 	const chosen = new Set(store.state.selection)
+	const pickedMaps = store.maps.value
+		.filter((map) => store.nodesOfMap(map.id).some((n) => chosen.has(n.id)))
+		.map(wholeMap)
 	const picked = objects.filter((object) => chosen.has(object.id))
 	const ids = new Set(picked.map((object) => object.id))
 	return {
 		objects: picked,
 		byId,
+		maps: pickedMaps,
 		connectors: connectors.filter(
 			(connector) =>
 				chosen.has(connector.id) ||
@@ -43,7 +62,7 @@ export function collectItems(store, scope = "board") {
 }
 
 // The rectangle to draw: the page of a preset-size board, otherwise the content with a margin.
-export function exportArea(store, items, scope = "board") {
+export function exportArea(store, items, scope = "board", measure = measureText) {
 	const canvas = store.canvas.value
 	if (scope !== "selection" && canvas.mode === "preset") {
 		const { width, height } = pageSize(canvas)
@@ -56,6 +75,7 @@ export function exportArea(store, items, scope = "board") {
 		.filter((connector) => resolved.has(connector.id))
 		.map((connector) => pathBounds(connectorPath(connector, resolved.get(connector.id))))
 	if (items.objects.length) boxes.push(boundsOfObjects(items.objects))
+	for (const m of items.maps || []) boxes.push(layoutMap(m.map, m.nodes, sized(measure)).bounds)
 	if (!boxes.length) return null
 	const area = growRect(unionBounds(boxes), PADDING)
 	return {
@@ -66,7 +86,8 @@ export function exportArea(store, items, scope = "board") {
 	}
 }
 
-export const isEmpty = (items) => !items.objects.length && !items.connectors.length
+export const isEmpty = (items) =>
+	!items.objects.length && !items.connectors.length && !(items.maps || []).length
 
 // The largest picture a browser canvas can be trusted to make.
 export const MAX_SIDE = 8192

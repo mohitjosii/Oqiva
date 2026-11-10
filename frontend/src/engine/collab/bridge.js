@@ -8,6 +8,12 @@
 // item and sanitised before it reaches the store.
 
 import { sanitizeCanvas, sanitizeConnector, sanitizeObject, sanitizeTheme } from "../model/schema"
+import {
+	repairMap,
+	sanitizeCrosslink,
+	sanitizeMap,
+	sanitizeMapNode,
+} from "../modes/mindmap/document"
 import { LOCAL, itemToYMap, writeField, yMapToObject } from "./ydoc"
 
 const SETTINGS = { canvas: sanitizeCanvas, theme: sanitizeTheme }
@@ -16,6 +22,9 @@ export function createBridge(store, doc) {
 	const roots = {
 		objects: doc.getMap("objects"),
 		connectors: doc.getMap("connectors"),
+		maps: doc.getMap("maps"),
+		mapnodes: doc.getMap("mapnodes"),
+		crosslinks: doc.getMap("crosslinks"),
 		canvas: doc.getMap("canvas"),
 		theme: doc.getMap("theme"),
 	}
@@ -52,8 +61,14 @@ export function createBridge(store, doc) {
 	// --- doc -> store ---
 
 	const themeName = () => store.theme.value.preset
-	const currentItems = (list) =>
-		list === "objects" ? store.objects.value : store.connectors.value
+	const REFS = {
+		objects: () => store.objects.value,
+		connectors: () => store.connectors.value,
+		maps: () => store.maps.value,
+		mapnodes: () => store.mapNodes.value,
+		crosslinks: () => store.crosslinks.value,
+	}
+	const currentItems = (list) => REFS[list]()
 
 	// The item the document holds for ``id``, sanitised, or null if it is gone or unusable.
 	function incoming(list, id) {
@@ -62,6 +77,9 @@ export function createBridge(store, doc) {
 		const raw = yMapToObject(map)
 		if (raw.id !== id) return null // an item must be filed under its own id
 		if (list === "objects") return sanitizeObject(raw, 0, themeName())
+		if (list === "maps") return sanitizeMap(raw)
+		if (list === "mapnodes") return sanitizeMapNode(raw)
+		if (list === "crosslinks") return sanitizeCrosslink(raw)
 		return sanitizeConnector(raw, 0, new Set(store.objects.value.map((o) => o.id)))
 	}
 
@@ -121,6 +139,49 @@ export function createBridge(store, doc) {
 		doc.transact(() => ids.forEach((id) => roots.connectors.delete(id)), LOCAL)
 	}
 
+	// A map that two people changed at once can end up broken: a node whose parent the other person
+	// deleted, a cross-link to a deleted node, a map with no root. Take out what cannot be drawn,
+	// here and in the document, so everyone settles on the same repaired map.
+	function dropBrokenMaps() {
+		const maps = store.maps.value
+		const nodes = store.mapNodes.value
+		const links = store.crosslinks.value
+		const alive = new Set(maps.map((m) => m.id))
+		const goneNodes = new Set(nodes.filter((n) => !alive.has(n.mapId)).map((n) => n.id))
+		const goneLinks = new Set(links.filter((l) => !alive.has(l.mapId)).map((l) => l.id))
+		const goneMaps = new Set()
+		for (const map of maps) {
+			const mine = nodes.filter((n) => n.mapId === map.id)
+			const repaired = repairMap(
+				map,
+				mine,
+				links.filter((l) => l.mapId === map.id),
+			)
+			if (!repaired) {
+				goneMaps.add(map.id)
+				mine.forEach((n) => goneNodes.add(n.id))
+				links.filter((l) => l.mapId === map.id).forEach((l) => goneLinks.add(l.id))
+				continue
+			}
+			const keptNodes = new Set(repaired.nodes.map((n) => n.id))
+			const keptLinks = new Set(repaired.crosslinks.map((l) => l.id))
+			mine.filter((n) => !keptNodes.has(n.id)).forEach((n) => goneNodes.add(n.id))
+			links
+				.filter((l) => l.mapId === map.id && !keptLinks.has(l.id))
+				.forEach((l) => goneLinks.add(l.id))
+		}
+		const removal = [
+			["crosslinks", goneLinks],
+			["mapnodes", goneNodes],
+			["maps", goneMaps],
+		].filter(([, ids]) => ids.size)
+		if (!removal.length) return
+		store.applyRemote(removal.map(([list, ids]) => ({ t: "remove", list, ids: [...ids] })))
+		doc.transact(() => {
+			for (const [list, ids] of removal) ids.forEach((id) => roots[list].delete(id))
+		}, LOCAL)
+	}
+
 	// Changes from outside are gathered over one Yjs transaction, then applied once: objects
 	// first, so a line that arrives with its shapes finds them.
 	let batch = null
@@ -130,15 +191,27 @@ export function createBridge(store, doc) {
 		const steps = [
 			work.objects.size && (() => reconcileList("objects", work.objects)),
 			work.connectors.size && (() => reconcileList("connectors", work.connectors)),
+			work.maps.size && (() => reconcileList("maps", work.maps)),
+			work.mapnodes.size && (() => reconcileList("mapnodes", work.mapnodes)),
+			work.crosslinks.size && (() => reconcileList("crosslinks", work.crosslinks)),
 			work.canvas && (() => settingsOps("canvas")),
 			work.theme && (() => settingsOps("theme")),
 		]
 		for (const step of steps) if (step) store.applyRemote(step())
 		dropDanglingLines()
+		dropBrokenMaps()
 	}
 	function note(kind, value) {
 		if (!batch) {
-			batch = { objects: new Set(), connectors: new Set(), canvas: false, theme: false }
+			batch = {
+				objects: new Set(),
+				connectors: new Set(),
+				maps: new Set(),
+				mapnodes: new Set(),
+				crosslinks: new Set(),
+				canvas: false,
+				theme: false,
+			}
 			queueMicrotask(apply)
 		}
 		if (value instanceof Set) value.forEach((id) => batch[kind].add(id))
@@ -164,6 +237,8 @@ export function createBridge(store, doc) {
 	}
 	observe(roots.objects, (events) => note("objects", changedIds(events, roots.objects)))
 	observe(roots.connectors, (events) => note("connectors", changedIds(events, roots.connectors)))
+	for (const list of ["maps", "mapnodes", "crosslinks"])
+		observe(roots[list], (events) => note(list, changedIds(events, roots[list])))
 	observe(roots.canvas, () => note("canvas", true))
 	observe(roots.theme, () => note("theme", true))
 
@@ -186,9 +261,17 @@ export function createBridge(store, doc) {
 					]),
 				),
 			)
+			for (const list of ["maps", "mapnodes", "crosslinks"])
+				store.applyRemote(
+					reconcileList(
+						list,
+						new Set([...roots[list].keys(), ...currentItems(list).map((i) => i.id)]),
+					),
+				)
 			store.applyRemote(settingsOps("canvas"))
 			store.applyRemote(settingsOps("theme"))
 			dropDanglingLines()
+			dropBrokenMaps()
 		},
 		dispose() {
 			unsubscribe()

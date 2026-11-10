@@ -429,3 +429,48 @@ class TestBoardFromTemplate(RestoresSettings, IntegrationTestCase):
 		self.assertEqual(entry, self.w.member)
 		blank = board_api.create_board(self.w.workspace)
 		self.assertIsNone(frappe.db.get_value("Oqiva Board", blank["name"], "template"))
+
+
+class TestMindMapPreview(IntegrationTestCase):
+	def entry(self):
+		def node(node_id, parent, order, text, **over):
+			return {"id": node_id, "parentId": parent, "order": order, "text": text, **over}
+
+		return {
+			"id": "m",
+			"origin": {"x": 0, "y": 0},
+			"rootId": "r",
+			"layout": "both",
+			"nodes": [
+				node("r", None, 0, "Centre"),
+				node("a", "r", 0, "Right one"),
+				node("b", "r", 1, "Left one"),
+				node("c", "r", 2, "Right two"),
+				node("a1", "a", 0, "Deeper"),
+				node("hid", "c", 0, "Hidden", collapsed=False),
+				node("c1", "hid", 0, "Under hidden"),
+			],
+			"crosslinks": [],
+		}
+
+	def test_a_mind_map_is_sketched_for_the_gallery(self):
+		"""Success: boxes for the nodes (right and left of the centre) and a line for each branch."""
+		preview = template_service.build_preview(
+			{"objects": [], "connectors": [], "mindmaps": [self.entry()]}
+		)
+		boxes = {o["id"]: o for o in preview["objects"]}
+		self.assertEqual(set(boxes), {"r", "a", "b", "c", "a1", "hid", "c1"})
+		self.assertEqual(boxes["r"]["label"], "Centre")
+		centre = boxes["r"]["x"] + boxes["r"]["w"] / 2
+		self.assertGreater(boxes["a"]["x"], centre)
+		self.assertLess(boxes["b"]["x"], centre)
+		self.assertEqual(len(preview["connectors"]), 6)
+
+	def test_collapsed_nodes_hide_their_children_and_a_broken_map_gives_nothing(self):
+		"""Boundary: a collapsed branch is not drawn; a map with no root yields no boxes."""
+		entry = self.entry()
+		entry["nodes"][5]["collapsed"] = True
+		preview = template_service.build_preview({"objects": [], "connectors": [], "mindmaps": [entry]})
+		self.assertNotIn("c1", {o["id"] for o in preview["objects"]})
+		entry["rootId"] = "nobody"
+		self.assertEqual(template_service.build_preview({"mindmaps": [entry]})["objects"], [])

@@ -5,10 +5,12 @@
 
 import * as Y from "yjs"
 import * as buffer from "lib0/buffer"
+import { flattenMindmaps, nestMindmaps } from "../modes/mindmap/document"
 import { parseDocument, sanitizeCanvas, sanitizeTheme } from "../model/schema"
 
 export const LOCAL = Symbol("oqiva-local") // changes this browser made, on their way out
-export const LISTS = ["objects", "connectors"]
+// Mind maps are three flat lists here, as in the store: the maps, their nodes and their cross-links.
+export const LISTS = ["objects", "connectors", "maps", "mapnodes", "crosslinks"]
 
 const clone = (value) => JSON.parse(JSON.stringify(value))
 const sameJson = (a, b) => JSON.stringify(a) === JSON.stringify(b)
@@ -48,9 +50,17 @@ export function seedUpdate(snapshot) {
 		const theme = seed.getMap("theme")
 		for (const key of Object.keys(snapshot.theme).sort())
 			theme.set(key, clone(snapshot.theme[key]))
+		const flat = flattenMindmaps(snapshot.mindmaps)
+		const lists = {
+			objects: snapshot.objects,
+			connectors: snapshot.connectors,
+			maps: flat.maps,
+			mapnodes: flat.nodes,
+			crosslinks: flat.crosslinks,
+		}
 		for (const list of LISTS) {
 			const map = seed.getMap(list)
-			for (const item of [...(snapshot[list] || [])].sort((a, b) => (a.id < b.id ? -1 : 1)))
+			for (const item of [...(lists[list] || [])].sort((a, b) => (a.id < b.id ? -1 : 1)))
 				map.set(item.id, itemToYMap(item))
 		}
 	})
@@ -66,6 +76,11 @@ export function snapshotFromDoc(doc, base) {
 		theme: yMapToObject(doc.getMap("theme")),
 		objects: [...doc.getMap("objects").values()].map(yMapToObject),
 		connectors: [...doc.getMap("connectors").values()].map(yMapToObject),
+		mindmaps: nestMindmaps(
+			[...doc.getMap("maps").values()].map(yMapToObject),
+			[...doc.getMap("mapnodes").values()].map(yMapToObject),
+			[...doc.getMap("crosslinks").values()].map(yMapToObject),
+		),
 	}
 	return parseDocument(raw).document
 }

@@ -3,6 +3,7 @@
 // It forwards pointer events to the controller and holds no document logic of its own.
 import { computed, onBeforeUnmount, onMounted, ref } from "vue"
 import { objectBounds, rectsIntersect } from "../geometry/bounds"
+import { isTypingTarget } from "../interaction/keymap"
 import { connectorPath, pathBounds, resolveConnectors } from "../geometry/connectors"
 import { visibleRect } from "../geometry/viewport"
 import { createConnector, createObject, createTable } from "../model/factories"
@@ -10,6 +11,7 @@ import { GRID_SIZES, pageSize } from "../model/schema"
 import ConnectorView from "./ConnectorView.vue"
 import ShapeView from "./ShapeView.vue"
 import SelectionOverlay from "./SelectionOverlay.vue"
+import MindMapLayer from "./MindMapLayer.vue"
 
 const props = defineProps({
 	store: { type: Object, required: true },
@@ -150,6 +152,14 @@ const previewObject = computed(() => {
 
 const cursor = computed(() => props.controller.cursor)
 
+// Pressing on the board must not take the keyboard focus away from a field being typed in (a node
+// just made by the plus button is being typed in), so the press does not move focus; the fields
+// themselves, and rich text, still take it as usual.
+function keepFocus(event) {
+	const target = event.target
+	if (!isTypingTarget(target) && !target.closest?.("[contenteditable]")) event.preventDefault()
+}
+
 function pointerDown(event) {
 	if (event.button === 1) event.preventDefault()
 	root.value.setPointerCapture?.(event.pointerId)
@@ -172,6 +182,7 @@ function pointerUp(event) {
 		class="absolute inset-0 select-none overflow-hidden touch-none"
 		:style="{ cursor, backgroundColor: preset ? PAGE_BG : pageFill }"
 		data-testid="board-canvas"
+		@mousedown="keepFocus"
 		@pointerdown="pointerDown"
 		@pointermove="controller.pointerMove($event)"
 		@pointerup="pointerUp"
@@ -225,6 +236,15 @@ function pointerUp(event) {
 				/>
 				<ShapeView v-if="previewObject" :object="previewObject" />
 			</g>
+			<MindMapLayer
+				:store="store"
+				:controller="controller"
+				:transform="worldTransform"
+				:cull-area="cullArea"
+				:detail="detail"
+				:background="pageFill"
+				:fonts="fonts"
+			/>
 			<g :transform="worldTransform" data-testid="connectors">
 				<ConnectorView
 					v-for="connector in visibleConnectors"

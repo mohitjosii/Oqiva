@@ -49,6 +49,15 @@ GRIDS = ("off", "dense", "sparse")
 MODES = ("infinite", "preset")
 MAX_TEXT_CHARS = 10_000
 MAX_RUNS = 500
+MAP_MAX_MAPS = 50
+MAP_MAX_NODES = 2000
+MAP_MAX_CROSSLINKS = 500
+MAP_TEXT = 500
+MAP_NOTE = 2000
+MAP_LABEL = 100
+MAP_LAYOUTS = ("both", "right")
+HEX6 = re.compile(r"^#[0-9a-fA-F]{6}$")
+MARKER_ICON = re.compile(r"^[a-z0-9-]{1,40}$")
 
 
 def _number(value, low: float, high: float) -> bool:
@@ -250,6 +259,100 @@ def _check_canvas(canvas) -> None:
 		raise OqivaError(_("The canvas settings are not valid."))
 
 
+def _check_marker(node_id: str, marker) -> None:
+	if marker is None:
+		return
+	if not isinstance(marker, dict):
+		_bad(node_id, _("a marker must be an object."))
+	icon, dot = marker.get("icon"), marker.get("dot")
+	if icon is not None and not (isinstance(icon, str) and MARKER_ICON.match(icon)):
+		_bad(node_id, _("a marker icon is not valid."))
+	if dot is not None and not (isinstance(dot, str) and HEX6.match(dot)):
+		_bad(node_id, _("a marker colour is not valid."))
+
+
+def _check_map_node(node, seen: set, parents: dict) -> None:
+	if not isinstance(node, dict) or not isinstance(node.get("id"), str) or not ID.match(node["id"]):
+		raise OqivaError(_("A mind map node has a missing or invalid id."))
+	node_id = node["id"]
+	if node_id in seen:
+		_bad(node_id, _("the id is used twice."))
+	seen.add(node_id)
+	parent = node.get("parentId")
+	if parent is not None and not (isinstance(parent, str) and ID.match(parent)):
+		_bad(node_id, _("the parent is not valid."))
+	order = node.get("order")
+	if not (isinstance(order, int) and not isinstance(order, bool) and 0 <= order <= 1_000_000):
+		_bad(node_id, _("the order is not valid."))
+	for field, limit in (("text", MAP_TEXT), ("note", MAP_NOTE)):
+		value = node.get(field, "")
+		if not (isinstance(value, str) and len(value) <= limit):
+			_bad(node_id, _("{0} is too long.").format(field))
+	if node.get("collapsed", False) not in (True, False):
+		_bad(node_id, _("collapsed must be true or false."))
+	if node.get("color") is not None and not (isinstance(node["color"], str) and HEX6.match(node["color"])):
+		_bad(node_id, _("the colour is not valid."))
+	size = node.get("fontSize")
+	if size is not None and not _number(size, 8, 96):
+		_bad(node_id, _("the font size must be between 8 and 96."))
+	_check_marker(node_id, node.get("marker"))
+	parents[node_id] = parent
+
+
+def _check_mindmaps(maps: list, seen: set) -> None:
+	"""Every mind map is a real tree: one root, parents that exist, no cycles, links between its own nodes."""
+	if len(maps) > MAP_MAX_MAPS:
+		raise OqivaLimitExceeded(_("This board has too many mind maps."))
+	for entry in maps:
+		if not isinstance(entry, dict) or not isinstance(entry.get("id"), str) or not ID.match(entry["id"]):
+			raise OqivaError(_("A mind map has a missing or invalid id."))
+		map_id = entry["id"]
+		if map_id in seen:
+			_bad(map_id, _("the id is used twice."))
+		seen.add(map_id)
+		origin = entry.get("origin")
+		if not (
+			isinstance(origin, dict)
+			and _number(origin.get("x"), -1e6, 1e6)
+			and _number(origin.get("y"), -1e6, 1e6)
+		):
+			_bad(map_id, _("the map needs a position."))
+		if entry.get("layout", "both") not in MAP_LAYOUTS:
+			_bad(map_id, _("the layout is not recognised."))
+		nodes = entry.get("nodes")
+		if not isinstance(nodes, list) or not 1 <= len(nodes) <= MAP_MAX_NODES:
+			_bad(map_id, _("a mind map has between 1 and {0} nodes.").format(MAP_MAX_NODES))
+		parents: dict = {}
+		for node in nodes:
+			_check_map_node(node, seen, parents)
+		roots = [node_id for node_id, parent in parents.items() if parent is None]
+		if roots != [entry.get("rootId")]:
+			_bad(map_id, _("a mind map needs exactly one root."))
+		for node_id, parent in parents.items():
+			if parent is not None and parent not in parents:
+				_bad(node_id, _("the parent is not in this mind map."))
+		for node_id in parents:  # no node may be its own ancestor
+			step, hops = node_id, 0
+			while parents[step] is not None:
+				step, hops = parents[step], hops + 1
+				if hops > len(parents):
+					_bad(node_id, _("the nodes form a loop."))
+		links = entry.get("crosslinks", [])
+		if not isinstance(links, list) or len(links) > MAP_MAX_CROSSLINKS:
+			_bad(map_id, _("the cross-links are not valid."))
+		for link in links:
+			if not isinstance(link, dict) or not isinstance(link.get("id"), str) or not ID.match(link["id"]):
+				raise OqivaError(_("A cross-link has a missing or invalid id."))
+			if link["id"] in seen:
+				_bad(link["id"], _("the id is used twice."))
+			seen.add(link["id"])
+			if link.get("from") not in parents or link.get("to") not in parents or link["from"] == link["to"]:
+				_bad(link["id"], _("a cross-link joins two different nodes of the map."))
+			label = link.get("label", "")
+			if not (isinstance(label, str) and len(label) <= MAP_LABEL):
+				_bad(link["id"], _("the label is too long."))
+
+
 def check_crdt_state(crdt_state) -> str:
 	"""The collaboration state sent with a save: base64 text of at most twice the document limit.
 
@@ -303,6 +406,7 @@ def parse_document(raw: str, enforce_limits: bool = True) -> tuple[dict, int]:
 		_check_object(item, seen)
 	for item in document["connectors"]:
 		_check_connector(item, seen)
+	_check_mindmaps(document["mindmaps"], seen)
 	count = _count(document)
 	if enforce_limits and count > get_setting("max_objects_per_board"):
 		raise OqivaLimitExceeded(_("This board has too many objects."))

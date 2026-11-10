@@ -3,7 +3,10 @@
 // so the file works anywhere.
 
 import { connectorPath, resolveConnectors } from "../geometry/connectors"
+import { layoutMap } from "../modes/mindmap/layout"
+import { sized } from "../modes/mindmap/layouts"
 import { connectorNode, el, FONT, objectNode, serializeNode } from "../render/nodes"
+import { mapScene } from "../render/mindmapScene"
 
 // Shown where a picture could not be fetched.
 export const MISSING_PICTURE =
@@ -47,6 +50,25 @@ export function buildSvg(items, area, { background = null, measure, images = nul
 				}),
 			),
 	]
+	// Mind maps go above the shapes and below the lines, as on the board.
+	const maps = (items.maps || []).map((m) =>
+		mapScene(
+			{ map: m.map, nodes: m.nodes, ...layoutMap(m.map, m.nodes, sized(measure)) },
+			m.crosslinks,
+			{
+				measure: sized(measure),
+				detail: true,
+				selected: new Set(),
+				editingId: null,
+				focus: null,
+				background: background || "#FFFFFF",
+				drag: null,
+				offset: null,
+				interactive: false,
+			},
+		),
+	)
+	body.splice(items.objects.length, 0, ...maps)
 	children.push(el("g", { "clip-path": `url(#${clip})`, "font-family": FONT }, body))
 	const root = el(
 		"svg",
