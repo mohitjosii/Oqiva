@@ -191,6 +191,26 @@ await step("a frame is a named section that can be jumped to", async () => {
 	await shot(page, "p6-4-frame")
 })
 
+await step("a double-click on a section's name edits it, and makes no card", async () => {
+	await done()
+	await page.keyboard.press("Escape")
+	await page.keyboard.press("Shift+1") // frame everything, so the frame's name is on screen
+	await page.waitForTimeout(400)
+	const before = await shapes.count()
+	const name = page.locator('[data-testid="objects"] text', { hasText: "Plan" }).first()
+	const box = await name.boundingBox()
+	await page.mouse.dblclick(box.x + box.width / 2, box.y + box.height / 2)
+	const input = page.locator('[data-testid="frame-name-input"]')
+	await input.waitFor()
+	await input.fill("Roadmap")
+	await input.press("Enter")
+	await input.waitFor({ state: "detached" })
+	await poll(async () => (await page.locator('[data-testid="objects"]').textContent()).includes("Roadmap"), "the new name drawn")
+	assert.equal(await shapes.count(), before, "a double-click on the name made no card")
+	await page.keyboard.press("Control+z")
+	await poll(async () => (await page.locator('[data-testid="objects"]').textContent()).includes("Plan"), "undo of the rename")
+})
+
 await step("icons and emoji can be placed", async () => {
 	await page.keyboard.press("Escape")
 	const before = await shapes.count()
@@ -209,8 +229,8 @@ await step("icons and emoji can be placed", async () => {
 
 await step("a link on an object shows a badge that opens the address", async () => {
 	await page.keyboard.press("Escape")
-	const first = await shapes.nth(0).boundingBox()
 	await done()
+	const first = await shapes.filter({ hasText: "Orders DB" }).first().boundingBox()
 	await page.mouse.click(first.x + first.width / 2, first.y + first.height / 2)
 	await use("Link")
 	await page.locator('[data-testid="link-url"]').fill("javascript:alert(1)")
@@ -231,17 +251,19 @@ await step("a link on an object shows a badge that opens the address", async () 
 })
 
 await step("the minimap shows the board and moves the view", async () => {
+	await done()
+	await page.keyboard.press("Escape")
 	const map = page.locator('[data-testid="minimap"]')
 	await map.waitFor()
-	const view = page.locator('[data-testid="minimap-view"]')
-	const before = await view.boundingBox()
+	await page.locator('[data-testid="minimap-view"]').waitFor()
+	const mark = page.locator('[data-testid="objects"] > g').filter({ hasText: "Orders DB" }).first()
+	const before = await mark.boundingBox()
 	const mapBox = await map.boundingBox()
-	await done()
 	await page.mouse.click(mapBox.x + 12, mapBox.y + 12)
 	await poll(async () => {
-		const after = await view.boundingBox()
-		return Math.abs(after.x - before.x) > 3 || Math.abs(after.y - before.y) > 3
-	}, "the view rectangle moving")
+		const after = await mark.boundingBox().catch(() => null)
+		return !after || Math.abs(after.x - before.x) > 3 || Math.abs(after.y - before.y) > 3
+	}, "the board scrolling under the view")
 	await shot(page, "p6-6-minimap")
 })
 

@@ -33,6 +33,20 @@ const press = (x, y, over = {}) => ({
 	...over,
 })
 
+// A line from a card to nowhere in particular, so the card counts as taken.
+function tieDown(id) {
+	store.addItems({
+		connectors: [
+			createConnector({
+				from: { objectId: id, anchor: "e" },
+				to: { x: 2000, y: 2000 },
+				theme: "ocean",
+				z: 1,
+			}),
+		],
+	})
+}
+
 let store
 let controller
 function setup(objects = [], options = {}) {
@@ -670,14 +684,15 @@ describe("lines", () => {
 	})
 
 	it("hover arrows add a connected copy on that side, in one step", () => {
+		tieDown("b") // "b" already has a line, so it is not a free card to join
 		controller.pointerMove(press(150, 130))
 		expect(store.state.hoverId).toBe("a")
 		controller.pointerDown(press(240, 130, { target: { dataset: { quick: "e" } } }))
 		controller.pointerUp(press(240, 130))
 		expect(store.objects.value).toHaveLength(3)
-		expect(store.connectors.value).toHaveLength(1)
+		expect(store.connectors.value).toHaveLength(2)
 		const added = store.objects.value.find((object) => !["a", "b"].includes(object.id))
-		const connector = store.connectors.value[0]
+		const connector = store.connectors.value.find((c) => c.from.objectId === "a")
 		expect(connector.from).toEqual({ objectId: "a", anchor: "e" })
 		expect(connector.to).toEqual({ objectId: added.id, anchor: "w" })
 		// Directly east is taken by "b", so the copy sits clear of it.
@@ -688,10 +703,10 @@ describe("lines", () => {
 				added.y + added.h > 100,
 		).toBe(false)
 		expect(store.state.selection).toEqual([added.id])
-		expect(store.history.undoStack).toHaveLength(1)
+		expect(store.history.undoStack).toHaveLength(2) // the tie-down, then this one step
 		store.undo()
 		expect(store.objects.value).toHaveLength(2)
-		expect(store.connectors.value).toHaveLength(0)
+		expect(store.connectors.value).toHaveLength(1)
 	})
 
 	it("hover arrows do nothing for a read-only viewer", () => {
@@ -1198,12 +1213,16 @@ describe("the hover arrows keep their shape through the gap", () => {
 	})
 
 	it("a selected shape offers the quick add too, for a screen that cannot hover", () => {
+		tieDown("b")
 		store.select(["a"])
 		controller.pointerDown(press(247, 130, { target: { dataset: { quick: "e" } } }))
 		controller.pointerUp(press(247, 130))
 		expect(store.objects.value).toHaveLength(3)
-		expect(store.connectors.value).toHaveLength(1)
-		expect(store.connectors.value[0].from).toEqual({ objectId: "a", anchor: "e" })
+		expect(store.connectors.value).toHaveLength(2)
+		expect(store.connectors.value.find((c) => c.from.objectId === "a").from).toEqual({
+			objectId: "a",
+			anchor: "e",
+		})
 	})
 
 	it("with two shapes selected there is no quick add, and a text box never has one", () => {
@@ -1328,5 +1347,81 @@ describe("table rows and columns", () => {
 		controller.pointerMove(handleEvent("row-1", 300, 160))
 		controller.pointerUp(handleEvent("row-1", 300, 160))
 		expect(store.getObject("t").table.rowH).toEqual(rows)
+	})
+})
+
+describe("the quick-add arrow joins a free card nearby first", () => {
+	const quick = (side, x = 247, y = 130) => {
+		controller.pointerDown(press(x, y, { target: { dataset: { quick: side } } }))
+		controller.pointerUp(press(x, y))
+	}
+	const lineTo = (id) => store.connectors.value.find((c) => c.to.objectId === id)
+
+	beforeEach(() => {
+		setup([rect("a", 100, 100), rect("b", 400, 100)])
+		store.select(["a"])
+	})
+
+	it("connects the free card on that side and adds nothing, then the next click adds a card", () => {
+		quick("e")
+		expect(store.objects.value).toHaveLength(2)
+		expect(store.connectors.value).toHaveLength(1)
+		expect(store.connectors.value[0].from).toEqual({ objectId: "a", anchor: "e" })
+		expect(store.connectors.value[0].to).toEqual({ objectId: "b", anchor: "w" })
+		expect(store.connectors.value[0].heads.end).toBe("arrow")
+		expect(store.state.selection).toEqual(["b"])
+		store.select(["a"])
+		quick("e") // "b" now has a line, so this one adds a new card
+		expect(store.objects.value).toHaveLength(3)
+		expect(store.connectors.value).toHaveLength(2)
+	})
+
+	it("is one undo step, and uses the line type last chosen", () => {
+		store.state.lastConnectorTool = "arrow-elbow"
+		quick("e")
+		expect(store.connectors.value[0].geometry).toBe("elbow")
+		expect(store.history.undoStack).toHaveLength(1)
+		store.undo()
+		expect(store.connectors.value).toHaveLength(0)
+		expect(store.objects.value).toHaveLength(2)
+	})
+
+	it("ignores a card that is too far, on another side, or already has a line", () => {
+		setup([
+			rect("a", 100, 100),
+			rect("far", 900, 100),
+			rect("up", 100, -300),
+			rect("tied", 400, 100),
+		])
+		const line = createConnector({
+			from: { objectId: "tied", anchor: "e" },
+			to: { x: 900, y: 700 },
+			theme: "ocean",
+			z: 1,
+		})
+		store.addItems({ connectors: [line] })
+		store.select(["a"])
+		quick("e")
+		expect(store.objects.value).toHaveLength(5) // none qualified, a new card was added
+		expect(store.connectors.value.filter((c) => c.from.objectId === "a")).toHaveLength(1)
+		expect(lineTo("far")).toBeUndefined()
+		expect(lineTo("tied")).toBeUndefined()
+	})
+
+	it("joins the card in the direction of the arrow, and the nearest when there are two", () => {
+		setup([
+			rect("a", 100, 100),
+			rect("below", 100, 300),
+			rect("right2", 330, 100),
+			rect("right1", 260, 100),
+		])
+		store.select(["a"])
+		quick("s")
+		expect(lineTo("below")).toBeTruthy()
+		expect(store.connectors.value[0].to.anchor).toBe("n")
+		store.select(["a"])
+		quick("e")
+		expect(lineTo("right1")).toBeTruthy()
+		expect(lineTo("right2")).toBeUndefined()
 	})
 })

@@ -502,3 +502,49 @@ describe("palette for the new kinds", () => {
 		expect(store.getObject(note.id).link).toBeUndefined()
 	})
 })
+
+describe("section names and quick-add inside a frame", () => {
+	beforeEach(() => {
+		setup([rect("a", 100, 100), rect("b", 300, 100)])
+		store.addObjects([
+			createFrame({ x: 40, y: 40, w: 700, h: 300 }, { name: "Plan", z: store.nextBackZ() }),
+		])
+		store.clearSelection()
+	})
+	const frameId = () => store.objects.value.find((o) => o.kind === "frame").id
+
+	it("a double-click on the name, or a little beside it, edits the name and makes no card", () => {
+		const before = store.objects.value.length
+		controller.doubleClick(press(70, 22)) // on the name, above the frame's top-left corner
+		expect(store.state.editingId).toBe(frameId())
+		expect(store.state.selection).toEqual([frameId()])
+		expect(store.objects.value).toHaveLength(before)
+		store.state.editingId = null
+		controller.doubleClick(press(160, 12)) // a tap that missed the word by a few pixels
+		expect(store.state.editingId).toBe(frameId())
+		expect(store.objects.value).toHaveLength(before)
+	})
+
+	it("the name tag grows with the name, and the empty inside of a frame is still empty canvas", () => {
+		const long = {
+			...store.objects.value.find((o) => o.kind === "frame"),
+			name: "A rather long section name here",
+		}
+		expect(pointInObject(long, { x: 40 + 250, y: 40 - 15 })).toBe(true)
+		expect(pointInObject(long, { x: 40 + 500, y: 40 - 15 })).toBe(false)
+		const before = store.objects.value.length
+		controller.doubleClick(press(500, 250)) // inside the frame, away from its cards
+		expect(store.objects.value).toHaveLength(before + 1) // a double-click there still makes a shape
+	})
+
+	it("the arrow beside a card inside a frame puts the new card in line, not pushed up out of the frame", () => {
+		store.select(["b"])
+		controller.pointerDown(press(447, 130, { target: { dataset: { quick: "e" } } }))
+		controller.pointerUp(press(447, 130))
+		const added = store.objects.value.find(
+			(o) => !["a", "b"].includes(o.id) && o.kind === "shape",
+		)
+		expect(added.y).toBe(100) // the same row as "b"
+		expect(added.x).toBeGreaterThan(400)
+	})
+})

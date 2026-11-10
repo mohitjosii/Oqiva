@@ -1,0 +1,118 @@
+{
+ "actions": [],
+ "autoname": "hash",
+ "creation": "2026-11-11 09:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "board",
+  "version_number",
+  "kind",
+  "label",
+  "pinned",
+  "revision",
+  "schema_version",
+  "size_bytes",
+  "object_count",
+  "created_by_user",
+  "document"
+ ],
+ "fields": [
+  {
+   "fieldname": "board",
+   "fieldtype": "Link",
+   "label": "Board",
+   "options": "Oqiva Board",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "version_number",
+   "fieldtype": "Int",
+   "label": "Version Number",
+   "reqd": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "kind",
+   "fieldtype": "Select",
+   "label": "Kind",
+   "options": "Auto\nNamed\nPre-restore",
+   "default": "Auto",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "label",
+   "fieldtype": "Data",
+   "label": "Label",
+   "length": 120
+  },
+  {
+   "fieldname": "pinned",
+   "fieldtype": "Check",
+   "label": "Pinned",
+   "default": "0"
+  },
+  {
+   "fieldname": "revision",
+   "fieldtype": "Int",
+   "label": "Board Revision",
+   "read_only": 1
+  },
+  {
+   "fieldname": "schema_version",
+   "fieldtype": "Int",
+   "label": "Schema Version",
+   "read_only": 1
+  },
+  {
+   "fieldname": "size_bytes",
+   "fieldtype": "Int",
+   "label": "Size (bytes)",
+   "read_only": 1
+  },
+  {
+   "fieldname": "object_count",
+   "fieldtype": "Int",
+   "label": "Objects",
+   "read_only": 1
+  },
+  {
+   "fieldname": "created_by_user",
+   "fieldtype": "Link",
+   "label": "Taken by",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "document",
+   "fieldtype": "JSON",
+   "label": "Document"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-11-11 09:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Oqiva",
+ "name": "Oqiva Board Version",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "Oqiva Admin",
+   "read": 1,
+   "report": 1
+  },
+  {
+   "role": "System Manager",
+   "read": 1,
+   "report": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

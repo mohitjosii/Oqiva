@@ -80,6 +80,35 @@ async function newBoard() {
 	}
 }
 
+// An exported board file (.oqiva.json) becomes a new board here. The server checks everything;
+// the browser only refuses what is plainly too big to be one.
+const importInput = ref(null)
+const importing = ref(false)
+const MAX_IMPORT_BYTES = 16 * 1024 * 1024
+async function importBoard(event) {
+	const file = event.target.files?.[0]
+	event.target.value = "" // so choosing the same file again still counts
+	if (!file || importing.value) return
+	if (file.size > MAX_IMPORT_BYTES) return toast.error("That file is too large to be a board.")
+	importing.value = true
+	try {
+		const board = await api("board.import_board", {
+			workspace: route.params.workspace,
+			project: route.params.project || null,
+			content: await file.text(),
+		})
+		if (board.dropped_pictures)
+			toast.warning(
+				`${board.dropped_pictures === 1 ? "A picture was" : `${board.dropped_pictures} pictures were`} not imported, because pictures stay with the board they came from.`,
+			)
+		router.push({ name: "board", params: { board: board.name } })
+	} catch (error) {
+		toast.error(messageFor(error))
+	} finally {
+		importing.value = false
+	}
+}
+
 function leave() {
 	confirmDialog({
 		title: "Leave workspace?",
@@ -285,6 +314,25 @@ const userMenu = computed(() => [
 							params: { workspace: route.params.workspace },
 						})
 					"
+				/>
+				<Button
+					v-if="powers.canCreate"
+					variant="subtle"
+					iconLeft="upload"
+					label="Import"
+					title="Make a board from an exported .oqiva.json file"
+					:loading="importing"
+					data-testid="import-board"
+					@click="importInput.click()"
+				/>
+				<input
+					ref="importInput"
+					type="file"
+					accept=".json,application/json"
+					class="hidden"
+					aria-label="Choose a board file"
+					data-testid="import-input"
+					@change="importBoard"
 				/>
 				<Button
 					v-if="powers.canCreate"

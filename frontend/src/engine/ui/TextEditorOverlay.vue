@@ -141,6 +141,7 @@ function sync() {
 function begin(id) {
 	if (props.store.getConnector(id)) return // a line's label has its own editor
 	const target = props.store.getObject(id)
+	if (target?.kind === "frame") return // a section's name has its own small editor
 	if (!target || state.value.readonly) {
 		state.value.editingId = null
 		return

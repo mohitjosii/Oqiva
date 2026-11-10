@@ -27,7 +27,7 @@ export function pointInObject(object, point, tolerance = 0) {
 	const y = local.y - object.y
 	const w = object.w
 	const h = object.h
-	if (object.kind === "frame") return frameHit(x, y, w, h, tolerance)
+	if (object.kind === "frame") return frameHit(x, y, w, h, tolerance, object.name)
 	if (x < -tolerance || y < -tolerance || x > w + tolerance || y > h + tolerance) return false
 	if (object.kind === "text" || object.shape === "rectangle") return true
 	if (object.shape === "ellipse") {
@@ -44,10 +44,18 @@ export function pointInObject(object, point, tolerance = 0) {
 
 // A frame is picked by its name tag or its border, so the empty inside stays free for a marquee or
 // for pressing on the shapes in front of it.
-const FRAME_TAG = { height: 26, width: 220, edge: 6 }
-function frameHit(x, y, w, h, tolerance) {
+const FRAME_TAG = { height: 34, minWidth: 140, edge: 6 }
+function frameHit(x, y, w, h, tolerance, name = "") {
 	const edge = Math.max(tolerance, FRAME_TAG.edge)
-	if (y >= -FRAME_TAG.height && y <= 0 && x >= 0 && x <= Math.min(w, FRAME_TAG.width)) return true
+	// The name tag is as wide as the name, and a little more, so a tap near it still counts.
+	const tagWidth = Math.max(FRAME_TAG.minWidth, (name || "").length * 9 + 28)
+	if (
+		y >= -FRAME_TAG.height - tolerance &&
+		y <= 0 &&
+		x >= -tolerance &&
+		x <= Math.min(w, tagWidth) + tolerance
+	)
+		return true
 	if (x < -edge || y < -edge || x > w + edge || y > h + edge) return false
 	return x <= edge || y <= edge || x >= w - edge || y >= h - edge
 }

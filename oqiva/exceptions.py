@@ -18,7 +18,12 @@ class OqivaError(frappe.ValidationError):
 	code = "OQIVA_ERROR"
 
 	def __init__(self, message: str | None = None):
-		super().__init__(message or self.default_message())
+		message = message or self.default_message()
+		super().__init__(message)
+		# Frappe sends a plain exception's text to the browser only in developer mode. Putting it in the
+		# message log makes it reach the page as ``_server_messages``, which is how the app shows
+		# "This file is too large" rather than a generic failure.
+		frappe.msgprint(message, indicator="red", alert=False)
 
 	@classmethod
 	def default_message(cls) -> str:

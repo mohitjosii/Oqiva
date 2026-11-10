@@ -571,14 +571,18 @@ class TestCollaborationState(RestoresSettings, IntegrationTestCase):
 	def test_a_save_tells_everyone_with_the_board_open_and_a_big_one_asks_them_to_fetch_it(self):
 		with patch("oqiva.utils.realtime.frappe.publish_realtime") as publish:
 			self.save(self.state)
-		events = [c.args[0] for c in publish.call_args_list]
-		self.assertEqual(events, ["oqiva:saved"])
-		self.assertEqual(publish.call_args.kwargs["room"], f"oqiva:board:{self.w.board}")
-		self.assertTrue(publish.call_args.kwargs["after_commit"])
-		self.assertEqual(publish.call_args.args[1]["save_id"], "s1")
+		# Frappe's own list_update and doc_update (from the version a save may keep) are not ours to judge.
+		ours = [c for c in publish.call_args_list if c.args[0].startswith("oqiva:")]
+		self.assertEqual([c.args[0] for c in ours], ["oqiva:saved"])
+		self.assertEqual(ours[-1].kwargs["room"], f"oqiva:board:{self.w.board}")
+		self.assertTrue(ours[-1].kwargs["after_commit"])
+		self.assertEqual(ours[-1].args[1]["save_id"], "s1")
 		with patch("oqiva.utils.realtime.frappe.publish_realtime") as publish:
 			self.save(self.state, save_id="s2", resync=True)
-		self.assertEqual([c.args[0] for c in publish.call_args_list], ["oqiva:saved", "oqiva:resync"])
+		self.assertEqual(
+			[c.args[0] for c in publish.call_args_list if c.args[0].startswith("oqiva:")],
+			["oqiva:saved", "oqiva:resync"],
+		)
 
 	def test_only_people_who_may_view_can_fetch_the_state(self):
 		with self.assertRaises(OqivaNotFound):

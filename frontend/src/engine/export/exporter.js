@@ -25,6 +25,7 @@ export async function exportBoard({
 	notify,
 	measure = measureText,
 }) {
+	if (format === "json") return exportBoardFile({ host, notify })
 	const items = collectItems(store, scope)
 	if (isEmpty(items)) {
 		notify.error(
@@ -54,6 +55,18 @@ export async function exportBoard({
 		if (result.reduced)
 			notify.warning("The board is very large, so it was exported at a smaller size.")
 		return { ...result, missing }
+	} catch (error) {
+		notify.error(error?.message || "That could not be exported.")
+		return null
+	}
+}
+
+// The board's own file (.oqiva.json): the server makes it, so it is exactly what is saved there.
+async function exportBoardFile({ host, notify }) {
+	try {
+		const file = await host.exports.boardFile()
+		downloadBlob(new Blob([file.content], { type: "application/json" }), file.filename)
+		return { filename: file.filename, reduced: false, missing: [] }
 	} catch (error) {
 		notify.error(error?.message || "That could not be exported.")
 		return null

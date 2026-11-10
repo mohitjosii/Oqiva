@@ -235,5 +235,25 @@ await step("a table row and a column can be resized one at a time", async () => 
 	await poll(async () => Math.abs((await tableBox()).width - before.width) < 2, "undo of the column")
 })
 
+await step("an arrow next to a free card joins it first, and the next click adds a new card", async () => {
+	await done()
+	await page.keyboard.press("Escape")
+	await page.keyboard.press("r")
+	await drag(at(300, -250), at(420, -190))
+	await page.keyboard.press("Escape")
+	await page.keyboard.press("r")
+	await drag(at(520, -250), at(640, -190)) // a free card 100 units to its right
+	await page.keyboard.press("Escape")
+	const cards = await shapes.count()
+	const before = await lines.count()
+	await page.mouse.click(...Object.values(at(360, -220)))
+	await page.locator('[data-quick="e"]').click()
+	await poll(async () => (await lines.count()) === before + 1, "a line to the card next to it")
+	assert.equal(await shapes.count(), cards, "no new card yet")
+	await page.mouse.click(...Object.values(at(360, -220)))
+	await page.locator('[data-quick="e"]').click()
+	await expectCount(shapes, cards + 1, "shapes after the second click")
+})
+
 await browser.close()
 finish(problems)

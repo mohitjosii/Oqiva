@@ -24,6 +24,7 @@ API_MODULES = (
 	"comment",
 	"notification",
 	"template",
+	"version",
 )
 READ_ONLY_ENDPOINTS = {
 	"list_workspaces",
@@ -44,6 +45,9 @@ READ_ONLY_ENDPOINTS = {
 	"list_comments",
 	"people",
 	"list_notifications",
+	"list_versions",
+	"get_version",
+	"board_file",
 	"unread_count",
 	"list_templates",
 	"get_template",

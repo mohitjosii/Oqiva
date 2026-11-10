@@ -41,7 +41,7 @@ import { presetObject, pushRecentPreset } from "../model/library"
 import { newId } from "../model/ids"
 import { GRID_SIZES, normalizeRotation, pageSize } from "../model/schema"
 import { toolById } from "../model/shapes"
-import { libraryPlacement, OPPOSITE, quickAddRect } from "./placement"
+import { libraryPlacement, OPPOSITE, quickAddRect, quickTarget } from "./placement"
 import { createConnectorPaths } from "../render/connectorPaths"
 import { expandToGroups } from "../store/arrange"
 import { cellAt, scaleTable, setTrackSize, withTable } from "../store/tableOps"
@@ -555,7 +555,33 @@ export class CanvasController {
 	quickAdd(side) {
 		const source = this.quickSource()
 		if (!source) return
-		const obstacles = this.store.objects.value.map(objectBounds)
+		const geometry = connectorToolById(this.state.lastConnectorTool)?.geometry || "straight"
+		// A free card close by on that side is joined first; the next click adds a new one.
+		const target = quickTarget(
+			source,
+			side,
+			this.store.objects.value,
+			this.store.connectors.value,
+		)
+		if (target) {
+			const joined = createConnector({
+				from: { objectId: source.id, anchor: side },
+				to: { objectId: target.id, anchor: OPPOSITE[side] },
+				geometry,
+				arrow: true,
+				theme: this.store.theme.value.preset,
+				z: this.store.nextConnectorZ(),
+			})
+			if (this.store.addItems({ connectors: [joined] }, { label: "Connect shapes" })) {
+				this.store.select([target.id])
+				this.state.hoverId = null
+			}
+			return
+		}
+		// A frame is a region the new card may sit in, not something in its way.
+		const obstacles = this.store.objects.value
+			.filter((object) => object.kind !== "frame")
+			.map(objectBounds)
 		const rect = quickAddRect(source, side, obstacles)
 		const copy = {
 			...source,
@@ -568,7 +594,7 @@ export class CanvasController {
 		const arrow = createConnector({
 			from: { objectId: source.id, anchor: side },
 			to: { objectId: copy.id, anchor: OPPOSITE[side] },
-			geometry: connectorToolById(this.state.lastConnectorTool)?.geometry || "straight",
+			geometry,
 			arrow: true,
 			theme: this.store.theme.value.preset,
 			z: this.store.nextConnectorZ(),
@@ -929,6 +955,7 @@ export class CanvasController {
 			this.store.select([hit.id])
 			this.state.editingNew = false
 			this.state.editingCell = null
+			// On a frame (its name or border) this edits the name; it never makes a card.
 			this.state.editingId = hit.id
 			return
 		}

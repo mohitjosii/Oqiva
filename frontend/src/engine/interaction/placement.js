@@ -1,12 +1,47 @@
 // Where to put a new shape that grows out of an existing one (quick-add).
 
-import { anchorDirection } from "../geometry/connectors"
-import { rectsIntersect } from "../geometry/bounds"
+import { anchorDirection, CONNECTABLE_KINDS } from "../geometry/connectors"
+import { objectBounds, rectsIntersect } from "../geometry/bounds"
 
 export const OPPOSITE = { n: "s", s: "n", e: "w", w: "e", ne: "sw", sw: "ne", nw: "se", se: "nw" }
 export const QUICK_GAP = 60
 
 const MAX_TRIES = 12
+export const QUICK_NEAR = 260 // a free card this close (edge to edge) is connected before a new one is added
+const QUICK_CONE = 0.7 // and it must lie roughly the way the arrow points (cosine of about 45 degrees)
+
+// The distance between two boxes' edges (0 when they touch or overlap).
+function boxGap(a, b) {
+	const dx = Math.max(0, a.x - (b.x + b.w), b.x - (a.x + a.w))
+	const dy = Math.max(0, a.y - (b.y + b.h), b.y - (a.y + a.h))
+	return Math.hypot(dx, dy)
+}
+
+// A free card (one with no line on it) close to ``source`` in the direction of ``side``, if there is
+// one: the quick-add arrow connects it first, and only the next click adds a new card. The nearest wins.
+export function quickTarget(source, side, objects, connectors) {
+	const dir = anchorDirection(source, side)
+	const from = objectBounds(source)
+	const linked = new Set()
+	for (const line of connectors)
+		for (const end of [line.from, line.to]) if (end?.objectId) linked.add(end.objectId)
+	let best = null
+	for (const object of objects) {
+		if (object.id === source.id || linked.has(object.id) || !CONNECTABLE_KINDS.has(object.kind))
+			continue
+		const box = objectBounds(object)
+		const v = {
+			x: box.x + box.w / 2 - (from.x + from.w / 2),
+			y: box.y + box.h / 2 - (from.y + from.h / 2),
+		}
+		const distance = Math.hypot(v.x, v.y)
+		if (!distance || (v.x * dir.x + v.y * dir.y) / distance < QUICK_CONE) continue
+		const gap = boxGap(from, box)
+		if (gap > QUICK_NEAR || (best && distance >= best.distance)) continue
+		best = { object, distance }
+	}
+	return best?.object || null
+}
 
 // A rectangle for a copy of ``source``, ``QUICK_GAP`` away on ``side`` (n, e, s or w), moved
 // along the edge until it clears everything else. A rotated source places its copy the same

@@ -5,6 +5,7 @@ import { useRoute, useRouter } from "vue-router"
 import BoardTitle from "@/components/BoardTitle.vue"
 import ErrorState from "@/components/ErrorState.vue"
 import NotificationBell from "@/components/NotificationBell.vue"
+import RecoveryVersions from "@/components/RecoveryVersions.vue"
 import ShareDialog from "@/components/ShareDialog.vue"
 import { useAsync } from "@/composables/useAsync"
 import { api, upload } from "@/data/api"
@@ -123,6 +124,27 @@ const prepared = computed(() => {
 				exports: {
 					prepare: (format, scope) =>
 						api("export.prepare", { board: boardName.value, format, scope }),
+					boardFile: () => api("export.board_file", { board: boardName.value }),
+				},
+				versions: {
+					list: () => api("version.list_versions", { board: boardName.value }),
+					get: (version_number) =>
+						api("version.get_version", { board: boardName.value, version_number }),
+					save: (label) => api("version.save_version", { board: boardName.value, label }),
+					label: (version_number, label) =>
+						api("version.label_version", {
+							board: boardName.value,
+							version_number,
+							label,
+						}),
+					pin: (version_number, pinned) =>
+						api("version.pin_version", {
+							board: boardName.value,
+							version_number,
+							pinned: pinned ? 1 : 0,
+						}),
+					beginRestore: (version_number) =>
+						api("version.begin_restore", { board: boardName.value, version_number }),
 				},
 			},
 		}
@@ -310,6 +332,11 @@ const failed = computed(() => board.error.value || content.error.value)
 					<p class="mt-2 text-sm text-ink-gray-6">
 						{{ RECOVERY[prepared.recovery].text }}
 					</p>
+					<RecoveryVersions
+						v-if="caps.can_edit"
+						:board="boardName"
+						@restored="open(boardName)"
+					/>
 					<Button
 						class="mt-5"
 						variant="subtle"

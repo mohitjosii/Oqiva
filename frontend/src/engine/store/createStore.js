@@ -90,6 +90,7 @@ export function createStore(document, { readonly = false } = {}) {
 		commentDraft: null, // a comment about to be written: {anchor_type, shape_id | x, y}
 		openThread: null, // the thread being looked at
 		cursor: null, // where this person's pointer is on the board: {x, y}
+		versionsOpen: false, // the version history panel is showing
 		libraryOpen: false, // the shape library panel is showing
 		recentPresets: [], // keys of library shapes placed lately, newest first
 		hintFrame: null, // the frame a dragged library shape would land in
@@ -447,6 +448,40 @@ export function createStore(document, { readonly = false } = {}) {
 
 		setTheme(name) {
 			return transact("Theme", () => run({ t: "theme", patch: { preset: name } }))
+		},
+
+		// Makes the board's content equal to ``next`` ({objects, connectors, canvas, theme}) as ONE
+		// ordinary edit: what is gone is removed, what changed is updated, what is new is added.
+		// Peers see it as a normal change, and one undo puts everything back. Used to restore a version.
+		replaceContent(next, { label = "Restore version" } = {}) {
+			return transact(label, () => {
+				for (const list of LISTS) {
+					const wanted = new Map((next[list] || []).map((item) => [item.id, item]))
+					const gone = data[list]
+						.filter((item) => !wanted.has(item.id))
+						.map((item) => item.id)
+					const changes = [...wanted.values()]
+						.filter((item) => index[list].has(item.id))
+						.map((item) => ({
+							id: item.id,
+							patch: wholePatch(index[list].get(item.id), item),
+						}))
+						.filter((change) => Object.keys(change.patch).length)
+					const added = [...wanted.values()].filter((item) => !index[list].has(item.id))
+					if (gone.length) run({ t: "remove", list, ids: gone })
+					if (changes.length) run({ t: "update", list, changes })
+					if (added.length) run({ t: "add", list, items: added })
+				}
+				if (next.canvas) {
+					const patch = wholePatch(canvasRef.value, next.canvas)
+					if (Object.keys(patch).length) run({ t: "canvas", patch })
+				}
+				if (next.theme) {
+					const patch = wholePatch(themeRef.value, next.theme)
+					if (Object.keys(patch).length) run({ t: "theme", patch })
+				}
+				state.selection = exists(state.selection)
+			})
 		},
 
 		// Copies of the given items, offset and re-identified (see clone.js).

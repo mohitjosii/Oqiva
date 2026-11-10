@@ -3,7 +3,7 @@
 // out here from the current objects, so a connector follows its shapes through move, resize
 // and rotate without anything being stored twice.
 
-import { rotatePoint } from "./bounds"
+import { objectBounds, rotatePoint } from "./bounds"
 import { HANDLES, handlePoint } from "./resize"
 
 export const ANCHORS = Object.keys(HANDLES)
@@ -11,6 +11,10 @@ export const CONNECTABLE_KINDS = new Set(["shape", "text", "image", "table"])
 export const FAN_SPACING = 14 // board units between connectors sharing one anchor
 const MIN_STUB = 24 // how far an elbow leaves a shape before turning
 const CURVE_SAMPLES = 32
+const AVOID_MARGIN = 10 // how far a curve keeps from a card it goes round
+const AVOID_REACH = 360 // cards further than this from the two ends are not looked at
+// The sideways pushes tried, in order, until a curve clears every card.
+const BEND_STEPS = [0, 45, -45, 100, -100, 170, -170, 260, -260, 380, -380]
 
 const length = (v) => Math.hypot(v.x, v.y)
 const sub = (a, b) => ({ x: a.x - b.x, y: a.y - b.y })
@@ -78,6 +82,11 @@ export function resolveConnectors(connectors, byId) {
 		}
 	}
 	const result = new Map()
+	let world = null // the cards a curve must not cross, worked out once and only if one is needed
+	const cards = () =>
+		(world ||= [...byId.values()]
+			.filter((object) => object.kind !== "frame")
+			.map((object) => ({ id: object.id, ...objectBounds(object) })))
 	for (const connector of connectors) {
 		const ends = {}
 		for (const end of ["from", "to"]) {
@@ -111,6 +120,9 @@ export function resolveConnectors(connectors, byId) {
 			p1: ends.to.point,
 			d0: ends.from.dir,
 			d1: ends.to.dir,
+			// Only a curved line with no bend of its own steers round cards.
+			cards: connector.geometry === "curved" && !connector.bend ? cards : null,
+			own: [connector.from.objectId, connector.to.objectId],
 		})
 	}
 	return result
@@ -174,12 +186,93 @@ function bezier(c, t) {
 
 const perpendicular = (v) => ({ x: -v.y, y: v.x })
 
+const dot = (a, b) => a.x * b.x + a.y * b.y
+
 // The control points of a curved connector. ``bend`` pushes the middle sideways.
+//
+// An end that points away from the other end would, with a plain handle, fold the curve back
+// through its own card. It gets a longer handle that also leans toward the other end, so the
+// curve leaves the card and swings round it.
 export function curveControls(p0, d0, p1, d1, bend = 0) {
-	const distance = length(sub(p1, p0))
+	const toward = sub(p1, p0)
+	const distance = length(toward)
+	const dir = unit(toward)
 	const reach = Math.min(200, Math.max(30, distance * 0.45))
-	const side = scale(perpendicular(unit(sub(p1, p0))), bend)
-	return [p0, add(add(p0, scale(d0, reach)), side), add(add(p1, scale(d1, reach)), side), p1]
+	const handle = (point, out, facing, lean) => {
+		const away = Math.max(0, -dot(out, facing)) // 0 when it points at the other end, 1 when away
+		const length = reach * (1 + away * 0.9)
+		const side = perpendicular(out)
+		const swing = scale(dot(side, lean) >= 0 ? side : scale(side, -1), away * reach * 0.9)
+		return add(add(point, scale(out, length)), swing)
+	}
+	const push = scale(perpendicular(dir), bend)
+	return [
+		p0,
+		add(handle(p0, d0, dir, toward), push),
+		add(handle(p1, d1, scale(dir, -1), scale(toward, -1)), push),
+		p1,
+	]
+}
+
+const samples = (controls) =>
+	Array.from({ length: CURVE_SAMPLES + 1 }, (_, i) => bezier(controls, i / CURVE_SAMPLES))
+
+// How many sampled points of a curve lie inside a card (grown a little). The first and last few
+// are ignored: they are on the cards the line belongs to.
+function crossings(points, cards) {
+	let count = 0
+	for (let i = 2; i < points.length - 2; i++) {
+		const p = points[i]
+		if (
+			cards.some(
+				(c) =>
+					p.x > c.x - AVOID_MARGIN &&
+					p.x < c.x + c.w + AVOID_MARGIN &&
+					p.y > c.y - AVOID_MARGIN &&
+					p.y < c.y + c.h + AVOID_MARGIN,
+			)
+		)
+			count++
+	}
+	return count
+}
+
+// The cards close enough to the two ends of a line to be in its way.
+const nearCards = (p0, p1, cards) =>
+	cards.filter(
+		(c) =>
+			c.x + c.w > Math.min(p0.x, p1.x) - AVOID_REACH &&
+			c.x < Math.max(p0.x, p1.x) + AVOID_REACH &&
+			c.y + c.h > Math.min(p0.y, p1.y) - AVOID_REACH &&
+			c.y < Math.max(p0.y, p1.y) + AVOID_REACH,
+	)
+
+// A short text that changes when a card that could be in this line's way is moved, resized or
+// added, so a cached path is drawn again. Empty for a line that does not steer.
+export function avoidanceKey(resolved) {
+	if (!resolved.cards) return ""
+	const own = new Set(resolved.own)
+	return nearCards(
+		resolved.p0,
+		resolved.p1,
+		resolved.cards().filter((c) => !own.has(c.id)),
+	)
+		.map((c) => `${c.id}:${c.x},${c.y},${c.w},${c.h}`)
+		.join(";")
+}
+
+// The sideways push, among a few, that takes a curve clear of the cards in its way; the plain curve
+// if nothing is in the way, and the least bad one if no push gets clear.
+export function autoBend(p0, d0, p1, d1, cards) {
+	const near = nearCards(p0, p1, cards)
+	if (!near.length) return 0
+	let best = { bend: 0, count: Infinity }
+	for (const bend of BEND_STEPS) {
+		const count = crossings(samples(curveControls(p0, d0, p1, d1, bend)), near)
+		if (count === 0) return bend
+		if (count < best.count) best = { bend, count }
+	}
+	return best.bend
 }
 
 function pathLength(points) {
@@ -207,10 +300,19 @@ export function connectorPath(connector, resolved) {
 	let d
 	let mid
 	if (connector.geometry === "curved") {
-		const controls = curveControls(p0, d0, p1, d1, connector.bend || 0)
-		points = Array.from({ length: CURVE_SAMPLES + 1 }, (_, i) =>
-			bezier(controls, i / CURVE_SAMPLES),
-		)
+		let bend = connector.bend || 0
+		if (!bend && resolved.cards) {
+			const own = new Set(resolved.own)
+			bend = autoBend(
+				p0,
+				d0,
+				p1,
+				d1,
+				resolved.cards().filter((card) => !own.has(card.id)),
+			)
+		}
+		const controls = curveControls(p0, d0, p1, d1, bend)
+		points = samples(controls)
 		d = `M${controls[0].x} ${controls[0].y} C${controls[1].x} ${controls[1].y} ${controls[2].x} ${controls[2].y} ${controls[3].x} ${controls[3].y}`
 		mid = bezier(controls, 0.5)
 	} else {

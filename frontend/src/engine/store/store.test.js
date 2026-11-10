@@ -422,3 +422,75 @@ describe("copying a selection", () => {
 		expect(store.state.selection).toEqual(ids)
 	})
 })
+
+describe("replaceContent (restoring a version)", () => {
+	const make = (id, x) => ({
+		...createObject("rectangle", { x, y: 0, w: 100, h: 60 }, { theme: "ocean", z: 1 }),
+		id,
+	})
+	const line = (id, from, to) => ({
+		id,
+		from: { objectId: from, anchor: "e" },
+		to: { objectId: to, anchor: "w" },
+		geometry: "straight",
+		heads: { start: "none", end: "arrow" },
+		bend: 0,
+		style: { stroke: "#475569", strokeWidth: 2, dash: "solid", opacity: 1 },
+		label: null,
+		z: 1,
+	})
+
+	it("turns the board into the other content in one undoable step", () => {
+		const doc = {
+			...createDocument(),
+			objects: [make("a", 0), make("b", 300)],
+			connectors: [line("c1", "a", "b")],
+		}
+		const store = createStore(doc)
+		store.select(["b"])
+		const before = JSON.parse(JSON.stringify(store.snapshot()))
+		const old = {
+			objects: [{ ...make("a", 40) }, make("z", 600)],
+			connectors: [],
+			canvas: { ...store.canvas.value, grid: "dense" },
+			theme: { preset: "violet" },
+		}
+		expect(store.replaceContent(old)).toBe(true)
+		expect(store.objects.value.map((o) => [o.id, o.x])).toEqual([
+			["a", 40],
+			["z", 600],
+		])
+		expect(store.connectors.value).toEqual([])
+		expect(store.canvas.value.grid).toBe("dense")
+		expect(store.theme.value.preset).toBe("violet")
+		expect(store.state.selection).toEqual([]) // "b" is gone
+		store.undo()
+		expect(JSON.parse(JSON.stringify(store.snapshot()))).toEqual(before)
+		expect(store.canRedo).toBe(true)
+	})
+
+	it("tells the listeners once, as a local change, and does nothing for equal content", () => {
+		const store = createStore({ ...createDocument(), objects: [make("a", 0)] })
+		const events = []
+		store.subscribe((e) => events.push(e))
+		store.replaceContent({
+			objects: [make("a", 0)],
+			connectors: [],
+			canvas: store.canvas.value,
+			theme: store.theme.value,
+		})
+		expect(events).toEqual([])
+		store.replaceContent({ objects: [make("a", 0), make("b", 200)], connectors: [] })
+		expect(events).toHaveLength(1)
+		expect(events[0]).toMatchObject({ type: "change", origin: "local" })
+	})
+
+	it("is refused for a read-only viewer", () => {
+		const store = createStore(
+			{ ...createDocument(), objects: [make("a", 0)] },
+			{ readonly: true },
+		)
+		expect(store.replaceContent({ objects: [], connectors: [] })).toBe(false)
+		expect(store.objects.value).toHaveLength(1)
+	})
+})

@@ -16,6 +16,7 @@ UNIQUE_CONSTRAINTS = (
 	("Oqiva Board View", ["board", "user"], "oqiva_unique_board_view"),
 	("Oqiva Pending Invite", ["email", "workspace"], "oqiva_unique_pending_invite"),
 	("Oqiva Link Grant", ["share_link", "user"], "oqiva_unique_link_grant"),
+	("Oqiva Board Version", ["board", "version_number"], "oqiva_unique_board_version"),
 )
 
 INDEXES = (
@@ -25,6 +26,7 @@ INDEXES = (
 	("Oqiva Board", ["project", "is_trashed"], "oqiva_board_project_state"),
 	("Oqiva Project", ["workspace", "is_trashed"], "oqiva_project_workspace_state"),
 	("Oqiva Board View", ["user", "last_opened_on"], "oqiva_board_view_user_recent"),
+	("Oqiva Board Version", ["board", "kind", "creation"], "oqiva_board_version_kind"),
 )
 
 

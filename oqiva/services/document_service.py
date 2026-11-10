@@ -24,7 +24,7 @@ from oqiva.exceptions import (
 	OqivaLimitExceeded,
 	OqivaStaleRevision,
 )
-from oqiva.services import comment_service, file_service
+from oqiva.services import comment_service, file_service, version_service
 from oqiva.utils import realtime
 from oqiva.utils.settings import get_setting
 
@@ -32,7 +32,11 @@ SUPPORTED_SCHEMA = 1
 ID = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 COLOR = re.compile(r"^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$")
 LIST_KEYS = ("objects", "connectors", "mindmaps", "flowcharts")
-KNOWN_KINDS = ("shape", "text", "image", "table")
+KNOWN_KINDS = ("shape", "text", "image", "table", "note", "icon", "frame")
+LINK_URL = re.compile(r"^(https?://|mailto:)[^\s<>\"']+$", re.IGNORECASE)
+LINK_BOARD = re.compile(r"^[A-Za-z0-9_.-]{1,140}$")
+ICON_NAME = re.compile(r"^[a-z0-9-]{1,40}$")
+EMOJI_BAD = re.compile(r"[\x00-\x1f<>&\"']")
 IMAGE_SRC = re.compile(r"^/private/files/[A-Za-z0-9._%()+~-]{1,200}$")
 GEOMETRIES = ("straight", "elbow", "curved")
 HEADS = ("none", "arrow", "open", "dot")
@@ -160,6 +164,19 @@ def _check_object(item, seen: set) -> None:
 			_bad(object_id, _("{0} must be true or false.").format(flip))
 	if "groupId" in item and not (isinstance(item["groupId"], str) and ID.match(item["groupId"])):
 		_bad(object_id, _("the group id is not valid."))
+	if "link" in item:
+		_check_link(object_id, item["link"])
+	if item["kind"] == "icon":
+		icon, emoji = item.get("icon"), item.get("emoji")
+		if not (
+			(isinstance(icon, str) and ICON_NAME.match(icon))
+			or (isinstance(emoji, str) and 0 < len(emoji) <= 16 and not EMOJI_BAD.search(emoji))
+		):
+			_bad(object_id, _("an icon needs a name or an emoji."))
+	if item["kind"] == "frame" and not (
+		isinstance(item.get("name", ""), str) and len(item.get("name", "")) <= 200
+	):
+		_bad(object_id, _("the section name is too long."))
 	if item["kind"] == "image":
 		if not isinstance(item.get("src"), str) or not IMAGE_SRC.match(item["src"]):
 			_bad(object_id, _("a picture must come from this board's files."))
@@ -167,6 +184,17 @@ def _check_object(item, seen: set) -> None:
 			_bad(object_id, _("the picture description is too long."))
 	if item["kind"] == "table":
 		_check_table(object_id, item.get("table"))
+
+
+def _check_link(object_id: str, link) -> None:
+	"""A link is a web or mail address, or a board; anything else (javascript: for one) is refused."""
+	if not isinstance(link, dict):
+		_bad(object_id, _("a link must be an object."))
+	if "url" in link:
+		if not (isinstance(link["url"], str) and len(link["url"]) <= 2000 and LINK_URL.match(link["url"])):
+			_bad(object_id, _("a link must be a web or mail address."))
+	elif not (isinstance(link.get("board"), str) and LINK_BOARD.match(link["board"])):
+		_bad(object_id, _("a link must be a web or mail address, or a board."))
 
 
 def _check_end(connector_id: str, end) -> None:
@@ -388,4 +416,5 @@ def save_document(
 	if resync:
 		realtime.resync(row.name)
 	comment_service.reconcile_missing(row.name, parsed)
+	version_service.maybe_auto(row.name, document, revision, parsed["schemaVersion"], count, user)
 	return {"revision": revision, "replayed": False}

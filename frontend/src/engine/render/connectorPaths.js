@@ -1,9 +1,9 @@
 // The outline of every connector, worked out from the current objects. A path is reused while
-// its connector and its two ends have not changed, so moving one shape redraws only the
+// its connector, its two ends and the cards near a steering curve have not changed, so moving one shape redraws only the
 // connectors attached to it.
 
 import { computed } from "vue"
-import { connectorPath, resolveConnectors } from "../geometry/connectors"
+import { avoidanceKey, connectorPath, resolveConnectors } from "../geometry/connectors"
 
 export function createConnectorPaths(store) {
 	const cache = new Map()
@@ -18,7 +18,7 @@ export function createConnectorPaths(store) {
 			const r = resolved.get(connector.id)
 			if (!r) continue
 			alive.add(connector.id)
-			const key = `${r.p0.x},${r.p0.y},${r.p1.x},${r.p1.y},${r.d0.x},${r.d0.y},${r.d1.x},${r.d1.y}`
+			const key = `${r.p0.x},${r.p0.y},${r.p1.x},${r.p1.y},${r.d0.x},${r.d0.y},${r.d1.x},${r.d1.y}|${avoidanceKey(r)}`
 			const hit = cache.get(connector.id)
 			if (hit && hit.connector === connector && hit.key === key) {
 				paths.set(connector.id, hit.path)
