@@ -6,6 +6,8 @@ overwrite each other. The server checks the document's shape and size but never 
 anything, so it validates structure, not appearance.
 """
 
+import base64
+import binascii
 import json
 import math
 import re
@@ -22,7 +24,8 @@ from oqiva.exceptions import (
 	OqivaLimitExceeded,
 	OqivaStaleRevision,
 )
-from oqiva.services import file_service
+from oqiva.services import comment_service, file_service
+from oqiva.utils import realtime
 from oqiva.utils.settings import get_setting
 
 SUPPORTED_SCHEMA = 1
@@ -219,6 +222,24 @@ def _check_canvas(canvas) -> None:
 		raise OqivaError(_("The canvas settings are not valid."))
 
 
+def check_crdt_state(crdt_state) -> str:
+	"""The collaboration state sent with a save: base64 text of at most twice the document limit.
+
+	The server cannot read it (it holds no Yjs), so it checks only that it is well-formed text of
+	a sane size. Whoever loads it sanitises what comes out of it, as for anything from a peer."""
+	if crdt_state in (None, ""):
+		return ""
+	if not isinstance(crdt_state, str):
+		raise OqivaError(_("The collaboration state is not valid."))
+	if len(crdt_state) > get_setting("max_document_bytes") * 2 * 4 // 3 + 8:
+		raise OqivaLimitExceeded(_("This board's history is too large to save."))
+	try:
+		base64.b64decode(crdt_state, validate=True)
+	except binascii.Error, ValueError:
+		raise OqivaError(_("The collaboration state is not valid."))
+	return crdt_state
+
+
 def _count(document: dict) -> int:
 	nodes = sum(len(m.get("nodes", [])) for m in document["mindmaps"] if isinstance(m, dict))
 	flow_nodes = sum(len(c.get("nodes", [])) for c in document["flowcharts"] if isinstance(c, dict))
@@ -265,7 +286,7 @@ def load_document(user: str, board: str) -> dict:
 	ctx, row = resolve.board_context(user, board)
 	require(ctx, "board:view")
 	stored = frappe.db.get_value(
-		BOARD_DOCTYPE, row.name, ["document", "revision", "schema_version"], as_dict=True
+		BOARD_DOCTYPE, row.name, ["document", "revision", "schema_version", "crdt_state"], as_dict=True
 	)
 	document = stored.document or empty_document_json()
 	recovery = None
@@ -280,6 +301,7 @@ def load_document(user: str, board: str) -> dict:
 		"board": row.name,
 		"title": row.title,
 		"document": document,
+		"crdt_state": "" if recovery else (stored.crdt_state or ""),
 		"revision": stored.revision,
 		"recovery": recovery,
 		"capabilities": capabilities(ctx),
@@ -298,8 +320,30 @@ def get_revision(user: str, board: str) -> dict:
 	return frappe.db.get_value(BOARD_DOCTYPE, row.name, ["revision", "last_save_id"], as_dict=True)
 
 
-def save_document(user: str, board: str, document: str, base_revision: int, save_id: str) -> dict:
+def get_crdt_state(user: str, board: str) -> dict:
+	"""The board's collaboration state and the revision it belongs to, for a client that must merge
+	what the server holds into its own before saving again."""
+	ctx, row = resolve.board_context(user, board)
+	require(ctx, "board:view")
+	stored = frappe.db.get_value(BOARD_DOCTYPE, row.name, ["revision", "crdt_state"], as_dict=True)
+	return {"revision": stored.revision, "crdt_state": stored.crdt_state or ""}
+
+
+def save_document(
+	user: str,
+	board: str,
+	document: str,
+	base_revision: int,
+	save_id: str,
+	crdt_state: str | None = None,
+	resync: bool = False,
+) -> dict:
 	"""Save a board's content.
+
+	``crdt_state`` is the client's collaboration state for the same content. A save without it
+	clears the stored one, so a state that no longer matches the document is never kept.
+	``resync`` says the content was too large to share live, so everyone with the board open is
+	told to fetch it.
 
 	``base_revision`` is the revision the client last saw. If someone else saved since, this
 	raises OqivaStaleRevision and writes nothing. ``save_id`` makes a retry safe: if a save
@@ -311,6 +355,7 @@ def save_document(user: str, board: str, document: str, base_revision: int, save
 	if not isinstance(save_id, str) or not ID.match(save_id):
 		raise OqivaError(_("A save needs an id."))
 	parsed, count = parse_document(document)
+	crdt = check_crdt_state(crdt_state)
 	file_service.check_images(user, parsed)
 	# The row lock is what makes "check the revision, then write" one step. Without it two
 	# saves could both read revision N and both write N+1.
@@ -320,17 +365,27 @@ def save_document(user: str, board: str, document: str, base_revision: int, save
 	if current.last_save_id == save_id:
 		return {"revision": current.revision, "replayed": True}
 	if int(base_revision) != current.revision:
-		raise OqivaStaleRevision()
+		error = OqivaStaleRevision()
+		error.revision = current.revision
+		raise error
 	revision = current.revision + 1
 	frappe.db.set_value(
 		BOARD_DOCTYPE,
 		row.name,
 		{
 			"document": document,
+			"crdt_state": crdt,
 			"revision": revision,
 			"schema_version": parsed["schemaVersion"],
 			"object_count": count,
 			"last_save_id": save_id,
 		},
 	)
+	# Everyone with the board open learns a save landed, so they can tell their own from a peer's.
+	realtime.push_to_board(
+		row.name, "oqiva:saved", {"board": row.name, "revision": revision, "save_id": save_id}
+	)
+	if resync:
+		realtime.resync(row.name)
+	comment_service.reconcile_missing(row.name, parsed)
 	return {"revision": revision, "replayed": False}

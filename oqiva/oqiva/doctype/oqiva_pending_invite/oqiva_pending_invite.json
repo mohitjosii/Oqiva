@@ -7,6 +7,8 @@
   "email",
   "workspace",
   "role",
+  "board",
+  "access",
   "invited_by_user"
  ],
  "fields": [
@@ -24,16 +26,28 @@
    "fieldtype": "Link",
    "label": "Workspace",
    "options": "Oqiva Workspace",
-   "reqd": 1,
-   "in_list_view": 1
+   "in_list_view": 1,
+   "description": "Set for a workspace invite. A board invite sets Board instead."
   },
   {
    "fieldname": "role",
    "fieldtype": "Select",
    "label": "Role",
    "options": "Admin\nMember\nGuest",
-   "default": "Member",
-   "reqd": 1
+   "default": "Member"
+  },
+  {
+   "fieldname": "board",
+   "fieldtype": "Link",
+   "label": "Board",
+   "options": "Oqiva Board",
+   "search_index": 1
+  },
+  {
+   "fieldname": "access",
+   "fieldtype": "Select",
+   "label": "Access",
+   "options": "\nview\ncomment\nedit"
   },
   {
    "fieldname": "invited_by_user",

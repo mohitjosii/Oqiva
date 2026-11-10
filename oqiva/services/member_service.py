@@ -8,6 +8,7 @@ from oqiva.access.guard import service_write
 from oqiva.access.rules import ROLE_RANK, can_manage_member
 from oqiva.constants import INVITE_ROLES
 from oqiva.exceptions import OqivaConflict, OqivaError, OqivaForbidden, OqivaNotFound
+from oqiva.utils import realtime
 
 
 def add_member_row(workspace: str, user: str, role: str) -> str:
@@ -78,6 +79,7 @@ def change_role(actor: str, workspace: str, user: str, role: str) -> dict:
 	if not can_manage_member(ctx, target.role, role):
 		raise OqivaForbidden()
 	frappe.db.set_value("Oqiva Workspace Member", target.name, "role", role)
+	realtime.access_changed(user, workspace=workspace)
 	return {"user": user, "role": role}
 
 
@@ -91,6 +93,7 @@ def remove_member(actor: str, workspace: str, user: str) -> dict:
 	if not can_manage_member(ctx, target.role):
 		raise OqivaForbidden()
 	service_write(frappe.get_doc("Oqiva Workspace Member", target.name)).delete(ignore_permissions=True)
+	realtime.access_changed(user, workspace=workspace)  # their open boards must notice at once
 	return {"user": user}
 
 

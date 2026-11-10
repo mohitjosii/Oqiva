@@ -326,6 +326,8 @@ await step("a view-only user can look around but not change anything", async () 
 	await view.goto(`${BASE}/oqiva/board/${boardName}`)
 	await view.locator('[data-testid="board-canvas"]').waitFor()
 	await view.getByText("View only").first().waitFor()
+	await view.locator('[data-testid="objects"] > g').first().waitFor()
+	await view.waitForTimeout(500) // let the rest of the board finish drawing before counting
 	const mounted = await view.locator('[data-testid="objects"] > g').count()
 	await view.keyboard.press("r")
 	await view.keyboard.press("Control+a")

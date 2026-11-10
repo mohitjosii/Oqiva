@@ -230,6 +230,22 @@ export function sanitizeObject(raw, index, themeName) {
 	return object
 }
 
+// The canvas settings, with anything that is not a known value put back to its default.
+export function sanitizeCanvas(canvas) {
+	const base = createDocument().canvas
+	const source = canvas && typeof canvas === "object" ? canvas : {}
+	return {
+		mode: source.mode === "preset" ? "preset" : "infinite",
+		preset: CANVAS_PRESETS[source.preset] ? source.preset : base.preset,
+		background: isColor(source.background) ? source.background : null,
+		grid: source.grid in GRID_SIZES ? source.grid : "off",
+	}
+}
+
+export const sanitizeTheme = (theme) => ({
+	preset: THEMES[theme?.preset] ? theme.preset : DEFAULT_THEME,
+})
+
 export function parseDocument(input) {
 	let raw = input
 	if (typeof input === "string") {
@@ -249,7 +265,6 @@ export function parseDocument(input) {
 		throw new DocumentError("too_new", "This board was saved by a newer version of Oqiva.")
 	}
 	const issues = []
-	const base = createDocument()
 	const canvas = raw.canvas && typeof raw.canvas === "object" ? raw.canvas : {}
 	const themeName = THEMES[raw.theme?.preset] ? raw.theme.preset : DEFAULT_THEME
 	const seen = new Set()
@@ -282,12 +297,7 @@ export function parseDocument(input) {
 	const document = {
 		...raw,
 		schemaVersion: SCHEMA_VERSION,
-		canvas: {
-			mode: canvas.mode === "preset" ? "preset" : "infinite",
-			preset: CANVAS_PRESETS[canvas.preset] ? canvas.preset : base.canvas.preset,
-			background: isColor(canvas.background) ? canvas.background : null,
-			grid: canvas.grid in GRID_SIZES ? canvas.grid : "off",
-		},
+		canvas: sanitizeCanvas(canvas),
 		theme: { preset: themeName },
 		objects,
 		connectors,

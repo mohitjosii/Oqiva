@@ -181,3 +181,31 @@ These numbers come from a virtual machine with no GPU, so the browser rasterised
 - Elbow lines use right angles with a single middle turn and do not steer around other shapes.
 
 **Consequences:** Deleting a shape deletes its lines in the same undo step. A copied line keeps its attachments only when both its shapes are copied too; otherwise it stays where it was as a free line.
+
+## ADR-015: A board is a Yjs document of nested maps; saving merges before it retries
+**Status:** Accepted (Phase 5, 2026-11-10)
+**Context:** Two people must be able to draw on one board, including while one of them is offline, without either losing work. Saving stays on HTTP (ADR-011); the live link is only an accelerator.
+**Decision:**
+- **Layout.** The document holds one map each for `objects`, `connectors`, `canvas` and `theme`. Every object and line is its own nested map whose keys are the object's top-level fields. Two people changing different fields of one object (one moves it, one recolours it) both win; changing the same field settles on one value for everyone; deleting beats a concurrent change. Nested values (style, text, table cells, a line's ends) are replaced whole.
+- **Same bytes everywhere.** A board with no collaboration state yet is seeded from its saved content with a fixed client id and sorted keys, so two browsers that seed on their own produce identical updates and add up to one copy.
+- **Bridge.** Every committed step becomes a change to the document (inside a transaction marked local, so nothing echoes). Changes from outside become `applyRemote` operations in the store, which never enter this person's undo history and never mark the board changed. A drag shows to others when it ends, not frame by frame.
+- **Nothing from a peer is trusted.** Each incoming item is rebuilt from its map and put through the same sanitising as a loaded document (and must be filed under its own id). A line left pointing at a deleted shape is dropped everywhere.
+- **Saving.** `board.save_document` takes the content and the collaboration state (`crdt_state`, base64, at most twice the document limit, well-formedness only: the server has no Yjs). A save without a state clears the stored one, so the two never disagree. **Merge before retry:** when someone else saved first (`OqivaStaleRevision`), the editor fetches `board.get_crdt_state`, merges it into its own document (which cannot lose either side's work), rebuilds the content and saves again on top of the new revision, up to five times with a pause between. Only when the server has nothing to merge does it stop as a conflict. A client saves only its own changes; what peers did is theirs to save.
+- **Offline.** An IndexedDB copy (y-indexeddb, keyed by user and board) merges with the server state on open. If the document then holds changes the server's state lacks, the board is marked changed so they are saved.
+- **Live link.** `collab/provider.js` speaks the relay's protocol (join; `step1` state vector to everyone; `step2` targeted replies; `update`; awareness). A newcomer's state is asked for once per arrival, so changes made apart flow both ways. Only editors send state or updates; a payload over 900 KB is not sent, the editor saves over HTTP with `resync`, and the server asks everyone to fetch.
+- **Presence.** Yjs awareness: name, colour, pointer (at most 20 a second), selection. Peers' names and colours are cleaned before use.
+
+**Consequences:** The stored `crdt_state` keeps deletion records, so it can grow; compaction is a later job. Someone who may only view receives everything and sends only awareness. A peer with edit rights can store a corrupt state, which every loader sanitises or ignores (a state that cannot be read falls back to the saved content). The relay is the Node handler only: Frappe 16.53 has no Python socket server, so there is no `handlers.py` (the contract stays in ARCHITECTURE section 9).
+
+## ADR-016: Share links are hashed secrets; a redeemed link is a grant; visitors see through link endpoints
+**Status:** Accepted (Phase 5, 2026-11-10)
+**Decision:**
+- A link's secret is 32 random bytes shown once. Only an HMAC-SHA256 of it (keyed from the site's encryption key) and its first six characters are stored. Unknown, revoked, expired and trashed-board links give the same not-found.
+- A signed-in person who opens a link gets an Oqiva Link Grant (one per link and person). The grant gives the link's level for as long as the link is live: revoking or expiry takes effect at once, because access is read from the database on every request. The grant counts in capabilities, the permission-checked board list, "Shared with me" and file access.
+- A link for anyone who is not signed in exists only at Viewer level. That visitor gets no session and no standing access: they use three guest endpoints (`redeem_link`, `view_shared`, `link_file`), rate-limited by address, that return the board's content and its own pictures and nothing else. Everything else refuses a Guest.
+- Opening a link before the welcome page keeps the destination: the welcome page returns to where the person was going.
+- Redeem attempts, creation and revocation go to the audit log without the secret.
+
+## ADR-017: Comments are plain text in one-level threads, kept when deleted, pinned to a shape or a place
+**Status:** Accepted (Phase 5, 2026-11-10)
+**Decision:** Text is stored with markup stripped and control and direction characters removed, and drawn as text. A thread is a first comment plus replies (never a reply to a reply); anyone who may comment adds, replies and resolves; only the author edits; the author or a workspace Admin deletes (soft, with the thread). `@address` mentions are resolved on the server against the board's audience (members, shares, live grants); unknown or outside addresses are ignored, and edits notify only people newly mentioned. A shape-pinned comment is flagged when the shape is no longer on the board (checked on every save) and unflagged if it returns. Live updates carry only a notice, and each browser refetches its own view, so the server decides what each person may do. The generic list and read layer is limited to boards the person can see, and nothing can be written outside the services.

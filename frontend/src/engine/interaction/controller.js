@@ -3,7 +3,15 @@
 // objects ({clientX, clientY, button, shiftKey, ctrlKey, metaKey, target}), so it can be
 // driven in tests without a browser.
 
-import { boundsOfObjects, objectBounds, rectFromPoints, rectsIntersect } from "../geometry/bounds"
+import {
+	boundsOfObjects,
+	centerOf,
+	growRect,
+	objectBounds,
+	rectFromPoints,
+	rectsIntersect,
+	rotatePoint,
+} from "../geometry/bounds"
 import {
 	bendFor,
 	connectorHit,
@@ -26,7 +34,7 @@ import { toolById } from "../model/shapes"
 import { OPPOSITE, quickAddRect } from "./placement"
 import { createConnectorPaths } from "../render/connectorPaths"
 import { expandToGroups } from "../store/arrange"
-import { cellAt, scaleTable, withTable } from "../store/tableOps"
+import { cellAt, scaleTable, setTrackSize, withTable } from "../store/tableOps"
 import { paintOnto } from "./actions"
 import { snapToGuides } from "./guides"
 import { setViewport } from "./view"
@@ -36,6 +44,7 @@ const HIT_TOLERANCE_PX = 4
 const WHEEL_ZOOM_RATE = 0.00095
 const SNAP_PX = 14 // how near an anchor must be for a connector end to attach
 const ANCHOR_REVEAL_PX = 48 // shapes this near the pointer show their anchors
+const QUICK_ZONE_PX = 64 // the hover arrows stay while the pointer is within this of their shape
 const GUIDE_SNAP_PX = 6 // how close an edge must be to snap to a guide
 const EDGE_ZONE_PX = 40 // dragging this close to the edge of the view scrolls it
 const EDGE_SPEED = 700 // board pixels per second at the very edge
@@ -104,8 +113,14 @@ export class CanvasController {
 		this.state.connectorPreview = null
 	}
 
+	// The pointer left the board.
+	leave() {
+		this.state.cursor = null
+	}
+
 	// Pointer moving with no button down: which shape is hovered, and which anchors to show.
 	hover(event) {
+		this.state.cursor = this.boardPoint(event)
 		if (event.target?.dataset?.quick) return // moving onto a quick-add arrow keeps its shape
 		const point = this.boardPoint(event)
 		if (connectorToolById(this.state.tool)) {
@@ -119,7 +134,22 @@ export class CanvasController {
 			point,
 			HIT_TOLERANCE_PX / this.state.viewport.scale,
 		)
-		this.state.hoverId = hit && hit.kind === "shape" ? hit.id : null
+		if (hit && hit.kind === "shape") {
+			this.state.hoverId = hit.id
+			return
+		}
+		// The arrows sit outside the shape, so the pointer crosses a gap to reach one. They stay put
+		// through that gap, and go only once the pointer is well away from the shape.
+		const current = this.state.hoverId && this.store.getObject(this.state.hoverId)
+		if (
+			current &&
+			rectsIntersect(
+				growRect(objectBounds(current), QUICK_ZONE_PX / this.state.viewport.scale),
+				{ x: point.x, y: point.y, w: 0.01, h: 0.01 },
+			)
+		)
+			return
+		this.state.hoverId = null
 	}
 
 	clearHover() {
@@ -155,6 +185,11 @@ export class CanvasController {
 		this.state.editingId = null // pressing anywhere else ends text editing, which saves it
 		if (!event.target?.dataset?.quick) this.state.hoverId = null
 		const point = this.boardPoint(event)
+		if (this.state.tool === "comment") {
+			if (this.state.canComment)
+				this.drag = { type: "comment", start: point, startScreen: screen }
+			return
+		}
 		const connectorTool = connectorToolById(this.state.tool)
 		if (connectorTool) {
 			if (!this.state.readonly) this.startConnector(connectorTool, point, screen)
@@ -187,6 +222,12 @@ export class CanvasController {
 		const lines = this.store.selectedConnectors()
 		if (handle?.startsWith("line-") && lines.length === 1 && !selected.length) {
 			if (!this.state.readonly) this.startLineHandle(handle, lines[0])
+			return
+		}
+		if (/^(row|col)-\d+$/.test(handle || "")) {
+			const [object] = selected
+			if (object?.kind === "table" && selected.length === 1 && !lines.length)
+				if (!this.state.readonly) this.startTrack(handle, object, point)
 			return
 		}
 		if (
@@ -259,8 +300,10 @@ export class CanvasController {
 		const drag = this.drag
 		if (!drag) return this.hover(event)
 		this.lastMove = event
+		this.state.dragging = drag.type !== "pan"
 		const screen = this.screenPoint(event)
 		const point = this.boardPoint(event)
+		this.state.cursor = point
 		switch (drag.type) {
 			case "pan":
 				setViewport(
@@ -274,6 +317,9 @@ export class CanvasController {
 				break
 			case "resize":
 				this.resize(drag, point, event.shiftKey)
+				break
+			case "table-track":
+				this.moveTrack(drag, point)
 				break
 			case "rotate": {
 				const angle = rotationFor(drag.object, point)
@@ -464,10 +510,20 @@ export class CanvasController {
 		])
 	}
 
+	// The shape the quick-add arrows belong to: the one under the pointer, or (so a touch screen,
+	// which cannot hover, gets them too) the one shape that is selected.
+	quickSource() {
+		const hovered = this.state.hoverId && this.store.getObject(this.state.hoverId)
+		if (hovered?.kind === "shape") return hovered
+		const [only, ...rest] = this.store.selectedObjects()
+		const lines = this.store.selectedConnectors()
+		return only && !rest.length && !lines.length && only.kind === "shape" ? only : null
+	}
+
 	// The hover arrows: a copy of the shape on one side, joined to it by an arrow.
 	quickAdd(side) {
-		const source = this.store.getObject(this.state.hoverId)
-		if (!source || source.kind !== "shape") return
+		const source = this.quickSource()
+		if (!source) return
 		const obstacles = this.store.objects.value.map(objectBounds)
 		const rect = quickAddRect(source, side, obstacles)
 		const copy = {
@@ -481,7 +537,7 @@ export class CanvasController {
 		const arrow = createConnector({
 			from: { objectId: source.id, anchor: side },
 			to: { objectId: copy.id, anchor: OPPOSITE[side] },
-			geometry: "straight",
+			geometry: connectorToolById(this.state.lastConnectorTool)?.geometry || "straight",
 			arrow: true,
 			theme: this.store.theme.value.preset,
 			z: this.store.nextConnectorZ(),
@@ -528,6 +584,38 @@ export class CanvasController {
 		drag.gesture.set([{ id: object.id, patch }])
 	}
 
+	// A row or column of a table is dragged by its far border, on its own.
+	startTrack(handle, object, point) {
+		const [axis, index] = handle.split("-")
+		const sizes = axis === "row" ? object.table.rowH : object.table.colW
+		this.drag = {
+			type: "table-track",
+			object,
+			axis,
+			index: Number(index),
+			start: this.tableLocal(object, point),
+			size: sizes[Number(index)],
+			gesture: this.store.beginGesture([object.id]),
+		}
+	}
+
+	tableLocal(object, point) {
+		return object.rotation ? rotatePoint(point, centerOf(object), -object.rotation) : point
+	}
+
+	moveTrack(drag, point) {
+		const local = this.tableLocal(drag.object, point)
+		const moved = drag.axis === "row" ? local.y - drag.start.y : local.x - drag.start.x
+		const table = setTrackSize(
+			drag.object.table,
+			drag.axis,
+			drag.index,
+			Math.round(drag.size + moved),
+			this.measure,
+		)
+		drag.gesture.set([{ id: drag.object.id, patch: withTable(table) }])
+	}
+
 	drawRect(drag, point, shiftKey) {
 		if (drag.tool.ratio || shiftKey) {
 			const size = Math.max(
@@ -549,6 +637,7 @@ export class CanvasController {
 		if (!drag) return
 		this.drag = null
 		this.lastMove = null
+		this.state.dragging = false
 		this.state.panning = false
 		this.state.guides = []
 		switch (drag.type) {
@@ -562,11 +651,21 @@ export class CanvasController {
 			case "rotate":
 				drag.gesture.commit("Rotate")
 				break
+			case "table-track":
+				drag.gesture.commit(drag.axis === "row" ? "Resize row" : "Resize column")
+				break
 			case "marquee":
 				this.state.marquee = null
 				break
 			case "connect":
 				this.finishConnector(drag, this.screenPoint(event))
+				break
+			case "comment":
+				if (
+					Math.hypot(...this.delta(this.screenPoint(event), drag.startScreen)) <
+					CLICK_SLOP_PX
+				)
+					this.placeComment(drag.start)
 				break
 			case "line-end":
 				this.clearConnectHints()
@@ -613,6 +712,25 @@ export class CanvasController {
 		this.state.tableCell = { id: table.id, row: 0, col: 0 }
 	}
 
+	delta(a, b) {
+		return [a.x - b.x, a.y - b.y]
+	}
+
+	// A click with the comment tool: a shape under it gets the comment, otherwise the place does.
+	placeComment(point) {
+		const hit = topObjectAt(
+			this.store.objects.value,
+			point,
+			HIT_TOLERANCE_PX / this.state.viewport.scale,
+		)
+		this.state.commentDraft = hit
+			? { anchor_type: "shape", shape_id: hit.id }
+			: { anchor_type: "point", x: Math.round(point.x), y: Math.round(point.y) }
+		this.state.commentsOpen = true
+		this.state.openThread = null
+		this.state.tool = "select"
+	}
+
 	// Places a new object, selects it, and goes back to the select tool.
 	createAndSelect(toolId, rect, { edit = toolId === "text" } = {}) {
 		const object = createObject(toolId, rect, {
@@ -643,6 +761,7 @@ export class CanvasController {
 		this.state.preview = null
 		this.state.marquee = null
 		this.state.guides = []
+		this.state.dragging = false
 		this.lastMove = null
 		this.clearConnectHints()
 		if (drag?.gesture) drag.gesture.cancel()

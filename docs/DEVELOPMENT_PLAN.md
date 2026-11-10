@@ -157,7 +157,21 @@
 
 ---
 
-## Phase 5: Collaboration and sharing (about 4.5 weeks)
+## Phase 5: Collaboration and sharing (about 4.5 weeks) ✅ (built 2026-11-10 on branch `collaboration`, awaiting your testing)
+
+> **Status.** Tasks P5.01 to P5.09 are built, with the gaps below. Checks: 267 backend tests (249 + 18), 476 frontend tests, 16 relay harness tests (`node --test realtime/harness/relay.test.mjs`), and browser runs that all pass: `editor` (20 steps), `home` (14), `phase4` (50), `phase5` sharing and links (13), `collab` three people live (10), `comments` and notifications (14). ruff, prettier and the licence check (270 packages) pass. Decisions are in ADR-015 to ADR-017; notes in ARCHITECTURE section 23; test coverage in SECURITY_TEST_PLAN section 10.
+>
+> **Not done or not verified:**
+> - **Semgrep was not run** (the disk is at 99%; see Phase 4).
+> - **Not tried by a person yet:** other browsers (Firefox, Safari), more than three editors, a slow or flaky network beyond the offline cases in `collab.e2e.mjs`, and email (this site has no outgoing email account, so invite and notification emails are logged as failures and the invite is kept).
+> - **Others see a drag when it ends,** not frame by frame.
+> - **Visitors without an account see a snapshot:** it does not update live and they cannot comment. A signed-in person who opens the same link gets the live board.
+> - **`join` takes no `link_token`** (plan P5.02): a signed-in person's link access is a grant, and a visitor has no live link at all.
+> - **No `handlers.py`:** Frappe 16.53 has no Python socket server, so there is nothing to port the relay to.
+> - **Two notifications from section 11 are not written:** "access changed" and "workspace invite" (the open board still learns of an access change live). Share, mention and reply are.
+> - **The offline copy** stays in the browser's IndexedDB until the site data is cleared; it is not removed on sign-out. The stored collaboration state keeps deletion records and has no compaction yet.
+> - **Concurrent writes to one board row** (an autosave landing at the same instant as a rename) once returned a 500 in a browser run. The editor retries on a 500, and opening an unedited board no longer saves, which removed the trigger seen in the home run, but the underlying collision is not otherwise handled.
+> - Found and fixed along the way: link grants were missing from the board list's capabilities (a person with an Editor link saw a view-only board), and `frappe.share.remove` refused real members (tests ran as Administrator, so now `TestAsTheRealPerson` runs as a member).
 | ID | Lane | Task | Refs | Days | Depends |
 |---|---|---|---|---|---|
 | P5.01 | ENG | Yjs bridge (store ↔ Y.Doc, one entry per object, echo guard); y-indexeddb offline cache and merge order; **merge-before-retry** recovery for stale saves | §8.2, §9.3–9.4, L1 | 3 | P3.08, P1.03 |
@@ -178,6 +192,15 @@
 - Links follow T4.
 
 ---
+
+**Fixes after your manual testing (2026-11-10, uncommitted):**
+- The hover arrows no longer vanish on the way to them (the shape keeps its hover through a 64 px zone), and a selected shape shows its arrows too, so a touch screen can tap a shape, then tap an arrow.
+- The shape of a card can be changed from the right palette (Shape section: rectangle, square, ellipse, circle, triangle, diamond, polygon with 3 to 12 sides, block arrow); text and style are kept and it is one undo step.
+- The bottom toolbar was rebuilt from fixed-size buttons (no more overlapping chevrons).
+- Comments: the tool now says what to do (a toast), the palette has "Add comment" for a selected shape, and the Comments panel has an "Add a comment" button. I could not reproduce a failure in the browser, so if it still fails on your side, tell me the steps and any message you see.
+- A line type you pick (elbow, curved, straight) now sticks: new lines, the L key, and the hover arrows that add a connected shape use it until you change it again. It lasts for the session and is not saved with the board.
+- A table's rows and columns resize one at a time: select the table and drag the border between two rows or two columns (a row never gets shorter than its text; narrowing a column grows the rows where text wraps).
+- Browser checks: `e2e/fixes.e2e.mjs`.
 
 ## Phase 6: Oqiva canvas features and templates (about 3 weeks)
 | ID | Lane | Task | Refs | Days | Depends |

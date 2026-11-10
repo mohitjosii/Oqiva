@@ -232,3 +232,125 @@ describe("classifyFailure", () => {
 		expect(classifyFailure(failure(null, 400))).toBe("blocking")
 	})
 })
+
+describe("merging before saving again (someone else saved first)", () => {
+	// A server whose revision can move under us, and a recover that merges and reports it.
+	function collab({ moves = 1, recoverFails = null } = {}) {
+		let server = 1
+		let ours = { v: 0 }
+		let crdt = "ours"
+		let pending = moves
+		const statuses = []
+		const payloads = []
+		const merges = []
+		const autosave = createAutosave({
+			save: async (payload) => {
+				payloads.push(payload)
+				if (payload.baseRevision < server || pending > 0) {
+					if (pending > 0) {
+						pending--
+						server += 1
+					}
+					throw failure("OqivaStaleRevision", 409)
+				}
+				server += 1
+				return { revision: server }
+			},
+			getDocument: () => ours,
+			getCrdtState: () => crdt,
+			recover: async () => {
+				merges.push(server)
+				if (recoverFails && merges.length <= recoverFails.times) throw recoverFails.error
+				ours = { v: 0, merged: merges.length } // what merging the server's work does to the document
+				crdt = `merged${merges.length}`
+				return server
+			},
+			onStatus: ({ status }) => statuses.push(status),
+			revision: 1,
+			makeSaveId: (() => {
+				let n = 0
+				return () => `id${++n}`
+			})(),
+		})
+		return {
+			autosave,
+			statuses,
+			payloads,
+			merges,
+			get server() {
+				return server
+			},
+		}
+	}
+
+	it("merges the server's state and saves again on top of its revision, without stopping", async () => {
+		const c = collab()
+		c.autosave.markDirty()
+		await vi.advanceTimersByTimeAsync(1600)
+		await vi.advanceTimersByTimeAsync(400)
+		expect(c.merges).toHaveLength(1)
+		expect(c.payloads).toHaveLength(2)
+		expect(c.payloads[0].baseRevision).toBe(1)
+		expect(c.payloads[1].baseRevision).toBe(c.merges[0]) // on top of what the server holds
+		expect(c.payloads[1].crdtState).toBe("merged1") // the merged state, not the old one
+		expect(JSON.parse(c.payloads[1].document).merged).toBe(1)
+		expect(c.autosave.status).toBe("saved")
+		expect(c.statuses).not.toContain("conflict")
+		expect(c.payloads[1].saveId).not.toBe(c.payloads[0].saveId) // different content gets a new id
+	})
+
+	it("sends the collaboration state with every save", async () => {
+		const c = collab({ moves: 0 })
+		c.autosave.markDirty()
+		await vi.advanceTimersByTimeAsync(1600)
+		expect(c.payloads[0].crdtState).toBe("ours")
+		expect(c.payloads[0].resync).toBe(false)
+	})
+
+	it("keeps trying through several moves of the server, then gives up as a conflict", async () => {
+		const c = collab({ moves: 99 })
+		c.autosave.markDirty()
+		await vi.advanceTimersByTimeAsync(60000)
+		expect(c.merges).toHaveLength(5)
+		expect(c.autosave.status).toBe("conflict")
+		const before = c.payloads.length
+		await vi.advanceTimersByTimeAsync(60000)
+		expect(c.payloads.length).toBe(before) // a conflict stops it writing
+	})
+
+	it("survives the server moving three times before it settles", async () => {
+		const c = collab({ moves: 3 })
+		c.autosave.markDirty()
+		await vi.advanceTimersByTimeAsync(20000)
+		expect(c.merges).toHaveLength(3)
+		expect(c.autosave.status).toBe("saved")
+	})
+
+	it("when fetching the server's state fails, keeps the work and tries again later", async () => {
+		const c = collab({ recoverFails: { times: 1, error: new ApiError("down", { status: 0 }) } })
+		c.autosave.markDirty()
+		await vi.advanceTimersByTimeAsync(1600)
+		expect(["offline", "error"]).toContain(c.autosave.status)
+		await vi.advanceTimersByTimeAsync(10000)
+		expect(c.autosave.status).toBe("saved")
+	})
+
+	it("without a recover function, a stale save still stops as a conflict", async () => {
+		const { autosave, statuses } = setup({
+			outcomes: [async () => Promise.reject(failure("OqivaStaleRevision", 409))],
+		})
+		autosave.markDirty()
+		await vi.advanceTimersByTimeAsync(1600)
+		expect(statuses.at(-1)).toBe("conflict")
+	})
+
+	it("asks the server to tell everyone when the content was too big to share live", async () => {
+		const c = collab({ moves: 0 })
+		c.autosave.requestResync()
+		await vi.advanceTimersByTimeAsync(1600)
+		expect(c.payloads[0].resync).toBe(true)
+		c.autosave.markDirty()
+		await vi.advanceTimersByTimeAsync(1600)
+		expect(c.payloads[1].resync).toBe(false) // once is enough
+	})
+})

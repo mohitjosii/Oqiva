@@ -11,6 +11,7 @@ import WorkspaceSwitcher from "@/components/WorkspaceSwitcher.vue"
 import { api } from "@/data/api"
 import { preferences, toggleTheme } from "@/data/preferences"
 import { loadProjects, projectsState } from "@/data/projects"
+import { notifications } from "@/data/notifications"
 import { findWorkspace, refreshWorkspaces, session } from "@/data/session"
 import { colorValue } from "@/utils/colors"
 import { messageFor } from "@/utils/errors"
@@ -41,6 +42,7 @@ const nav = computed(() => {
 		{ name: "recent", label: "Recent", icon: "clock" },
 		{ name: "favorites", label: "Favorites", icon: "star" },
 		{ name: "shared", label: "Shared with me", icon: "share-2" },
+		{ name: "notifications", label: "Notifications", icon: "bell" },
 		{ name: "archived", label: "Archive", icon: "archive" },
 		{ name: "trash", label: "Trash", icon: "trash-2" },
 	].map((item) => ({ ...item, to: { name: item.name, params } }))
@@ -167,6 +169,18 @@ const userMenu = computed(() => [
 								aria-hidden="true"
 							/>
 							<span v-if="!collapsed">{{ item.label }}</span>
+							<span
+								v-if="
+									item.name === 'notifications' &&
+									notifications.unread &&
+									!collapsed
+								"
+								class="ml-auto rounded-full bg-blue-600 px-1.5 text-xs text-white"
+								data-testid="sidebar-unread"
+								>{{
+									notifications.unread > 99 ? "99+" : notifications.unread
+								}}</span
+							>
 							<span v-else class="sr-only">{{ item.label }}</span>
 						</router-link>
 					</li>

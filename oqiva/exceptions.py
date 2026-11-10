@@ -59,6 +59,7 @@ class OqivaStaleRevision(OqivaConflict):
 	"""A save was made against a revision that is no longer the current one."""
 
 	code = "OQIVA_STALE_REVISION"
+	revision: int | None = None  # the server's current revision, when known
 
 	@classmethod
 	def default_message(cls) -> str:

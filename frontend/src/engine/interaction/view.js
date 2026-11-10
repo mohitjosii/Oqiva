@@ -61,3 +61,14 @@ export function fitView(store, padding = 48) {
 	}
 	setViewport(store, fitBounds(target, store.state.size, { padding, maxScale: 1 }))
 }
+
+// Scrolls the view so a point on the board is in the middle of the screen.
+export function centerOn(store, point) {
+	const { scale } = store.state.viewport
+	const { width, height } = store.state.size
+	setViewport(store, {
+		...store.state.viewport,
+		x: width / 2 - point.x * scale,
+		y: height / 2 - point.y * scale,
+	})
+}

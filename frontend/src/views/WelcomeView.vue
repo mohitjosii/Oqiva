@@ -1,21 +1,29 @@
 <script setup>
 import { Button, FormControl, toast } from "frappe-ui"
 import { computed, ref } from "vue"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import { api } from "@/data/api"
 import { preferences } from "@/data/preferences"
 import { findWorkspace, homeWorkspace, refreshWorkspaces, session } from "@/data/session"
 import { messageFor } from "@/utils/errors"
 
 const router = useRouter()
+const route = useRoute()
 const logo = "/assets/oqiva/images/oqiva-logo.svg" // served by Frappe, not bundled
 const personal = computed(() => findWorkspace(session.personalWorkspace))
 const name = ref(personal.value?.workspace_name || "")
 const busy = ref(false)
 
+// Where the person was going before the welcome page got in the way (a shared link, say).
+const next = computed(() => {
+	const wanted = String(route.query.next || "")
+	return wanted.startsWith("/") && !wanted.startsWith("//") ? wanted : null
+})
+
 function finish() {
 	preferences.welcomed = true
-	router.replace({ name: "dashboard", params: { workspace: homeWorkspace() } })
+	if (next.value) router.replace(next.value)
+	else router.replace({ name: "dashboard", params: { workspace: homeWorkspace() } })
 }
 
 async function save() {

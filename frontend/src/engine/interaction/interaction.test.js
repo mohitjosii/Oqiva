@@ -1119,3 +1119,214 @@ describe("tables", () => {
 		expect(store.state.tableCell).toEqual({ id: "t", row: 0, col: 0 })
 	})
 })
+
+describe("the comment tool", () => {
+	beforeEach(() => {
+		setup([rect("a", 100, 100)])
+		store.state.canComment = true
+		store.state.tool = "comment"
+	})
+
+	it("a click on a shape starts a comment on that shape, opens the panel and returns to select", () => {
+		drag([150, 130], [150, 130])
+		expect(store.state.commentDraft).toEqual({ anchor_type: "shape", shape_id: "a" })
+		expect(store.state.commentsOpen).toBe(true)
+		expect(store.state.tool).toBe("select")
+		expect(store.objects.value).toHaveLength(1)
+		expect(store.history.undoStack).toHaveLength(0)
+	})
+
+	it("a click on empty canvas starts a comment on that place", () => {
+		drag([600.4, 300.6], [600.4, 300.6])
+		expect(store.state.commentDraft).toEqual({ anchor_type: "point", x: 600, y: 301 })
+	})
+
+	it("a drag is not a comment", () => {
+		drag([600, 300], [680, 380])
+		expect(store.state.commentDraft).toBeNull()
+		expect(store.state.tool).toBe("comment")
+	})
+
+	it("does nothing for someone who may not comment, even though a viewer may look around", () => {
+		store.state.canComment = false
+		drag([150, 130], [150, 130])
+		expect(store.state.commentDraft).toBeNull()
+	})
+
+	it("works on a read-only board for someone who may comment, and the C key reaches it only then", () => {
+		store.setReadonly(true)
+		drag([150, 130], [150, 130])
+		expect(store.state.commentDraft).not.toBeNull()
+		const key = { key: "c", target: null }
+		expect(commandFor(key, { readonly: true, canComment: true })).toEqual({
+			name: "tool",
+			tool: "comment",
+		})
+		expect(commandFor(key, { readonly: true, canComment: false })).toBeNull()
+		expect(commandFor(key, {})).toEqual({ name: "tool", tool: "comment" })
+	})
+})
+
+describe("the hover arrows keep their shape through the gap", () => {
+	beforeEach(() => setup([rect("a", 100, 100), rect("b", 600, 100)]))
+
+	it("stay while the pointer crosses the gap to an arrow, and go once it is well away", () => {
+		controller.pointerMove(press(150, 130)) // over "a"
+		expect(store.state.hoverId).toBe("a")
+		for (const x of [210, 225, 240]) {
+			controller.pointerMove(press(x, 130)) // out through the gap towards the east arrow
+			expect(store.state.hoverId).toBe("a")
+		}
+		controller.pointerMove(press(400, 130)) // far away
+		expect(store.state.hoverId).toBeNull()
+	})
+
+	it("moving onto another shape switches to it", () => {
+		controller.pointerMove(press(150, 130))
+		controller.pointerMove(press(650, 130))
+		expect(store.state.hoverId).toBe("b")
+	})
+
+	it("the zone shrinks with zoom, so it is always about 64 screen pixels", () => {
+		store.state.viewport = { x: 0, y: 0, scale: 0.5 } // "a" now spans screen x 50..100
+		controller.pointerMove(press(75, 65))
+		expect(store.state.hoverId).toBe("a")
+		controller.pointerMove(press(150, 65)) // 50px past its right edge
+		expect(store.state.hoverId).toBe("a")
+		controller.pointerMove(press(200, 65)) // 100px past
+		expect(store.state.hoverId).toBeNull()
+	})
+
+	it("a selected shape offers the quick add too, for a screen that cannot hover", () => {
+		store.select(["a"])
+		controller.pointerDown(press(247, 130, { target: { dataset: { quick: "e" } } }))
+		controller.pointerUp(press(247, 130))
+		expect(store.objects.value).toHaveLength(3)
+		expect(store.connectors.value).toHaveLength(1)
+		expect(store.connectors.value[0].from).toEqual({ objectId: "a", anchor: "e" })
+	})
+
+	it("with two shapes selected there is no quick add, and a text box never has one", () => {
+		store.select(["a", "b"])
+		controller.pointerDown(press(247, 130, { target: { dataset: { quick: "e" } } }))
+		expect(store.objects.value).toHaveLength(2)
+		const text = { ...rect("t", 300, 300, 100, 40), kind: "text" }
+		store.addObjects([text])
+		store.select(["t"])
+		controller.pointerDown(press(420, 320, { target: { dataset: { quick: "e" } } }))
+		expect(store.objects.value).toHaveLength(3)
+	})
+
+	it("moving a shape marks the board as busy until it is let go", () => {
+		controller.pointerDown(press(150, 130))
+		controller.pointerMove(press(190, 160))
+		expect(store.state.dragging).toBe(true)
+		controller.pointerUp(press(190, 160))
+		expect(store.state.dragging).toBe(false)
+	})
+})
+
+describe("a chosen line type sticks", () => {
+	beforeEach(() => {
+		setup([rect("a", 100, 100), rect("b", 500, 100)])
+		store.select(["a"])
+	})
+
+	it("changing the line type of a line makes the next lines, and quick-add arrows, use it", () => {
+		const line = createConnector({
+			from: { objectId: "a", anchor: "e" },
+			to: { objectId: "b", anchor: "w" },
+			geometry: "straight",
+			arrow: true,
+			theme: "ocean",
+			z: 1,
+		})
+		store.addItems({ connectors: [line] })
+		store.select([line.id])
+		runAction(store, { name: "style", target: "geometry", value: "elbow" })
+		expect(store.state.lastConnectorTool).toBe("arrow-elbow")
+		store.select(["a"])
+		controller.pointerDown(press(247, 130, { target: { dataset: { quick: "s" } } }))
+		controller.pointerUp(press(247, 130))
+		const added = store.connectors.value.find((c) => c.id !== line.id)
+		expect(added.geometry).toBe("elbow")
+		store.select([line.id])
+		runAction(store, { name: "style", target: "geometry", value: "curved" })
+		expect(store.state.lastConnectorTool).toBe("arrow-curved")
+	})
+
+	it("keeps a plain line plain when the last tool had no arrowhead", () => {
+		store.state.lastConnectorTool = "line-straight"
+		const line = createConnector({
+			from: { objectId: "a", anchor: "e" },
+			to: { objectId: "b", anchor: "w" },
+			geometry: "straight",
+			arrow: false,
+			theme: "ocean",
+			z: 1,
+		})
+		store.addItems({ connectors: [line] })
+		store.select([line.id])
+		runAction(store, { name: "style", target: "geometry", value: "curved" })
+		expect(store.state.lastConnectorTool).toBe("line-curved")
+	})
+
+	it("the line tool chosen last draws with that geometry", () => {
+		store.state.lastConnectorTool = "arrow-elbow"
+		runCommand(store, controller, { name: "tool", tool: "connector" })
+		expect(store.state.tool).toBe("arrow-elbow")
+	})
+})
+
+describe("table rows and columns", () => {
+	const table = () => ({
+		...createTable({ rows: 3, cols: 2, center: { x: 300, y: 200 }, theme: "ocean", z: 1 }),
+		id: "t",
+	})
+	const handleEvent = (name, x, y) => ({ ...press(x, y), target: { dataset: { handle: name } } })
+
+	it("dragging a row border changes that row only, in one undo step", () => {
+		setup([table()])
+		store.select(["t"])
+		const before = store.getObject("t")
+		controller.pointerDown(handleEvent("row-0", 300, 100))
+		controller.pointerMove(handleEvent("row-0", 300, 140))
+		controller.pointerUp(handleEvent("row-0", 300, 140))
+		const after = store.getObject("t")
+		expect(after.table.rowH[0]).toBe(before.table.rowH[0] + 40)
+		expect(after.table.rowH.slice(1)).toEqual(before.table.rowH.slice(1))
+		expect(after.h).toBe(after.table.rowH.reduce((a, b) => a + b, 0))
+		store.undo()
+		expect(store.getObject("t").table.rowH).toEqual(before.table.rowH)
+	})
+
+	it("a column border changes one column, and a row cannot go below the minimum", () => {
+		setup([table()])
+		store.select(["t"])
+		const before = store.getObject("t")
+		controller.pointerDown(handleEvent("col-0", 300, 100))
+		controller.pointerMove(handleEvent("col-0", 340, 100))
+		controller.pointerUp(handleEvent("col-0", 340, 100))
+		expect(store.getObject("t").table.colW[0]).toBe(before.table.colW[0] + 40)
+		controller.pointerDown(handleEvent("row-1", 300, 100))
+		controller.pointerMove(handleEvent("row-1", 300, -900))
+		controller.pointerUp(handleEvent("row-1", 300, -900))
+		expect(store.getObject("t").table.rowH[1]).toBe(20)
+	})
+
+	it("works on a turned table and is refused for a read-only viewer", () => {
+		setup([{ ...table(), rotation: 90 }])
+		store.select(["t"])
+		const before = store.getObject("t").table.rowH[0]
+		controller.pointerDown(handleEvent("row-0", 300, 100))
+		controller.pointerMove(handleEvent("row-0", 300 - 30, 100)) // turned 90: board x runs against rows
+		controller.pointerUp(handleEvent("row-0", 270, 100))
+		expect(store.getObject("t").table.rowH[0]).not.toBe(before)
+		store.setReadonly(true)
+		const rows = store.getObject("t").table.rowH
+		controller.pointerDown(handleEvent("row-1", 300, 100))
+		controller.pointerMove(handleEvent("row-1", 300, 160))
+		controller.pointerUp(handleEvent("row-1", 300, 160))
+		expect(store.getObject("t").table.rowH).toEqual(rows)
+	})
+})

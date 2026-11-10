@@ -1,5 +1,6 @@
 import { reactive } from "vue"
 import { api } from "@/data/api"
+import { startNotifications } from "@/data/notifications"
 import { readStored, writeStored } from "@/utils/storage"
 
 const LAST_WORKSPACE = "oqiva.lastWorkspace"
@@ -24,6 +25,7 @@ export async function boot() {
 		session.limits = data.limits
 		session.isAdmin = data.is_admin
 		session.ready = true
+		startNotifications()
 	} catch (error) {
 		session.error = error
 		throw error
@@ -47,3 +49,6 @@ export function homeWorkspace() {
 	const last = readStored(LAST_WORKSPACE)
 	return findWorkspace(last)?.name || session.personalWorkspace || session.workspaces[0]?.name
 }
+
+// A visitor who opened a share link without signing in (the page tells us so when it loads).
+export const isGuest = () => window.frappe?.boot?.user === "Guest"

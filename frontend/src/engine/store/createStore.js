@@ -12,6 +12,15 @@ import { History } from "./history"
 import { cloneSelection } from "./clone"
 
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b)
+
+// The patch that turns ``before`` into ``after``: changed fields, and undefined for removed ones.
+function wholePatch(before, after) {
+	const patch = {}
+	for (const key of new Set([...Object.keys(before), ...Object.keys(after)])) {
+		if (!same(before[key], after[key])) patch[key] = after[key]
+	}
+	return patch
+}
 const LISTS = ["objects", "connectors"]
 
 function withPatch(item, patch) {
@@ -61,6 +70,7 @@ export function createStore(document, { readonly = false } = {}) {
 		connectorPreview: null, // a connector being drawn: {from, to, geometry, arrow}
 		marquee: null, // a rectangle being dragged out
 		panning: false,
+		dragging: false, // something is being moved, resized or drawn
 		lastShapeTool: "rectangle",
 		lastConnectorTool: "arrow-straight",
 		editingNew: false, // the object being edited was just created
@@ -74,6 +84,13 @@ export function createStore(document, { readonly = false } = {}) {
 		recentColors: [], // colours picked lately, newest first
 		uploads: 0, // pictures being uploaded
 		exporting: false, // an export is being made
+		comments: [], // the threads on this board, as the server describes them
+		canComment: false, // this person may start a comment (even when they may not edit)
+		commentsOpen: false, // the comments panel is showing
+		commentDraft: null, // a comment about to be written: {anchor_type, shape_id | x, y}
+		openThread: null, // the thread being looked at
+		cursor: null, // where this person's pointer is on the board: {x, y}
+		peers: [], // the other people here: {clientId, id, name, color, cursor, selection}
 	})
 
 	const publish = (list) => {
@@ -184,6 +201,46 @@ export function createStore(document, { readonly = false } = {}) {
 
 	const ofList = (ids, list) => ids.filter((id) => index[list].has(id))
 
+	// Changes made by someone else (or restored from this device's cache). They go straight into
+	// the document, never into this person's undo history, and are tolerant of what they find:
+	// an add of something already here replaces it, and a change to something gone is ignored.
+	function applyRemote(ops) {
+		const real = []
+		for (const op of ops) {
+			const list = op.list || "objects"
+			if (op.t === "add") {
+				const fresh = op.items.filter(
+					(item) => !LISTS.some((name) => index[name].has(item.id)),
+				)
+				const known = op.items.filter((item) => index[list].has(item.id))
+				if (known.length) {
+					const changes = known.map((item) => ({
+						id: item.id,
+						patch: wholePatch(index[list].get(item.id), item),
+					}))
+					real.push({ t: "update", list, changes })
+				}
+				if (fresh.length) real.push({ t: "add", list, items: fresh })
+			} else if (op.t === "remove") {
+				const ids = op.ids.filter((id) => index[list].has(id))
+				if (ids.length) real.push({ t: "remove", list, ids })
+			} else if (op.t === "update") {
+				const changes = op.changes.filter(
+					(c) => index[list].has(c.id) && Object.keys(c.patch).length,
+				)
+				if (changes.length) real.push({ t: "update", list, changes })
+			} else {
+				real.push(op)
+			}
+		}
+		if (!real.length) return false
+		for (const op of real) applyOp(op)
+		state.selection = exists(state.selection)
+		if (state.editingId && !listOf(state.editingId)) state.editingId = null
+		emit({ type: "change", origin: "remote", ops: real })
+		return true
+	}
+
 	// Connectors attached to any of these objects, which must go when the objects do.
 	function dependentConnectors(objectIds) {
 		const gone = new Set(objectIds)
@@ -265,6 +322,7 @@ export function createStore(document, { readonly = false } = {}) {
 
 		// --- document changes ---
 		transact,
+		applyRemote,
 
 		// The most objects a board may hold. Adding past it is refused and announced.
 		setLimits(limits) {

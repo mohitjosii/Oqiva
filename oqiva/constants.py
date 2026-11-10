@@ -11,6 +11,13 @@ INVITE_ROLES = ("Admin", "Member", "Guest")
 PROJECT_COLORS = ("gray", "blue", "green", "orange", "red", "violet", "teal", "pink")
 
 BOARD_DOCTYPE = "Oqiva Board"
+LINK_DOCTYPE = "Oqiva Share Link"
+COMMENT_DOCTYPE = "Oqiva Comment"
+MAX_COMMENT_CHARS = 5000
+MAX_COMMENTS_PER_BOARD = 2000
+MAX_REPLIES_PER_THREAD = 200
+GRANT_DOCTYPE = "Oqiva Link Grant"
+LINK_ACCESS = {"Viewer": "view", "Commenter": "comment", "Editor": "edit"}
 AUDIT_DOCTYPE = "Oqiva Audit Log"
 THUMBNAIL_MAX_BYTES = 256 * 1024
 AUDIT_RETENTION_DAYS = 365
@@ -54,4 +61,8 @@ def empty_document_json() -> str:
 BOARD_CHILD_DOCTYPES = (
 	("Oqiva Board View", "board"),
 	("Oqiva Favorite", "board"),
+	("Oqiva Link Grant", "board"),
+	("Oqiva Share Link", "board"),
+	("Oqiva Pending Invite", "board"),
+	("Oqiva Comment", "board"),
 )

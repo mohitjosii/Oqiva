@@ -15,13 +15,17 @@ their credentials in a JSON file:
 
 ```json
 { "a": { "user": "e2e_a@example.com", "password": "..." },
-  "b": { "user": "e2e_b@example.com", "password": "..." } }
+  "b": { "user": "e2e_b@example.com", "password": "..." },
+  "c": { "user": "e2e_c@example.com", "password": "..." } }
 ```
 
 ## Run
 
-Three runs: `home.e2e.mjs` (the home area), `editor.e2e.mjs` (the canvas editor) and
-`phase4.e2e.mjs` (lines, palette, clipboard, pictures, tables, export). Use a fresh pair of
+Six runs: `home.e2e.mjs` (the home area), `editor.e2e.mjs` (the canvas editor),
+`phase4.e2e.mjs` (lines, palette, clipboard, pictures, tables, export), `phase5.e2e.mjs` (sharing and
+links), `collab.e2e.mjs` (three people live; needs the bench's socket server) and
+`comments.e2e.mjs` (comments, mentions, notifications). The last three need three test users in the
+credentials file (`a`, `b`, `c`). Use a fresh pair of
 throwaway users when you can: each run creates a workspace, and the workspace menu grows with
 every one. `png.mjs` makes the small pictures the runs upload.
 

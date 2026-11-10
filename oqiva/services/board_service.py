@@ -69,6 +69,7 @@ def _decorate(user: str, rows: list) -> list[dict]:
 			limit_page_length=0,
 		)
 	}
+	links = resolve.live_link_levels(user, names)
 	favorites = set(
 		frappe.get_all("Oqiva Favorite", filters={"user": user, "board": ["in", names]}, pluck="board")
 	)
@@ -96,7 +97,7 @@ def _decorate(user: str, rows: list) -> list[dict]:
 		ctx = AccessContext(
 			user=user,
 			role=roles.get(row.workspace),
-			share=shares.get(row.name),
+			share=resolve.best_share(shares.get(row.name), links.get(row.name)),
 			is_creator=row.created_by_user == user,
 		)
 		project = projects.get(row.project)
@@ -200,6 +201,7 @@ def _list_shared(user: str, limit: int, start: int) -> dict:
 		pluck="share_name",
 		limit_page_length=0,
 	)
+	names = list({*names, *(board for board, _access in resolve._live_grants(user))})
 	if not names:
 		return {"boards": [], "has_more": False}
 	rows = frappe.get_list(

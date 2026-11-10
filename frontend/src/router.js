@@ -1,5 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router"
-import { boot, findWorkspace, homeWorkspace, rememberWorkspace, session } from "@/data/session"
+import {
+	boot,
+	findWorkspace,
+	homeWorkspace,
+	isGuest,
+	rememberWorkspace,
+	session,
+} from "@/data/session"
 import { preferences } from "@/data/preferences"
 
 const AppShell = () => import("@/components/AppShell.vue")
@@ -9,6 +16,7 @@ const routes = [
 	// the app has booted. A redirect here would run before the guard, with no workspaces.
 	{ path: "/", name: "root", component: { render: () => null } },
 	{ path: "/welcome", name: "welcome", component: () => import("@/views/WelcomeView.vue") },
+	{ path: "/s/:token", name: "share-link", component: () => import("@/views/ShareLinkView.vue") },
 	{ path: "/board/:board", name: "board", component: () => import("@/views/BoardView.vue") },
 	{
 		path: "/w/:workspace",
@@ -19,6 +27,11 @@ const routes = [
 				path: "p/:project",
 				name: "project",
 				component: () => import("@/views/ProjectView.vue"),
+			},
+			{
+				path: "notifications",
+				name: "notifications",
+				component: () => import("@/views/NotificationsView.vue"),
 			},
 			...["recent", "favorites", "shared", "archived", "trash"].map((scope) => ({
 				path: scope,
@@ -38,6 +51,13 @@ const routes = [
 const router = createRouter({ history: createWebHistory("/oqiva/"), routes })
 
 router.beforeEach(async (to) => {
+	// A visitor who is not signed in has no workspaces to load: the link page is all they get.
+	if (isGuest())
+		return to.name === "share-link" ? true : { name: "share-link", params: { token: "none" } }
+	if (to.name === "share-link") {
+		if (!session.ready && !session.error) await boot().catch(() => {})
+		return true // opening a link comes before the welcome page, so the link is not lost
+	}
 	if (!session.ready && !session.error) {
 		try {
 			await boot()
@@ -46,7 +66,9 @@ router.beforeEach(async (to) => {
 		}
 	}
 	if (session.error) return true
-	if (!preferences.welcomed && to.name !== "welcome") return { name: "welcome" }
+	if (!preferences.welcomed && to.name !== "welcome") {
+		return { name: "welcome", query: to.name === "root" ? {} : { next: to.fullPath } }
+	}
 	if (to.name === "root") return { name: "dashboard", params: { workspace: homeWorkspace() } }
 	if (to.params.workspace) {
 		if (!findWorkspace(to.params.workspace)) {

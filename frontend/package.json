@@ -19,8 +19,12 @@
     "@tiptap/vue-3": "^3.26.0",
     "frappe-ui": "^0.1.278",
     "jspdf": "^4.2.1",
+    "lib0": "^0.2.119",
     "vue": "^3.5.12",
-    "vue-router": "^4.4.5"
+    "vue-router": "^4.4.5",
+    "y-indexeddb": "^9.0.12",
+    "y-protocols": "^1.0.7",
+    "yjs": "^13.6.33"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.4",

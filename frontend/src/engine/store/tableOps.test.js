@@ -13,6 +13,7 @@ import {
 	scaleTable,
 	setCellFill,
 	setCellText,
+	setTrackSize,
 	withTable,
 } from "./tableOps"
 
@@ -166,5 +167,36 @@ describe("where the active cell goes after a change", () => {
 			row: 0,
 			col: 1,
 		})
+	})
+})
+
+describe("setTrackSize", () => {
+	it("sets one row, within the limits", () => {
+		const table = make(3, 2).table
+		const next = setTrackSize(table, "row", 1, 90)
+		expect(next.rowH).toEqual([table.rowH[0], 90, table.rowH[2]])
+		expect(setTrackSize(table, "row", 1, 1).rowH[1]).toBe(20)
+		expect(setTrackSize(table, "row", 1, 99999).rowH[1]).toBe(2000)
+	})
+
+	it("a row stops at the height of its text", () => {
+		const base = make(2, 2).table
+		const table = {
+			...base,
+			cells: [[text("hello world this is long", 16), null], base.cells[1]],
+		}
+		const next = setTrackSize(table, "row", 0, 20, measure)
+		expect(next.rowH[0]).toBeGreaterThan(20)
+	})
+
+	it("a narrower column makes its row taller where the text wraps", () => {
+		const base = make(2, 2).table
+		const table = {
+			...base,
+			cells: [[text("hello world this is long", 16), null], base.cells[1]],
+		}
+		const next = setTrackSize(table, "col", 0, 40, measure)
+		expect(next.colW[0]).toBe(40)
+		expect(next.rowH[0]).toBeGreaterThan(table.rowH[0])
 	})
 })

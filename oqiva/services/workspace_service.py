@@ -8,6 +8,7 @@ from frappe.utils import now_datetime
 from oqiva.access import require, resolve
 from oqiva.access.guard import service_write
 from oqiva.services import member_service
+from oqiva.utils import realtime
 from oqiva.utils.text import clean_line, slugify
 
 
@@ -125,5 +126,8 @@ def delete_workspace(user: str, workspace: str) -> dict:
 	"""Soft-delete a workspace. Only its Owner may, and never a personal one."""
 	ctx = resolve.workspace_context(user, workspace)
 	require(ctx, "workspace:delete")
+	members = frappe.get_all("Oqiva Workspace Member", filters={"workspace": workspace}, pluck="user")
 	frappe.db.set_value("Oqiva Workspace", workspace, {"is_deleted": 1, "deleted_on": now_datetime()})
+	for member in members:
+		realtime.access_changed(member, workspace=workspace)
 	return {"name": workspace}

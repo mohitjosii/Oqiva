@@ -220,7 +220,7 @@ await step("grouping makes a click on one shape pick both, and ungroup lets them
 	await tile("ungroup").click()
 	await page.mouse.click(at(0, -300).x, at(0, -300).y)
 	await page.mouse.click(at(-200, 0).x, at(-200, 0).y)
-	await poll(async () => (await page.locator('[data-testid="selection-overlay"] polygon').count()) === 1, "a single shape outlined")
+	await poll(async () => (await page.locator('[data-testid="selection-overlay"] > polygon').count()) === 1, "a single shape outlined")
 })
 
 await step("a fill from the curated colours applies at once, and shows up under Recent", async () => {
@@ -388,7 +388,7 @@ await step("a picture can be flipped and the drawing mirrors", async () => {
 
 await step("a file that is not a picture is turned down with a message, and nothing is added", async () => {
 	await page.getByTestId("picture-input").setInputFiles({ name: "notes.txt", mimeType: "text/plain", buffer: Buffer.from("hello") })
-	await page.getByText(/Only PNG, JPEG, GIF and WebP/).waitFor()
+	await page.getByText(/Only PNG, JPEG, GIF and WebP/).last().waitFor()
 	await expectCount(pictures, 1, "pictures")
 })
 

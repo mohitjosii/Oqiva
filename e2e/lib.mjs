@@ -41,7 +41,7 @@ export async function signedIn(browser, { user, password }) {
 export async function shot(page, name) {
 	if (SHOTS) {
 		fs.mkdirSync(SHOTS, { recursive: true })
-		await page.screenshot({ path: `${SHOTS}/${name}.png` })
+		await page.screenshot({ path: `${SHOTS}/${name}.png` }).catch(() => {}) // the page may already be closed
 	}
 }
 
@@ -66,4 +66,19 @@ export function finish(problems = []) {
 	for (const problem of problems) console.log(`  warn ${problem}`)
 	console.log(failures || problems.length ? `\n${failures} failed, ${problems.length} browser problems` : "\nAll steps passed")
 	process.exit(failures || problems.length ? 1 : 0)
+}
+
+// A visitor who is not signed in at all.
+export async function anonymous(browser) {
+	const context = await browser.newContext({
+		viewport: { width: 1360, height: 860 },
+		extraHTTPHeaders: { "x-frappe-site-name": SITE },
+	})
+	const page = await context.newPage()
+	page.setDefaultTimeout(10000)
+	page.setDefaultNavigationTimeout(20000)
+	const problems = []
+	page.on("pageerror", (error) => problems.push(`pageerror: ${error.message}`))
+	activePage = page
+	return { context, page, problems }
 }

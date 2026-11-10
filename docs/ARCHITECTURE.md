@@ -558,3 +558,25 @@ Things worth knowing:
 - **Tests that touch files** delete the File rows they make, which also removes the files from disk.
 - **Browser run.** `e2e/phase4.e2e.mjs` covers lines, the palette, clipboard, guides, auto-pan, pictures, tables, every export format (it reads the downloaded bytes back), print, thumbnails and the home tile. A fresh pair of test users is best for each full run, because the workspace menu grows with every run.
 
+## 23. Implementation notes for Phase 5 (collaboration and sharing)
+
+| Area | Files | What it does |
+|---|---|---|
+| Sharing | `services/share_service.py`, `api/share.py`, `components/ShareDialog.vue` | Share by name or email at view, comment or edit (never share-again), change and revoke, leave, waiting invites that turn into shares when the person arrives |
+| Links | `services/link_service.py`, doctypes Oqiva Share Link and Link Grant, `views/ShareLinkView.vue`, `components/ShareLinks.vue` | Hashed secrets, grants, revoke cascade, the redeem page, the anonymous read-only viewer, pictures for visitors |
+| Access everywhere | `access/resolve.py`, `access/hooks.py`, `board_service.py` | Link grants count in single-board access, bulk capabilities, the list permission hook and "Shared with me" |
+| Realtime (server) | `realtime/handlers.js`, `utils/realtime.py` | The relay (join, editors-only writes, caps, throttle, re-check every 15 s) and the pushes after commit: `oqiva:access_changed`, `oqiva:saved`, `oqiva:resync`, `oqiva:comment` |
+| Collaboration (browser) | `engine/collab/{ydoc,bridge,provider,presence,session}.js` | The Yjs layout, store bridge, socket provider, presence, the offline copy |
+| Saving | `persistence/autosave.js`, `document_service.py` | `crdt_state` with every save, `get_crdt_state`, merge-before-retry, `resync` |
+| Comments | `services/comment_service.py`, `api/comment.py`, `engine/comments/`, `ui/Comment{Panel,Pins,Composer}.vue` | Threads, mentions, pins that follow shapes, resolve, flags for removed shapes |
+| Notifications | `services/notification_service.py`, `api/notification.py`, `data/notifications.js`, `components/Notification{Bell,List}.vue`, `views/NotificationsView.vue` | The person's Oqiva notifications, the bell and page, kept current by Frappe's own live "notification" event |
+
+Things worth knowing:
+
+- **Tests run as Administrator, people do not.** Services that call Frappe's own helpers (`frappe.share.remove`, which checks the *caller's* share permission) passed every test and failed for a real member in the browser. `TestAsTheRealPerson` runs the share services as a normal member to keep this honest.
+- **Bulk code paths must know every kind of access.** The board list built capabilities from shares only, so a person who had opened an Editor link saw a view-only board. Capabilities, the list hook and "Shared with me" now all read link grants.
+- **The relay is tested without a database.** `realtime/harness/relay.test.mjs` runs the real `handlers.js` on a socket.io server whose authorize call is scripted (`node --test realtime/harness`). It needs `apps/frappe/node_modules` for socket.io.
+- **The bench's socket server runs the handler it loaded at start.** After changing `handlers.js`, restart that process. It asks the web server for access using the port in the bench config.
+- **Browser runs.** `collab.e2e.mjs` (three people, presence, live sync, revocation, offline merge), `comments.e2e.mjs` (comments, mentions, bell, notifications page) and `phase5.e2e.mjs` (sharing and links) need a fresh trio of test users each, and the bench's socket server.
+- **Stale-save replies are normal.** A 417 from `save_document` is the answer that makes an editor merge and retry; the browser runs treat it as expected.
+

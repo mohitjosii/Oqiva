@@ -1,6 +1,6 @@
 <script setup>
 // The bar at the bottom of the board: tools, undo and redo, zoom, and canvas settings.
-import { Button, Dropdown, Popover, Select } from "frappe-ui"
+import { Dropdown, Popover, Select, toast } from "frappe-ui"
 import { computed, ref } from "vue"
 import { IMAGE_TYPES } from "../interaction/images"
 import { fitView, zoomIn, zoomOut, zoomTo } from "../interaction/view"
@@ -9,6 +9,7 @@ import { CANVAS_PRESETS } from "../model/schema"
 import { SHAPE_TOOLS, TEXT_TOOL, toolById } from "../model/shapes"
 import { THEMES } from "../model/themes"
 import TableSizePicker from "./TableSizePicker.vue"
+import ToolButton from "./ToolButton.vue"
 
 const props = defineProps({
 	store: { type: Object, required: true },
@@ -43,6 +44,13 @@ const lineOptions = computed(() =>
 		},
 	})),
 )
+
+// Choosing the comment tool says what to do next, since nothing on the board changes yet.
+function chooseComment() {
+	if (state.value.tool === "comment") return chooseTool("select")
+	chooseTool("comment")
+	toast.info("Click a shape, or any place on the board, to comment on it.")
+}
 
 function chooseTable({ rows, cols }) {
 	state.value.toolOptions.tableRows = rows
@@ -140,7 +148,7 @@ const settingsOptions = computed(() => [
 
 <template>
 	<div
-		class="absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 rounded-xl border border-outline-gray-2 bg-surface-white p-1.5 shadow-lg"
+		class="absolute bottom-4 left-1/2 z-10 flex max-w-[calc(100%-1.5rem)] -translate-x-1/2 items-center gap-1 overflow-x-auto rounded-xl border border-outline-gray-2 bg-surface-white p-1.5 shadow-lg"
 		role="toolbar"
 		aria-label="Board tools"
 		data-print="hide"
@@ -149,60 +157,62 @@ const settingsOptions = computed(() => [
 		@dblclick.stop
 		@wheel.stop
 	>
-		<Button
+		<ToolButton
 			icon="mouse-pointer"
-			:variant="state.tool === 'select' ? 'subtle' : 'ghost'"
 			title="Select (V)"
-			:aria-pressed="state.tool === 'select'"
+			:active="state.tool === 'select'"
 			@click="chooseTool('select')"
 		/>
-		<Button
+		<ToolButton
 			icon="move"
-			:variant="state.tool === 'hand' ? 'subtle' : 'ghost'"
 			title="Hand (H)"
-			:aria-pressed="state.tool === 'hand'"
+			:active="state.tool === 'hand'"
 			@click="chooseTool('hand')"
 		/>
-		<span class="mx-1 h-6 w-px bg-outline-gray-2" aria-hidden="true" />
+		<span class="mx-1 h-6 w-px shrink-0 bg-outline-gray-2" aria-hidden="true" />
 		<Dropdown :options="shapeOptions" :disabled="readonly">
-			<Button
+			<ToolButton
 				:icon="shapeTool.icon"
-				iconRight="chevron-down"
-				:variant="shapeActive ? 'subtle' : 'ghost'"
+				caret
 				title="Shapes"
+				:active="shapeActive"
 				:disabled="readonly"
-				:aria-pressed="shapeActive"
 			/>
 		</Dropdown>
 		<Select
 			v-if="state.tool === 'polygon'"
 			v-model="state.toolOptions.sides"
-			class="w-28"
+			class="w-28 shrink-0"
 			:options="sideOptions"
 			aria-label="Polygon sides"
 		/>
 		<Dropdown :options="lineOptions" :disabled="readonly">
-			<Button
+			<ToolButton
 				:icon="lineTool.icon"
-				iconRight="chevron-down"
-				:variant="lineActive ? 'subtle' : 'ghost'"
+				caret
 				title="Lines and arrows (L)"
+				:active="lineActive"
 				:disabled="readonly"
-				:aria-pressed="lineActive"
 				data-testid="lines-button"
 			/>
 		</Dropdown>
-		<Button
+		<ToolButton
 			:icon="TEXT_TOOL.icon"
-			:variant="state.tool === 'text' ? 'subtle' : 'ghost'"
 			title="Text box (T)"
+			:active="state.tool === 'text'"
 			:disabled="readonly"
-			:aria-pressed="state.tool === 'text'"
 			@click="chooseTool('text')"
 		/>
-		<Button
+		<ToolButton
+			icon="message-square"
+			title="Comment (C)"
+			:active="state.tool === 'comment'"
+			:disabled="!state.canComment"
+			data-testid="comment-tool"
+			@click="chooseComment"
+		/>
+		<ToolButton
 			icon="image"
-			variant="ghost"
 			title="Add picture"
 			:disabled="readonly"
 			data-testid="add-picture"
@@ -210,12 +220,11 @@ const settingsOptions = computed(() => [
 		/>
 		<Popover placement="top">
 			<template #target="{ togglePopover }">
-				<Button
+				<ToolButton
 					icon="grid"
-					:variant="state.tool === 'table' ? 'subtle' : 'ghost'"
 					title="Table"
+					:active="state.tool === 'table'"
 					:disabled="readonly"
-					:aria-pressed="state.tool === 'table'"
 					data-testid="table-button"
 					@click="togglePopover()"
 				/>
@@ -243,36 +252,28 @@ const settingsOptions = computed(() => [
 			data-testid="picture-input"
 			@change="picked"
 		/>
-		<span class="mx-1 h-6 w-px bg-outline-gray-2" aria-hidden="true" />
-		<Button
+		<span class="mx-1 h-6 w-px shrink-0 bg-outline-gray-2" aria-hidden="true" />
+		<ToolButton
 			icon="rotate-ccw"
-			variant="ghost"
 			title="Undo"
 			:disabled="!store.canUndo"
 			@click="store.undo()"
 		/>
-		<Button
+		<ToolButton
 			icon="rotate-cw"
-			variant="ghost"
 			title="Redo"
 			:disabled="!store.canRedo"
 			@click="store.redo()"
 		/>
-		<span class="mx-1 h-6 w-px bg-outline-gray-2" aria-hidden="true" />
-		<Button icon="minus" variant="ghost" title="Zoom out" @click="zoomOut(store)" />
+		<span class="mx-1 h-6 w-px shrink-0 bg-outline-gray-2" aria-hidden="true" />
+		<ToolButton icon="minus" title="Zoom out" @click="zoomOut(store)" />
 		<Dropdown :options="zoomOptions">
-			<Button
-				variant="ghost"
-				:label="`${percent}%`"
-				title="Zoom"
-				data-testid="zoom-level"
-				class="min-w-[3.5rem]"
-			/>
+			<ToolButton :label="`${percent}%`" title="Zoom" data-testid="zoom-level" />
 		</Dropdown>
-		<Button icon="plus" variant="ghost" title="Zoom in" @click="zoomIn(store)" />
-		<span class="mx-1 h-6 w-px bg-outline-gray-2" aria-hidden="true" />
+		<ToolButton icon="plus" title="Zoom in" @click="zoomIn(store)" />
+		<span class="mx-1 h-6 w-px shrink-0 bg-outline-gray-2" aria-hidden="true" />
 		<Dropdown :options="settingsOptions" :disabled="readonly" placement="right">
-			<Button icon="sliders" variant="ghost" title="Canvas settings" :disabled="readonly" />
+			<ToolButton icon="sliders" title="Canvas settings" :disabled="readonly" />
 		</Dropdown>
 	</div>
 </template>
