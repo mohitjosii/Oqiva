@@ -29,12 +29,13 @@ INDEXES = (
 
 
 def ensure_setup(*args, **kwargs) -> None:
-	"""Create roles, the board comment permission, constraints, indexes, settings."""
+	"""Create roles, the board comment permission, constraints, indexes, settings, templates."""
 	ensure_roles()
 	ensure_comment_permission_type()
 	ensure_constraints()
 	ensure_indexes()
 	ensure_settings()
+	ensure_templates()
 	frappe.clear_cache()
 
 
@@ -93,6 +94,16 @@ def ensure_settings() -> None:
 		)
 		if not stored:
 			frappe.db.set_single_value("Oqiva Settings", fieldname, default)
+
+
+def ensure_templates() -> None:
+	"""Load the template catalogue from the seed files. A failure must never break a migrate."""
+	from oqiva.services import template_service
+
+	try:
+		template_service.seed_templates()
+	except Exception:
+		frappe.log_error(title="Oqiva: could not seed templates")
 
 
 def grant_user_role(user: str) -> None:

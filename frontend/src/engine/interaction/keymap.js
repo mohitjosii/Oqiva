@@ -23,6 +23,10 @@ export const SHORTCUTS = [
 	{ group: "Tools", keys: ["T"], label: "Text box" },
 	{ group: "Tools", keys: ["L"], label: "Line or arrow (last one used)" },
 	{ group: "Tools", keys: ["C"], label: "Comment (click a shape or a place)" },
+	{ group: "Tools", keys: ["N"], label: "Sticky note" },
+	{ group: "Tools", keys: ["F"], label: "Frame (a named section)" },
+	{ group: "Tools", keys: ["Shift", "S"], label: "Shape library" },
+	{ group: "Edit", keys: ["Tab"], label: "In a note: write the next note beside it" },
 	{ group: "Lines", keys: ["Click a hover arrow"], label: "Add a connected copy" },
 	{ group: "Lines", keys: ["Drag an end"], label: "Move or re-attach a line end" },
 	{ group: "File", keys: ["Ctrl/Cmd", "P"], label: "Print the board" },
@@ -43,6 +47,8 @@ const TOOL_KEYS = {
 	t: "text",
 	l: "connector",
 	c: "comment",
+	n: "note",
+	f: "frame",
 }
 const ARROWS = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }
 
@@ -102,6 +108,7 @@ function lookup(event) {
 	if (key === "Escape") return { name: "escape" }
 	if (key === "?") return { name: "shortcuts" }
 	if (event.shiftKey && event.code === "Digit1") return { name: "fit" }
+	if (event.shiftKey && event.key.toLowerCase() === "s") return { name: "library" }
 	if (key in ARROWS) {
 		const step = event.shiftKey ? 10 : 1
 		return { name: "nudge", dx: ARROWS[key][0] * step, dy: ARROWS[key][1] * step }

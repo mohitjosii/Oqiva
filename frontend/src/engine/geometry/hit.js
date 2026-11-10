@@ -27,6 +27,7 @@ export function pointInObject(object, point, tolerance = 0) {
 	const y = local.y - object.y
 	const w = object.w
 	const h = object.h
+	if (object.kind === "frame") return frameHit(x, y, w, h, tolerance)
 	if (x < -tolerance || y < -tolerance || x > w + tolerance || y > h + tolerance) return false
 	if (object.kind === "text" || object.shape === "rectangle") return true
 	if (object.shape === "ellipse") {
@@ -39,6 +40,16 @@ export function pointInObject(object, point, tolerance = 0) {
 	if (pointInPolygon({ x, y }, polygon)) return true
 	// Close to the outline counts as a hit for the tolerance band.
 	return tolerance > 0 && distanceToPolygon({ x, y }, polygon) <= tolerance
+}
+
+// A frame is picked by its name tag or its border, so the empty inside stays free for a marquee or
+// for pressing on the shapes in front of it.
+const FRAME_TAG = { height: 26, width: 220, edge: 6 }
+function frameHit(x, y, w, h, tolerance) {
+	const edge = Math.max(tolerance, FRAME_TAG.edge)
+	if (y >= -FRAME_TAG.height && y <= 0 && x >= 0 && x <= Math.min(w, FRAME_TAG.width)) return true
+	if (x < -edge || y < -edge || x > w + edge || y > h + edge) return false
+	return x <= edge || y <= edge || x >= w - edge || y >= h - edge
 }
 
 function distanceToSegment(p, [ax, ay], [bx, by]) {
@@ -69,5 +80,15 @@ export function topObjectAt(objects, point, tolerance = 0) {
 
 // Objects whose outline box touches ``rect``, as a marquee selects them.
 export function objectsInRect(objects, rect) {
-	return objects.filter((object) => rectsIntersect(objectBounds(object), rect))
+	return objects.filter((object) => {
+		const box = objectBounds(object)
+		if (object.kind !== "frame") return rectsIntersect(box, rect)
+		// A frame is only caught by a marquee that takes in all of it.
+		return (
+			box.x >= rect.x &&
+			box.y >= rect.y &&
+			box.x + box.w <= rect.x + rect.w &&
+			box.y + box.h <= rect.y + rect.h
+		)
+	})
 }

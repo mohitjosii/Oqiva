@@ -84,6 +84,16 @@ const prepared = computed(() => {
 					},
 					fetchState: () => api("board.get_crdt_state", { board: boardName.value }),
 				},
+				links: {
+					searchBoards: async (text) => {
+						if (text.trim().length < 2) return []
+						const found = await api("search.query", { text })
+						return found.boards
+							.filter((b) => b.name !== boardName.value)
+							.map((b) => ({ name: b.name, title: b.title }))
+					},
+					openBoard: (board) => router.push({ name: "board", params: { board } }),
+				},
 				comments: {
 					list: () => api("comment.list_comments", { board: boardName.value }),
 					people: () => api("comment.people", { board: boardName.value }),

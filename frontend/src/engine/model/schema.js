@@ -4,6 +4,7 @@
 
 import { DEFAULT_THEME, THEMES, isColor } from "./themes"
 import { ID_PATTERN } from "./ids"
+import { ICON_PATTERN, isEmoji } from "./icons"
 
 export const SCHEMA_VERSION = 1
 
@@ -18,7 +19,7 @@ export const CANVAS_PRESETS = {
 }
 
 export const GRID_SIZES = { dense: 16, sparse: 48 }
-export const KNOWN_KINDS = new Set(["shape", "text", "image", "table"])
+export const KNOWN_KINDS = new Set(["shape", "text", "image", "table", "note", "icon", "frame"])
 export const GEOMETRIES = new Set(["straight", "elbow", "curved"])
 export const HEADS = new Set(["none", "arrow", "open", "dot"])
 export const ANCHOR_NAMES = new Set(["n", "ne", "e", "se", "s", "sw", "w", "nw"])
@@ -32,7 +33,30 @@ export const SHAPE_NAMES = new Set([
 	"diamond",
 	"polygon",
 	"arrow",
+	"cylinder",
+	"document",
+	"cloud",
+	"hexagon",
+	"trapezoid",
+	"checkbox",
+	"radio",
+	"dropdown",
+	"mobile",
+	"desktop",
 ])
+// Sticky note colours: a pale tint to fill the note and a deep tone for its writing.
+export const NOTE_COLORS = [
+	{ name: "Yellow", fill: "#FEF08A", ink: "#713F12" },
+	{ name: "Orange", fill: "#FDBA74", ink: "#7C2D12" },
+	{ name: "Pink", fill: "#F9A8D4", ink: "#831843" },
+	{ name: "Violet", fill: "#C4B5FD", ink: "#3B0764" },
+	{ name: "Blue", fill: "#93C5FD", ink: "#1E3A8A" },
+	{ name: "Green", fill: "#86EFAC", ink: "#14532D" },
+	{ name: "Gray", fill: "#E5E7EB", ink: "#1F2937" },
+]
+export const LINK_LIMITS = { url: 2000, board: 140 }
+const LINK_URL = /^(https?:\/\/|mailto:)[^\s<>"']+$/i
+const LINK_BOARD = /^[A-Za-z0-9_.-]{1,140}$/
 export const DASHES = new Set(["solid", "dashed", "dotted"])
 export const ALIGNS = new Set(["left", "center", "right"])
 
@@ -180,6 +204,23 @@ export function sanitizeTable(raw, themeName) {
 	return { colW, rowH, cells, fills }
 }
 
+// A link on an object: a web address or mail address, or another board. Anything else (a
+// javascript: address, say) is dropped.
+export function sanitizeLink(raw) {
+	if (!raw || typeof raw !== "object") return null
+	if (typeof raw.url === "string") {
+		const url = raw.url.trim()
+		return url.length <= LINK_LIMITS.url && LINK_URL.test(url) ? { url } : null
+	}
+	if (typeof raw.board === "string" && LINK_BOARD.test(raw.board)) {
+		return {
+			board: raw.board,
+			title: typeof raw.title === "string" ? raw.title.slice(0, 140) : "",
+		}
+	}
+	return null
+}
+
 function sanitizeStyle(style = {}) {
 	const source = style && typeof style === "object" ? style : {}
 	return {
@@ -197,10 +238,11 @@ export function sanitizeObject(raw, index, themeName) {
 		return null
 	if (typeof raw.kind !== "string" || !KNOWN_KINDS.has(raw.kind)) return { ...raw } // kept for newer versions
 	const isText = raw.kind === "text"
+	const hasText = raw.kind === "shape" || isText || raw.kind === "note"
 	const object = {
 		id: raw.id,
 		kind: raw.kind,
-		shape: isText ? "rectangle" : SHAPE_NAMES.has(raw.shape) ? raw.shape : "rectangle",
+		shape: raw.kind === "shape" && SHAPE_NAMES.has(raw.shape) ? raw.shape : "rectangle",
 		x: number(raw.x, 0, -LIMITS.coordinate, LIMITS.coordinate),
 		y: number(raw.y, 0, -LIMITS.coordinate, LIMITS.coordinate),
 		w: number(raw.w, 100, 1, LIMITS.maxSize),
@@ -208,8 +250,19 @@ export function sanitizeObject(raw, index, themeName) {
 		rotation: normalizeRotation(number(raw.rotation, 0, -1e6, 1e6)),
 		z: number(raw.z, index, -1e9, 1e9),
 		style: sanitizeStyle(raw.style),
-		text: raw.kind === "shape" || isText ? sanitizeText(raw.text, themeName) : null,
+		text: hasText ? sanitizeText(raw.text, themeName) : null,
 	}
+	const link = sanitizeLink(raw.link)
+	if (link) object.link = link
+	if (raw.kind === "icon") {
+		const icon = typeof raw.icon === "string" && ICON_PATTERN.test(raw.icon) ? raw.icon : null
+		const emoji = isEmoji(raw.emoji) ? raw.emoji : null
+		if (!icon && !emoji) return null // nothing to draw
+		if (icon) object.icon = icon
+		else object.emoji = emoji
+	}
+	if (raw.kind === "frame")
+		object.name = typeof raw.name === "string" ? raw.name.slice(0, 200) : ""
 	if (object.shape === "polygon") object.sides = Math.round(number(raw.sides, 5, 3, 12))
 	if (typeof raw.groupId === "string" && ID_PATTERN.test(raw.groupId))
 		object.groupId = raw.groupId

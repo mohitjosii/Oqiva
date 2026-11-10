@@ -90,6 +90,11 @@ export function createStore(document, { readonly = false } = {}) {
 		commentDraft: null, // a comment about to be written: {anchor_type, shape_id | x, y}
 		openThread: null, // the thread being looked at
 		cursor: null, // where this person's pointer is on the board: {x, y}
+		libraryOpen: false, // the shape library panel is showing
+		recentPresets: [], // keys of library shapes placed lately, newest first
+		hintFrame: null, // the frame a dragged library shape would land in
+		editingSelectAll: false, // the text being edited starts selected, so typing replaces it
+		minimap: true, // the overview map is showing
 		peers: [], // the other people here: {clientId, id, name, color, cursor, selection}
 	})
 
@@ -278,6 +283,8 @@ export function createStore(document, { readonly = false } = {}) {
 		getConnector: (id) => (void refs.connectors.value, index.connectors.get(id) || null),
 		getItem: (id) => (void refs.objects.value, void refs.connectors.value, find(id)),
 		nextZ: () => (data.objects.length ? data.objects[data.objects.length - 1].z + 1 : 1),
+		// Behind everything, where frames sit.
+		nextBackZ: () => (data.objects.length ? data.objects[0].z - 1 : 1),
 		nextConnectorZ: () =>
 			data.connectors.length ? data.connectors[data.connectors.length - 1].z + 1 : 1,
 

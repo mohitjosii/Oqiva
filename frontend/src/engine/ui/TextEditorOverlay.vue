@@ -10,9 +10,11 @@ import { computed, nextTick, onBeforeUnmount, reactive, ref, shallowRef, watch }
 import { objectBounds } from "../geometry/bounds"
 import { toScreen } from "../geometry/viewport"
 import { themeOf } from "../model/themes"
-import { textArea } from "../model/shapes"
+import { defaultAlign, textArea } from "../model/shapes"
+import { NOTE_COLORS } from "../model/schema"
+import { placementFor } from "../interaction/placement"
 import { autoHeight } from "../text/fit"
-import { emptyText } from "../model/factories"
+import { createNote, emptyText } from "../model/factories"
 import { CELL_PADDING, cellRect, growRow, setCellText, withTable } from "../store/tableOps"
 import { fromProseMirror, isEmptyText, toProseMirror } from "../text/richText"
 
@@ -84,7 +86,8 @@ const areaStyle = computed(() => {
 		lineHeight: 1.3,
 		textAlign: session.base.align,
 		color: session.base.color,
-		justifyContent: o.kind === "text" && !session.cell ? "flex-start" : "center",
+		justifyContent:
+			(o.kind === "text" || o.kind === "note") && !session.cell ? "flex-start" : "center",
 		fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
 	}
 })
@@ -149,7 +152,11 @@ function begin(id) {
 	session.cell = cell
 	const source = cell ? target.table.cells[cell.row]?.[cell.col] : target.text
 	session.base = {
-		align: source?.align || (target.kind === "text" || cell ? "left" : "center"),
+		align:
+			source?.align ||
+			(target.kind === "text" || target.kind === "note" || cell
+				? "left"
+				: defaultAlign(target.shape)),
 		size: source?.size || 16,
 		color: source?.color || theme.text,
 	}
@@ -181,7 +188,13 @@ function begin(id) {
 		onUpdate: sync,
 		onTransaction: () => tick.value++,
 	})
-	nextTick(() => editor.value?.commands.focus("end"))
+	const selectAll = state.value.editingSelectAll
+	state.value.editingSelectAll = false
+	nextTick(() => {
+		if (selectAll)
+			editor.value?.chain().focus().selectAll().run() // typing replaces the label
+		else editor.value?.commands.focus("end")
+	})
 }
 
 function finish() {
@@ -225,9 +238,28 @@ onBeforeUnmount(() => session.id && finish())
 
 const stop = () => (state.value.editingId = null)
 
+// In a note, Tab writes the next note beside it (as many as you like in a row).
+async function nextNote() {
+	const id = session.id
+	const source = props.store.getObject(id)
+	state.value.editingId = null
+	await nextTick()
+	const here = props.store.getObject(id) || source
+	const obstacles = props.store.objects.value
+		.filter((o) => o.kind !== "frame" && o.id !== id)
+		.map(objectBounds)
+	const rect = placementFor(here, "e", { w: here.w, h: here.h }, obstacles, 40)
+	const color = NOTE_COLORS.find((c) => c.fill === here.style.fill) || NOTE_COLORS[0]
+	const note = createNote(rect, { color, z: props.store.nextZ() })
+	if (!props.store.addObjects([note], { label: "Add sticky note" })) return
+	state.value.editingNew = false
+	state.value.editingId = note.id
+}
+
 // Tab and Shift+Tab walk through a table's cells, left to right and top to bottom.
 function nextCell(backwards) {
 	const o = object.value
+	if (o?.kind === "note" && !backwards) return nextNote()
 	if (!session.cell || !o?.table) return
 	const cols = o.table.colW.length
 	const rows = o.table.rowH.length

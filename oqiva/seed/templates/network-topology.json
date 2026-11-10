@@ -1,0 +1,353 @@
+{
+	"slug": "network-topology",
+	"name": "Network topology",
+	"description": "The internet, a router, and what sits behind it.",
+	"category": "Architecture",
+	"tags": [
+		"network",
+		"infrastructure",
+		"diagram"
+	],
+	"sort_order": 22,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "net",
+				"kind": "shape",
+				"shape": "cloud",
+				"x": 0,
+				"y": 160,
+				"w": 190,
+				"h": 110,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#F3F4F6",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1F2937",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Internet"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "router",
+				"kind": "shape",
+				"shape": "hexagon",
+				"x": 260,
+				"y": 160,
+				"w": 170,
+				"h": 100,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#5B21B6",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Router"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "web",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 520,
+				"y": 0,
+				"w": 180,
+				"h": 100,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#5B21B6",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Web server"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "app",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 520,
+				"y": 160,
+				"w": 180,
+				"h": 100,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#5B21B6",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "App server"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "db",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 520,
+				"y": 320,
+				"w": 160,
+				"h": 110,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#166534",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Database"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "office",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 260,
+				"y": 320,
+				"w": 130,
+				"h": 150,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1F2937",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Office laptops"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [
+			{
+				"id": "line-1",
+				"from": {
+					"objectId": "net",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "router",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 1
+			},
+			{
+				"id": "line-2",
+				"from": {
+					"objectId": "router",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "web",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 2
+			},
+			{
+				"id": "line-3",
+				"from": {
+					"objectId": "router",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "app",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 3
+			},
+			{
+				"id": "line-4",
+				"from": {
+					"objectId": "app",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "db",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 4
+			},
+			{
+				"id": "line-5",
+				"from": {
+					"objectId": "office",
+					"anchor": "n"
+				},
+				"to": {
+					"objectId": "router",
+					"anchor": "s"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "dashed",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 5
+			}
+		],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

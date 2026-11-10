@@ -30,10 +30,27 @@ const poll = async (check, what, ms = 8000) => {
 }
 const expectCount = (locator, n, what) => poll(async () => (await locator.count()) === n, `${n} ${what}`)
 const at = (x, y) => ({ x: origin.x + x, y: origin.y + y })
+const use = async (menu) => {
+	const body = page.getByTestId(`menu-body-${menu}`)
+	if (!(await body.isVisible().catch(() => false))) await page.getByTestId(`menu-${menu}`).click()
+	await body.waitFor()
+}
+// Close an open menu before pressing on the board: the menu would be in the way.
+const done = async () => {
+	const open = page.locator('[data-testid^="menu-body-"]')
+	if (await open.count()) {
+		await page.keyboard.press("Escape")
+		await open.waitFor({ state: "detached" }).catch(() => {})
+	}
+}
 async function drag(from, to) {
+	await done()
 	await page.mouse.move(from.x, from.y)
+	await done()
 	await page.mouse.down()
+	await done()
 	await page.mouse.move(to.x, to.y, { steps: 10 })
+	await done()
 	await page.mouse.up()
 }
 
@@ -73,14 +90,17 @@ await step("the toolbar buttons do not overlap each other", async () => {
 
 await step("draws a shape and the arrow stays while the pointer travels to it", async () => {
 	await page.keyboard.press("r")
+	await done()
 	await drag(at(-300, -40), at(-100, 40))
 	await page.keyboard.press("Escape")
 	await expectCount(shapes, 1, "shapes")
+	await done()
 	await page.mouse.move(...Object.values(at(-200, 0)))
 	const right = page.locator('[data-quick="e"]')
 	await right.waitFor()
 	const box = await right.boundingBox()
 	// move in small steps from the shape toward the arrow, through the gap
+	await done()
 	await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, { steps: 25 })
 	assert.ok(await right.isVisible(), "arrow still there")
 	await right.click()
@@ -89,7 +109,9 @@ await step("draws a shape and the arrow stays while the pointer travels to it", 
 })
 
 await step("a selected shape offers its arrows without hovering (touch)", async () => {
+	await done()
 	await page.mouse.click(...Object.values(at(-200, 0)))
+	await done()
 	await page.mouse.move(origin.x + 400, origin.y + 300) // pointer far away
 	const down = page.locator('[data-quick="s"]')
 	await down.waitFor()
@@ -98,13 +120,19 @@ await step("a selected shape offers its arrows without hovering (touch)", async 
 })
 
 await step("the kind of a shape can be changed from the palette", async () => {
+	await done()
 	await page.mouse.click(...Object.values(at(-200, 0)))
+	await use("Shape")
 	await page.locator('[data-testid="shape-types"]').waitFor()
+	await use("Shape")
 	await page.locator('[data-testid="tile-shape-diamond"]').click()
 	await poll(async () => (await shapes.nth(0).locator("polygon, path").count()) > 0, "diamond drawn")
+	await use("Shape")
 	await page.locator('[data-testid="tile-shape-polygon"]').click()
+	await use("Shape")
 	await page.locator('[data-testid="polygon-sides"]').click()
 	await page.getByRole("menuitem", { name: "5 sides" }).click()
+	await use("Shape")
 	await poll(async () => (await page.locator('[data-testid="polygon-sides"]').innerText()).includes("5"), "5 sides")
 	await shot(page, "fx-2-shape")
 	await page.keyboard.press("Control+z")
@@ -115,6 +143,7 @@ await step("the kind of a shape can be changed from the palette", async () => {
 await step("a comment starts from the toolbar tool", async () => {
 	await page.keyboard.press("Escape")
 	await page.locator('[data-testid="comment-tool"]').click()
+	await done()
 	await page.mouse.click(...Object.values(at(-200, 0)))
 	const draft = page.locator('[data-testid="comment-draft"]')
 	await draft.waitFor()
@@ -126,6 +155,7 @@ await step("a comment starts from the toolbar tool", async () => {
 
 await step("a comment starts from the palette on a selected shape", async () => {
 	await page.keyboard.press("Escape")
+	await done()
 	await page.mouse.click(...Object.values(at(-200, 0)))
 	await page.locator('[data-testid="tile-add-comment"]').click()
 	const draft = page.locator('[data-testid="comment-draft"]')
@@ -158,12 +188,15 @@ const curved = async (index) => /C/.test((await lines.nth(index).locator("path")
 await step("a chosen line type sticks for the next arrows", async () => {
 	await page.keyboard.press("Escape")
 	const mid = await lines.nth(0).locator("path").first().boundingBox()
+	await done()
 	await page.mouse.click(mid.x + mid.width / 2, mid.y + mid.height / 2)
+	await use("Line")
 	await page.locator('[data-testid="tile-geometry-curved"]').click()
 	await poll(() => curved(0), "the first line curved")
 	const before = await lines.count()
 	await page.keyboard.press("Escape")
 	const first = await shapes.nth(0).boundingBox()
+	await done()
 	await page.mouse.click(first.x + first.width / 2, first.y + first.height / 2)
 	await page.locator('[data-quick="n"]').click()
 	await expectCount(lines, before + 1, "lines")
@@ -175,6 +208,7 @@ await step("a table row and a column can be resized one at a time", async () => 
 	await page.keyboard.press("Escape")
 	await page.getByTestId("table-button").click()
 	await page.getByTestId("table-size-3x3").click()
+	await done()
 	await drag(at(250, 100), at(450, 220))
 	const table = page.locator('[data-testid="objects"] > g path[d^="M0 0 L0"]').first()
 	await table.waitFor()
@@ -188,10 +222,12 @@ await step("a table row and a column can be resized one at a time", async () => 
 	await page.locator('[data-handle="row-0"]').waitFor({ state: "attached" })
 	const before = await tableBox()
 	const row = await centreOf("row-0")
+	await done()
 	await drag(row, { x: row.x, y: row.y + 40 })
 	await poll(async () => Math.abs((await tableBox()).height - (before.height + 40)) < 2, "a row 40 taller")
 	assert.ok(Math.abs((await tableBox()).width - before.width) < 2, "width unchanged")
 	const col = await centreOf("col-0")
+	await done()
 	await drag(col, { x: col.x + 30, y: col.y })
 	await poll(async () => Math.abs((await tableBox()).width - (before.width + 30)) < 2, "a column 30 wider")
 	await shot(page, "fx-5-table-track")

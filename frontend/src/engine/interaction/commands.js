@@ -43,6 +43,9 @@ export function runCommand(store, controller, command, ui = {}) {
 			return zoomTo(store, 1)
 		case "fit":
 			return fitView(store)
+		case "library":
+			state.libraryOpen = !state.libraryOpen
+			return
 		case "shortcuts":
 			return ui.toggleShortcuts?.()
 		case "print":

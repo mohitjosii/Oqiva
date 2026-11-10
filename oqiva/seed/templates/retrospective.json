@@ -1,0 +1,191 @@
+{
+	"slug": "retrospective",
+	"name": "Retrospective",
+	"description": "What went well, what to improve, and what to do next.",
+	"category": "Planning",
+	"tags": [
+		"retro",
+		"team",
+		"agile"
+	],
+	"sort_order": 40,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "frame-1",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 380,
+				"h": 520,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Went well"
+			},
+			{
+				"id": "frame-2",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 420,
+				"y": 0,
+				"w": 380,
+				"h": 520,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "To improve"
+			},
+			{
+				"id": "frame-3",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 840,
+				"y": 0,
+				"w": 380,
+				"h": 520,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Actions"
+			},
+			{
+				"id": "n1",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 30,
+				"y": 50,
+				"w": 200,
+				"h": 140,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#86EFAC",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Shipped on time"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n2",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 450,
+				"y": 50,
+				"w": 200,
+				"h": 140,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#FDBA74",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#7C2D12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Slow reviews"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n3",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 870,
+				"y": 50,
+				"w": 200,
+				"h": 140,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#93C5FD",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Pair on reviews"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

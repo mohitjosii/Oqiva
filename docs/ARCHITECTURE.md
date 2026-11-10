@@ -391,6 +391,10 @@ Templates are stored as **Oqiva documents** with a `schemaVersion`, not as Oqiva
 
 The 14 Oqiva templates are converted once in Phase 6 (task P6.06) by a Node script that uses the engine's own shape factories and layout engines, and the output is committed to `oqiva/seed/templates/*.json`. `setup.ensure_setup()` upserts them by `slug`. The gallery has categories, tags, search and previews.
 
+**As built (P6.05).** Each seed file is `{slug, name, description, category, tags[], sort_order, document}`. The seed loads every `*.json` in the folder, validates it with the same checks a board save uses (so a template always makes a savable board), and writes a row only when the file's hash differs from the row's `source_hash`. That keeps the run idempotent, and it keeps an admin's later change, such as unpublishing a template, until the file itself changes. An invalid file is logged and skipped, never raised. The seed runs from `ensure_setup`, so it also runs after every migrate.
+
+The DocType's `document`, `schema_version`, `object_count` and a small `preview` are recomputed on every save, in Desk or by the seed. Only System Manager and Oqiva Admin have DocPerms; users go through `template.list_templates` and `template.get_template` (role Oqiva User, published templates only, no document body). Each card carries its `preview` (boxes with fill, stroke and a 40-character caption, plus line ends, capped at 120 of each), so the gallery draws every thumbnail from one request. `board.create_board(..., template=slug)` makes the board from a server-side copy, records the slug in `Oqiva Board.template` (provenance only) and writes a `template_used` audit entry. An unknown or unpublished slug gives `OqivaNotFound`.
+
 ---
 
 ## 15. Frontend

@@ -1,6 +1,6 @@
 import { newId } from "./ids"
 import { MIN_SIZE, SHAPE_TYPES, TEXT_BOX_SIZE, toolById } from "./shapes"
-import { sanitizeText, TABLE_LIMITS } from "./schema"
+import { NOTE_COLORS, sanitizeText, TABLE_LIMITS } from "./schema"
 import { themedStyle, themeOf } from "./themes"
 
 export function emptyText(themeName, overrides = {}) {
@@ -123,5 +123,99 @@ export function createTable({ rows, cols, center, rect, theme, z, cell = { w: 12
 			cells: Array.from({ length: rows }, () => Array(cols).fill(null)),
 			fills: Array.from({ length: rows }, () => Array(cols).fill(null)),
 		},
+	}
+}
+
+// A sticky note: a coloured square with writing that follows the colour.
+export function createNote(rect, { color = NOTE_COLORS[0], z } = {}) {
+	return {
+		id: newId(),
+		kind: "note",
+		shape: "rectangle",
+		x: rect.x,
+		y: rect.y,
+		w: Math.max(MIN_SIZE, rect.w),
+		h: Math.max(MIN_SIZE, rect.h),
+		rotation: 0,
+		z,
+		style: {
+			fill: color.fill,
+			stroke: null,
+			strokeWidth: 0,
+			dash: "solid",
+			opacity: 1,
+			radius: 2,
+		},
+		text: {
+			align: "left",
+			size: 18,
+			color: color.ink,
+			paragraphs: [{ runs: [] }],
+		},
+	}
+}
+
+export const NOTE_SIZE = { w: 200, h: 200 }
+
+// The writing colour that reads best on a note filled with ``fill``: its own deep tone when it is
+// one of the note colours, otherwise black or white by brightness.
+export function inkFor(fill) {
+	const known = NOTE_COLORS.find((c) => c.fill.toLowerCase() === String(fill).toLowerCase())
+	if (known) return known.ink
+	const hex = String(fill).replace("#", "")
+	const full = hex.length === 3 ? [...hex].map((c) => c + c).join("") : hex.slice(0, 6)
+	const [r, g, b] = [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16) / 255)
+	const linear = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+	const luminance = 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b)
+	return luminance > 0.4 ? "#111827" : "#FFFFFF"
+}
+
+// An icon from the icon set, or one emoji, as an object.
+export function createIcon({ icon = null, emoji = null, center, size = 64, theme, z }) {
+	return {
+		id: newId(),
+		kind: "icon",
+		shape: "rectangle",
+		x: center.x - size / 2,
+		y: center.y - size / 2,
+		w: size,
+		h: size,
+		rotation: 0,
+		z,
+		style: {
+			fill: null,
+			stroke: themeOf(theme).stroke,
+			strokeWidth: 2,
+			dash: "solid",
+			opacity: 1,
+			radius: 0,
+		},
+		text: null,
+		...(icon ? { icon } : { emoji }),
+	}
+}
+
+// A named region of the board, drawn behind everything else.
+export function createFrame(rect, { name = "Section", z } = {}) {
+	return {
+		id: newId(),
+		kind: "frame",
+		shape: "rectangle",
+		x: rect.x,
+		y: rect.y,
+		w: Math.max(MIN_SIZE * 4, rect.w),
+		h: Math.max(MIN_SIZE * 4, rect.h),
+		rotation: 0,
+		z,
+		name,
+		style: {
+			fill: "#F8FAFC",
+			stroke: "#94A3B8",
+			strokeWidth: 1.5,
+			dash: "solid",
+			opacity: 1,
+			radius: 10,
+		},
+		text: null,
 	}
 }

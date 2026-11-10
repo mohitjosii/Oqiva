@@ -1,0 +1,247 @@
+{
+	"slug": "login-wireframe",
+	"name": "Sign-in screen",
+	"description": "A mobile sign-in screen to start from.",
+	"category": "UX / UI",
+	"tags": [
+		"wireframe",
+		"mobile",
+		"login"
+	],
+	"sort_order": 52,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "screen",
+				"kind": "shape",
+				"shape": "mobile",
+				"x": 0,
+				"y": 0,
+				"w": 280,
+				"h": 520,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": null
+			},
+			{
+				"id": "email",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 30,
+				"y": 150,
+				"w": 220,
+				"h": 40,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 6
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1F2937",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Email"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "pass",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 30,
+				"y": 210,
+				"w": 220,
+				"h": 40,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 6
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1F2937",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Password"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "remember",
+				"kind": "shape",
+				"shape": "checkbox",
+				"x": 30,
+				"y": 266,
+				"w": 180,
+				"h": 28,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1F2937",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Remember me"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "go",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 30,
+				"y": 312,
+				"w": 220,
+				"h": 40,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#3B82F6",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#FFFFFF",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Sign in"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "role",
+				"kind": "shape",
+				"shape": "dropdown",
+				"x": 30,
+				"y": 380,
+				"w": 220,
+				"h": 40,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1F2937",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Choose a workspace"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "title",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 40,
+				"y": 80,
+				"w": 520,
+				"h": 42,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 26,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Welcome back"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

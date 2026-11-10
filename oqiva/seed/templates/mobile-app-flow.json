@@ -1,0 +1,449 @@
+{
+	"slug": "mobile-app-flow",
+	"name": "Mobile app flow",
+	"description": "Four screens in a row, and how people move between them.",
+	"category": "UX / UI",
+	"tags": [
+		"wireframe",
+		"mobile",
+		"flow"
+	],
+	"sort_order": 51,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "s1",
+				"kind": "shape",
+				"shape": "mobile",
+				"x": 0,
+				"y": 0,
+				"w": 200,
+				"h": 380,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": null
+			},
+			{
+				"id": "s2",
+				"kind": "shape",
+				"shape": "mobile",
+				"x": 320,
+				"y": 0,
+				"w": 200,
+				"h": 380,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": null
+			},
+			{
+				"id": "s3",
+				"kind": "shape",
+				"shape": "mobile",
+				"x": 640,
+				"y": 0,
+				"w": 200,
+				"h": 380,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": null
+			},
+			{
+				"id": "s4",
+				"kind": "shape",
+				"shape": "mobile",
+				"x": 960,
+				"y": 0,
+				"w": 200,
+				"h": 380,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": null
+			},
+			{
+				"id": "b1",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 40,
+				"y": 300,
+				"w": 120,
+				"h": 40,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#3B82F6",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#FFFFFF",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Get started"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "b2",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 360,
+				"y": 300,
+				"w": 120,
+				"h": 40,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#3B82F6",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#FFFFFF",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Sign in"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "b3",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 680,
+				"y": 300,
+				"w": 120,
+				"h": 40,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#3B82F6",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#FFFFFF",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Next"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "b4",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1000,
+				"y": 300,
+				"w": 120,
+				"h": 40,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#3B82F6",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#FFFFFF",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Done"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 70,
+				"y": 40,
+				"w": 520,
+				"h": 42,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 26,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Welcome"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 390,
+				"y": 40,
+				"w": 520,
+				"h": 42,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 26,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Sign in"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t3",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 710,
+				"y": 40,
+				"w": 520,
+				"h": 42,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 26,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Set up"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t4",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1030,
+				"y": 40,
+				"w": 520,
+				"h": 42,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 26,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "All done"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [
+			{
+				"id": "line-1",
+				"from": {
+					"objectId": "b1",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "s2",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 1
+			},
+			{
+				"id": "line-2",
+				"from": {
+					"objectId": "b2",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "s3",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 2
+			},
+			{
+				"id": "line-3",
+				"from": {
+					"objectId": "b3",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "s4",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 3
+			}
+		],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

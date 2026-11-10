@@ -24,6 +24,14 @@ const replyText = ref("")
 const editing = ref(null)
 const editText = ref("")
 
+// The shape library and the comments share the left edge: opening one puts the other away.
+watch(
+	() => state.value.commentsOpen,
+	(open) => {
+		if (open) state.value.libraryOpen = false
+	},
+)
+
 // A draft started from the board opens the panel on the right tab.
 watch(
 	() => state.value.commentDraft,

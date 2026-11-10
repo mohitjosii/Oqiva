@@ -1,0 +1,453 @@
+{
+	"slug": "web-app-architecture",
+	"name": "Web application architecture",
+	"description": "Client, services and data, with the calls between them.",
+	"category": "Architecture",
+	"tags": [
+		"architecture",
+		"engineering",
+		"system design"
+	],
+	"sort_order": 20,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "frame-1",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": -60,
+				"y": -60,
+				"w": 320,
+				"h": 300,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Client"
+			},
+			{
+				"id": "frame-2",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 320,
+				"y": -60,
+				"w": 560,
+				"h": 300,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Services"
+			},
+			{
+				"id": "frame-3",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 940,
+				"y": -60,
+				"w": 320,
+				"h": 300,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Data"
+			},
+			{
+				"id": "user",
+				"kind": "shape",
+				"shape": "ellipse",
+				"x": 30,
+				"y": 30,
+				"w": 180,
+				"h": 120,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Customer"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "web",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 400,
+				"y": 20,
+				"w": 160,
+				"h": 90,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#DBEAFE",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Web app"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "api",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 640,
+				"y": 20,
+				"w": 160,
+				"h": 90,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#DBEAFE",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "API"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "auth",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 520,
+				"y": 150,
+				"w": 160,
+				"h": 90,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#DBEAFE",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Sign-in"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "db",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 1030,
+				"y": 30,
+				"w": 160,
+				"h": 110,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#166534",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Database"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "files",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1010,
+				"y": 160,
+				"w": 180,
+				"h": 80,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#166534",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "File storage"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "note",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 400,
+				"y": 270,
+				"w": 520,
+				"h": 22,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Everything on the right is private to the services."
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [
+			{
+				"id": "line-1",
+				"from": {
+					"objectId": "user",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "web",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "HTTPS"
+				},
+				"z": 1
+			},
+			{
+				"id": "line-2",
+				"from": {
+					"objectId": "web",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "api",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 2
+			},
+			{
+				"id": "line-3",
+				"from": {
+					"objectId": "web",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "auth",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 3
+			},
+			{
+				"id": "line-4",
+				"from": {
+					"objectId": "api",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "db",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "SQL"
+				},
+				"z": 4
+			},
+			{
+				"id": "line-5",
+				"from": {
+					"objectId": "api",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "files",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 5
+			}
+		],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

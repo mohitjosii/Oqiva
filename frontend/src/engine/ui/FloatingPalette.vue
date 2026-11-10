@@ -3,11 +3,13 @@
 import { Dropdown, Popover, Select, toast } from "frappe-ui"
 import { computed, ref } from "vue"
 import { IMAGE_TYPES } from "../interaction/images"
-import { fitView, zoomIn, zoomOut, zoomTo } from "../interaction/view"
+import { fitBounds } from "../geometry/viewport"
+import { fitView, setViewport, zoomIn, zoomOut, zoomTo } from "../interaction/view"
 import { CONNECTOR_TOOLS, connectorToolById } from "../model/connectorTools"
 import { CANVAS_PRESETS } from "../model/schema"
 import { SHAPE_TOOLS, TEXT_TOOL, toolById } from "../model/shapes"
 import { THEMES } from "../model/themes"
+import IconPicker from "./IconPicker.vue"
 import TableSizePicker from "./TableSizePicker.vue"
 import ToolButton from "./ToolButton.vue"
 
@@ -79,8 +81,33 @@ const sideOptions = Array.from({ length: 10 }, (_, i) => ({
 	value: i + 3,
 }))
 
+// Frames are the board's sections: a menu to jump to one.
+const frames = computed(() => props.store.objects.value.filter((o) => o.kind === "frame"))
+const sectionOptions = computed(() =>
+	frames.value.map((frame) => ({
+		label: frame.name || "Untitled section",
+		onClick: () => {
+			const box = { x: frame.x, y: frame.y - 28, w: frame.w, h: frame.h + 28 }
+			setViewport(
+				props.store,
+				fitBounds(box, state.value.size, { padding: 48, maxScale: 1.5 }),
+			)
+			props.store.select([frame.id])
+		},
+	})),
+)
+
+function pickIcon(choice, close) {
+	props.controller.placeIcon(choice)
+	close()
+}
+
 const zoomOptions = computed(() => [
 	{ label: "Fit everything", onClick: () => fitView(props.store) },
+	{
+		label: state.value.minimap ? "Hide the map" : "Show the map",
+		onClick: () => (state.value.minimap = !state.value.minimap),
+	},
 	...[0.5, 1, 2].map((scale) => ({
 		label: `${scale * 100}%`,
 		onClick: () => zoomTo(props.store, scale),
@@ -170,6 +197,14 @@ const settingsOptions = computed(() => [
 			@click="chooseTool('hand')"
 		/>
 		<span class="mx-1 h-6 w-px shrink-0 bg-outline-gray-2" aria-hidden="true" />
+		<ToolButton
+			icon="lucide-shapes"
+			title="Shape library (Shift+S)"
+			:active="state.libraryOpen"
+			:disabled="readonly"
+			data-testid="library-button"
+			@click="state.libraryOpen = !state.libraryOpen"
+		/>
 		<Dropdown :options="shapeOptions" :disabled="readonly">
 			<ToolButton
 				:icon="shapeTool.icon"
@@ -202,6 +237,22 @@ const settingsOptions = computed(() => [
 			:active="state.tool === 'text'"
 			:disabled="readonly"
 			@click="chooseTool('text')"
+		/>
+		<ToolButton
+			icon="lucide-sticky-note"
+			title="Sticky note (N)"
+			:active="state.tool === 'note'"
+			:disabled="readonly"
+			data-testid="note-tool"
+			@click="chooseTool(state.tool === 'note' ? 'select' : 'note')"
+		/>
+		<ToolButton
+			icon="lucide-frame"
+			title="Frame, a named section (F)"
+			:active="state.tool === 'frame'"
+			:disabled="readonly"
+			data-testid="frame-tool"
+			@click="chooseTool(state.tool === 'frame' ? 'select' : 'frame')"
 		/>
 		<ToolButton
 			icon="message-square"
@@ -242,6 +293,28 @@ const settingsOptions = computed(() => [
 				</div>
 			</template>
 		</Popover>
+		<Popover placement="top">
+			<template #target="{ togglePopover }">
+				<ToolButton
+					icon="lucide-smile-plus"
+					title="Icons and emoji"
+					:disabled="readonly"
+					data-testid="icons-button"
+					@click="togglePopover()"
+				/>
+			</template>
+			<template #body-main="{ close }">
+				<IconPicker @pick="(choice) => pickIcon(choice, close)" />
+			</template>
+		</Popover>
+		<Dropdown v-if="frames.length" :options="sectionOptions">
+			<ToolButton
+				icon="lucide-locate-fixed"
+				caret
+				title="Jump to a section"
+				data-testid="sections-button"
+			/>
+		</Dropdown>
 		<input
 			ref="picker"
 			type="file"

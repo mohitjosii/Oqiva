@@ -1,0 +1,224 @@
+{
+	"slug": "kanban-board",
+	"name": "Kanban board",
+	"description": "To do, doing and done, with a few notes to move around.",
+	"category": "Planning",
+	"tags": [
+		"kanban",
+		"tasks",
+		"agile"
+	],
+	"sort_order": 42,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "frame-1",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 320,
+				"h": 560,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "To do"
+			},
+			{
+				"id": "frame-2",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 360,
+				"y": 0,
+				"w": 320,
+				"h": 560,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Doing"
+			},
+			{
+				"id": "frame-3",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 720,
+				"y": 0,
+				"w": 320,
+				"h": 560,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Done"
+			},
+			{
+				"id": "a",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 30,
+				"y": 40,
+				"w": 260,
+				"h": 120,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Write the brief"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "b",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 30,
+				"y": 180,
+				"w": 260,
+				"h": 120,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#93C5FD",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Review the design"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "c",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 390,
+				"y": 40,
+				"w": 260,
+				"h": 120,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#FDBA74",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#7C2D12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Build the first version"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "d",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 750,
+				"y": 40,
+				"w": 260,
+				"h": 120,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#86EFAC",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Set up the project"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

@@ -4,7 +4,7 @@
 import { FeatherIcon } from "frappe-ui"
 
 defineProps({
-	icon: { type: String, default: null }, // a feather icon name
+	icon: { type: String, default: null }, // a feather icon name, or a lucide-… class
 	label: { type: String, default: null }, // text instead of an icon (the zoom level)
 	title: { type: String, required: true },
 	active: { type: Boolean, default: false },
@@ -28,6 +28,12 @@ defineProps({
 		:disabled="disabled"
 	>
 		<span v-if="label" class="tabular-nums">{{ label }}</span>
+		<span
+			v-else-if="icon && icon.startsWith('lucide-')"
+			:class="icon"
+			class="block h-[18px] w-[18px]"
+			aria-hidden="true"
+		/>
 		<FeatherIcon v-else :name="icon" class="h-[18px] w-[18px]" aria-hidden="true" />
 		<FeatherIcon
 			v-if="caret"

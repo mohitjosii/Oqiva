@@ -21,6 +21,9 @@ import BoardCanvas from "./render/BoardCanvas.vue"
 import FloatingPalette from "./ui/FloatingPalette.vue"
 import CommentPanel from "./ui/CommentPanel.vue"
 import CommentPins from "./ui/CommentPins.vue"
+import LinkBadges from "./ui/LinkBadges.vue"
+import Minimap from "./ui/Minimap.vue"
+import ShapeLibrary from "./ui/ShapeLibrary.vue"
 import ExportMenu from "./ui/ExportMenu.vue"
 import ShortcutsDialog from "./ui/ShortcutsDialog.vue"
 import LineLabelEditor from "./ui/LineLabelEditor.vue"
@@ -108,6 +111,37 @@ if (collab) {
 	)
 }
 
+// Small preferences kept in this browser: the shapes added lately, and whether the map shows.
+const PREFS = { recent: "oqiva.recentShapes", minimap: "oqiva.minimap" }
+function readPref(key, fallback) {
+	try {
+		const raw = window.localStorage.getItem(key)
+		return raw === null ? fallback : JSON.parse(raw)
+	} catch {
+		return fallback
+	}
+}
+function writePref(key, value) {
+	try {
+		window.localStorage.setItem(key, JSON.stringify(value))
+	} catch {
+		// private windows and blocked storage just forget it
+	}
+}
+const savedRecent = readPref(PREFS.recent, [])
+store.state.recentPresets = Array.isArray(savedRecent)
+	? savedRecent.filter((k) => typeof k === "string").slice(0, 4)
+	: []
+store.state.minimap = readPref(PREFS.minimap, true) !== false
+watch(
+	() => store.state.recentPresets,
+	(list) => writePref(PREFS.recent, list),
+)
+watch(
+	() => store.state.minimap,
+	(on) => writePref(PREFS.minimap, on),
+)
+
 const fonts = ref(0)
 const showShortcuts = ref(false)
 
@@ -150,8 +184,13 @@ const unsubscribe = store.subscribe((event) => {
 const overlayOpen = () =>
 	Boolean(document.querySelector('[data-dismissable-layer][data-state="open"]'))
 
+// Undo and redo still work with a menu open (a colour or a tile was just chosen in it), as long as
+// the person is not typing in a box.
+const isHistoryKey = (event) =>
+	(event.ctrlKey || event.metaKey) && ["z", "y"].includes(event.key.toLowerCase())
+
 function onKeydown(event) {
-	if (overlayOpen()) return
+	if (overlayOpen() && !(isHistoryKey(event) && !isTypingTarget(event.target))) return
 	if (event.key === " " && !isTypingTarget(event.target) && !store.state.editingId) {
 		event.preventDefault()
 		controller.setSpaceHeld(true)
@@ -249,7 +288,10 @@ defineExpose({ flush: () => autosave.flush(), store, autosave, unsaved })
 			<TextEditorOverlay :store="store" :measure="measureText" />
 			<LineLabelEditor :store="store" :paths="controller.paths" />
 			<CommentPins v-if="comments" :store="store" />
+			<LinkBadges :store="store" :links="host.links" />
 		</BoardCanvas>
+		<ShapeLibrary :store="store" :controller="controller" />
+		<Minimap :store="store" />
 		<FloatingPalette :store="store" :controller="controller" @image="addImage" />
 		<ExportMenu v-if="canExport" :store="store" @export="runExport" />
 		<CommentPanel v-if="comments" :store="store" :comments="comments" />
@@ -261,7 +303,7 @@ defineExpose({ flush: () => autosave.flush(), store, autosave, unsaved })
 		>
 			Adding picture…
 		</div>
-		<RightPalette :store="store" :measure="measureText" />
+		<RightPalette :store="store" :measure="measureText" :links="host.links" />
 		<ShortcutsDialog v-model="showShortcuts" />
 	</div>
 </template>

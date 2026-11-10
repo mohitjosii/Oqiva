@@ -33,9 +33,14 @@ def open_board(board: str) -> dict:
 
 
 @frappe.whitelist(methods=["POST"])
-def create_board(workspace: str, project: str | None = None, title: str | None = None) -> dict:
-	"""Create an empty board."""
-	return board_service.create_board(current_user(), workspace, project, title)
+def create_board(
+	workspace: str,
+	project: str | None = None,
+	title: str | None = None,
+	template: str | None = None,
+) -> dict:
+	"""Create an empty board, or a copy of a published template when ``template`` names one."""
+	return board_service.create_board(current_user(), workspace, project, title, template)
 
 
 @frappe.whitelist(methods=["POST"])

@@ -1,0 +1,585 @@
+{
+	"slug": "incident-response",
+	"name": "Incident response",
+	"description": "From the alert to the follow-up review.",
+	"category": "Engineering",
+	"tags": [
+		"process",
+		"oncall",
+		"engineering"
+	],
+	"sort_order": 60,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "alert",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 150,
+				"h": 70,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#EF4444",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 35
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#991B1B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Alert fires"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "ack",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 260,
+				"y": 0,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#111827",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#111827",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Acknowledge"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "sev",
+				"kind": "shape",
+				"shape": "diamond",
+				"x": 520,
+				"y": 0,
+				"w": 190,
+				"h": 120,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#F97316",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#9A3412",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Severity high?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "page",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 780,
+				"y": 0,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#EF4444",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#991B1B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Page the lead"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "comms",
+				"kind": "shape",
+				"shape": "document",
+				"x": 1040,
+				"y": 0,
+				"w": 170,
+				"h": 100,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#111827",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#111827",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Update the status page"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "triage",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 520,
+				"y": 160,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#111827",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#111827",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Triage"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "fix",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 780,
+				"y": 160,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#111827",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#111827",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Fix or roll back"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "verify",
+				"kind": "shape",
+				"shape": "diamond",
+				"x": 1040,
+				"y": 160,
+				"w": 190,
+				"h": 120,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#F97316",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#9A3412",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Fixed?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "review",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1300,
+				"y": 160,
+				"w": 150,
+				"h": 70,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 35
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#166534",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Write the review"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [
+			{
+				"id": "line-1",
+				"from": {
+					"objectId": "alert",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "ack",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 1
+			},
+			{
+				"id": "line-2",
+				"from": {
+					"objectId": "ack",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "sev",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 2
+			},
+			{
+				"id": "line-3",
+				"from": {
+					"objectId": "sev",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "page",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "yes"
+				},
+				"z": 3
+			},
+			{
+				"id": "line-4",
+				"from": {
+					"objectId": "sev",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "triage",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "no"
+				},
+				"z": 4
+			},
+			{
+				"id": "line-5",
+				"from": {
+					"objectId": "page",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "comms",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 5
+			},
+			{
+				"id": "line-6",
+				"from": {
+					"objectId": "page",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "triage",
+					"anchor": "e"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 6
+			},
+			{
+				"id": "line-7",
+				"from": {
+					"objectId": "triage",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "fix",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 7
+			},
+			{
+				"id": "line-8",
+				"from": {
+					"objectId": "fix",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "verify",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 8
+			},
+			{
+				"id": "line-9",
+				"from": {
+					"objectId": "verify",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "review",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "yes"
+				},
+				"z": 9
+			},
+			{
+				"id": "line-10",
+				"from": {
+					"objectId": "verify",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "triage",
+					"anchor": "s"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "dashed",
+					"opacity": 1
+				},
+				"label": {
+					"text": "no"
+				},
+				"z": 10
+			}
+		],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

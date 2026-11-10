@@ -31,6 +31,8 @@ import {
 } from "../store/tableOps"
 import { emptyText } from "../model/factories"
 import { CONNECTOR_TOOLS, connectorToolById } from "../model/connectorTools"
+import { inkFor } from "../model/factories"
+import { sanitizeLink } from "../model/schema"
 import { SHAPE_TOOLS } from "../model/shapes"
 import { capabilitiesOf, pushRecent } from "./palette"
 import { activeCell } from "./tables"
@@ -111,6 +113,18 @@ export function runAction(store, action, { measure } = {}) {
 			return apply(sidesChanges(objects, action.value), "Change sides")
 		case "comment":
 			return startComment(store, objects)
+		case "frameName":
+			return apply(
+				objects
+					.filter((o) => o.kind === "frame" && o.name !== action.value)
+					.map((o) => ({
+						id: o.id,
+						patch: { name: String(action.value).slice(0, 200) },
+					})),
+				"Rename section",
+			)
+		case "link":
+			return setLink(store, objects, action.value)
 		case "style":
 			return applyStyle(store, [...objects, ...connectors], action, measure)
 		case "painter":
@@ -217,6 +231,8 @@ function applyStyle(store, items, action, measure) {
 		.map((item) => {
 			const patch = stylePatch(item, action)
 			if (!patch) return null
+			if (item.kind === "note" && patch.style?.fill && patch.style.fill !== item.style.fill)
+				patch.text = { ...item.text, color: inkFor(patch.style.fill) } // the writing stays readable
 			if (patch.text && !item.geometry && measure) {
 				const needed = autoHeight({ ...item, ...patch }, measure, patch.text)
 				if (needed) patch.h = needed // a shape only ever grows to fit; a text box follows its text
@@ -422,6 +438,20 @@ function sidesChanges(objects, value) {
 	return objects
 		.filter((o) => o.kind === "shape" && o.shape === "polygon" && o.sides !== sides)
 		.map((o) => ({ id: o.id, patch: { sides } }))
+}
+
+// Puts a link on the one selected object (or takes it off with ``null``). A value that is not a
+// web address, mail address or board is refused.
+function setLink(store, objects, value) {
+	if (objects.length !== 1 || store.selectedConnectors().length) return false
+	const [object] = objects
+	const link = value === null ? null : sanitizeLink(value)
+	if (value !== null && !link) return false
+	if (JSON.stringify(object.link || null) === JSON.stringify(link)) return false
+	const patch = link ? { link } : { link: undefined }
+	return store.updateItems([{ id: object.id, patch }], {
+		label: link ? "Add link" : "Remove link",
+	})
 }
 
 // "Add comment" from the palette: a comment on the selected thing, with no clicking on the board.

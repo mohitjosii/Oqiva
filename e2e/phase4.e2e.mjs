@@ -33,6 +33,19 @@ const poll = async (check, what, ms = 8000) => {
 const expectCount = (locator, n, what) => poll(async () => (await locator.count()) === n, `${n} ${what}`)
 const saved = () => poll(async () => /Saved|View only/.test(await status.innerText()), "Saved")
 const at = (x, y) => ({ x: origin.x + x, y: origin.y + y })
+const use = async (menu) => {
+	const body = page.getByTestId(`menu-body-${menu}`)
+	if (!(await body.isVisible().catch(() => false))) await page.getByTestId(`menu-${menu}`).click()
+	await body.waitFor()
+}
+// Close an open menu before pressing on the board: the menu would be in the way.
+const done = async () => {
+	const open = page.locator('[data-testid^="menu-body-"]')
+	if (await open.count()) {
+		await page.keyboard.press("Escape")
+		await open.waitFor({ state: "detached" }).catch(() => {})
+	}
+}
 // Reopening a board frames everything, so board (0, 0) moves on screen. The first shape is
 // centred on board (-200, 0); work the origin out from where it is drawn.
 async function reframe() {
@@ -41,9 +54,13 @@ async function reframe() {
 }
 
 async function drag(from, to, { steps = 10 } = {}) {
+	await done()
 	await page.mouse.move(from.x, from.y)
+	await done()
 	await page.mouse.down()
+	await done()
 	await page.mouse.move(to.x, to.y, { steps })
+	await done()
 	await page.mouse.up()
 }
 
@@ -72,8 +89,10 @@ await step("opens a new board", async () => {
 
 await step("draws two shapes", async () => {
 	await page.keyboard.press("r")
+	await done()
 	await drag(at(-300, -40), at(-100, 40))
 	await page.keyboard.press("r")
+	await done()
 	await drag(at(100, -40), at(300, 40))
 	await expectCount(shapes, 2, "shapes")
 })
@@ -89,11 +108,14 @@ await step("the lines menu offers all six tools", async () => {
 
 await step("shows anchors near a shape and draws an arrow from one anchor to another", async () => {
 	await poll(async () => {
+		await done()
 		await page.mouse.move(at(-96, 4).x, at(-96, 4).y)
+		await done()
 		await page.mouse.move(at(-97, 5).x, at(-97, 5).y)
 		return (await page.locator("[data-anchor]").count()) >= 8
 	}, "anchor dots")
 	await shot(page, "p4-1-anchors")
+	await done()
 	await drag(at(-98, 3), at(102, -2))
 	await expectCount(lines, 1, "lines")
 	const e = await ends()
@@ -103,6 +125,7 @@ await step("shows anchors near a shape and draws an arrow from one anchor to ano
 })
 
 await step("the arrow follows its shape when the shape moves", async () => {
+	await done()
 	await drag(at(-200, 0), at(-200, 120)) // the left shape, down by 120
 	await poll(async () => (await ends()).start.y === 120, "the arrow's start to follow")
 	assert.equal((await ends()).end.y, 0)
@@ -111,9 +134,11 @@ await step("the arrow follows its shape when the shape moves", async () => {
 })
 
 await step("a line can be selected, bent, and given a label", async () => {
+	await done()
 	await page.mouse.click(...Object.values(at(0, 0)))
 	await page.locator('[data-handle="line-from"]').waitFor()
 	await page.locator('[data-handle="line-to"]').waitFor()
+	await done()
 	await page.mouse.dblclick(...Object.values(at(0, 0)))
 	const input = page.getByLabel("Line label")
 	await input.waitFor()
@@ -126,6 +151,7 @@ await step("a line can be selected, bent, and given a label", async () => {
 
 await step("hovering a shape offers arrows that add a connected copy", async () => {
 	await page.keyboard.press("Escape")
+	await done()
 	await page.mouse.move(...Object.values(at(200, 0)))
 	const down = page.locator('[data-quick="s"]')
 	await down.waitFor()
@@ -136,6 +162,7 @@ await step("hovering a shape offers arrows that add a connected copy", async () 
 })
 
 await step("deleting a shape takes its lines with it, and undo brings them back", async () => {
+	await done()
 	await page.mouse.click(...Object.values(at(200, 0)))
 	await page.keyboard.press("Delete")
 	await expectCount(shapes, 2, "shapes")
@@ -147,10 +174,13 @@ await step("deleting a shape takes its lines with it, and undo brings them back"
 
 await step("a free-ended line can be re-attached by dragging its end", async () => {
 	await page.keyboard.press("l")
+	await done()
 	await drag(at(-300, 200), at(-100, 200)) // two free ends, away from every shape
 	await expectCount(lines, 3, "lines")
+	await done()
 	await page.mouse.click(...Object.values(at(-200, 200)))
 	const handle = await page.locator('[data-handle="line-to"]').boundingBox()
+	await done()
 	await drag({ x: handle.x + handle.width / 2, y: handle.y + handle.height / 2 }, at(-200, 40)) // onto the left shape's bottom anchor
 	await poll(async () => {
 		const e = await ends(2)
@@ -183,12 +213,17 @@ const tile = (name) => page.getByTestId(`tile-${name}`)
 const swatch = (property, hex) => page.getByTestId(`swatch-${property}-${hex}`)
 
 await step("the palette appears with a selection and offers only what fits it", async () => {
+	await done()
 	await page.mouse.click(at(0, -300).x, at(0, -300).y) // empty canvas
 	await palette.waitFor({ state: "detached" })
+	await done()
 	await drag(at(-340, -80), at(340, 60)) // the two top shapes and the line between them
 	await palette.waitFor()
+	await use("Align")
 	await tile("align-left").waitFor()
+	await use("Space and size")
 	assert.equal(await tile("distribute-h").count(), 0, "spacing needs three shapes")
+	await use("Space and size")
 	assert.equal(await tile("swap").count(), 1, "swap is for exactly two")
 	await shot(page, "p4-6-palette-two")
 })
@@ -196,6 +231,7 @@ await step("the palette appears with a selection and offers only what fits it", 
 await step("align left lines the shapes up in one undoable step", async () => {
 	const before = [await box(0), await box(1)]
 	assert.notEqual(before[0].cx, before[1].cx)
+	await use("Align")
 	await tile("align-left").click()
 	await poll(async () => {
 		const [a, b] = [await box(0), await box(1)]
@@ -207,26 +243,36 @@ await step("align left lines the shapes up in one undoable step", async () => {
 
 await step("swap exchanges the two shapes' positions", async () => {
 	const [a, b] = [await box(0), await box(1)]
+	await use("Space and size")
 	await tile("swap").click()
 	await poll(async () => (await box(0)).cx === b.cx && (await box(1)).cx === a.cx, "positions to swap")
 	await page.keyboard.press("Control+z")
 })
 
 await step("grouping makes a click on one shape pick both, and ungroup lets them go", async () => {
+	await use("Arrange")
 	await tile("group").click()
+	await done()
 	await page.mouse.click(at(0, -300).x, at(0, -300).y)
+	await done()
 	await page.mouse.click(at(-200, 0).x, at(-200, 0).y)
 	await poll(async () => (await page.locator('[data-testid="selection-overlay"] polygon').count()) >= 2, "both group members outlined")
+	await use("Arrange")
 	await tile("ungroup").click()
+	await done()
 	await page.mouse.click(at(0, -300).x, at(0, -300).y)
+	await done()
 	await page.mouse.click(at(-200, 0).x, at(-200, 0).y)
 	await poll(async () => (await page.locator('[data-testid="selection-overlay"] > polygon').count()) === 1, "a single shape outlined")
 })
 
 await step("a fill from the curated colours applies at once, and shows up under Recent", async () => {
+	await use("Fill")
 	await swatch("fill", "#FEE2E2").click()
 	await poll(async () => (await shapes.nth(0).locator("rect").first().getAttribute("fill")) === "#FEE2E2", "the fill")
+	await use("Fill")
 	await poll(async () => (await page.getByTestId("recent-fill").count()) === 1, "a recent colours row")
+	await use("Border")
 	await swatch("stroke", "#EF4444").click()
 	await poll(async () => (await shapes.nth(0).locator("rect").first().getAttribute("stroke")) === "#EF4444", "the border colour")
 	await shot(page, "p4-7-styled")
@@ -235,8 +281,10 @@ await step("a fill from the curated colours applies at once, and shows up under 
 })
 
 await step("opacity and corner radius move with their sliders, in one undo step each", async () => {
+	await use("Transparency")
 	await page.getByTestId("opacity").fill("50")
 	await poll(async () => (await shapes.nth(0).getAttribute("opacity")) === "0.5", "half opacity")
+	await use("Corner radius")
 	await page.getByTestId("radius").fill("30")
 	await poll(async () => (await shapes.nth(0).locator("rect").first().getAttribute("rx")) === "30", "a corner radius of 30")
 	await page.keyboard.press("Control+z")
@@ -245,8 +293,10 @@ await step("opacity and corner radius move with their sliders, in one undo step 
 })
 
 await step("rotate and flip tiles turn the shape, and a line follows", async () => {
+	await use("Rotate and flip")
 	await tile("rotate-right").click()
 	await poll(async () => (await box(0)).rotation === 90, "a quarter turn")
+	await use("Rotate and flip")
 	await tile("flip-h").click()
 	await poll(async () => (await box(0)).rotation === 270, "the turn reversed by the flip")
 	await page.keyboard.press("Control+z")
@@ -255,30 +305,42 @@ await step("rotate and flip tiles turn the shape, and a line follows", async () 
 })
 
 await step("a line's own options show alone: colour, geometry, arrowheads", async () => {
+	await done()
 	await page.mouse.click(at(-200, 0).x, at(-200, 0).y) // empty the selection first
+	await done()
 	await page.mouse.click(at(0, -300).x, at(0, -300).y)
+	await done()
 	await page.mouse.click(at(0, 0).x, at(0, 0).y)
+	await use("Line")
 	await tile("geometry-elbow").waitFor()
-	assert.equal(await tile("align-left").count(), 0)
-	assert.equal(await swatch("fill", "#FEE2E2").count(), 0, "a line has no fill")
+	assert.equal(await page.getByTestId("menu-Align").count(), 0)
+	assert.equal(await page.getByTestId("menu-Fill").count(), 0, "a line has no fill")
+	await use("Line")
 	await tile("geometry-elbow").click()
+	await use("Line")
 	await tile("start-arrow").click()
+	await use("Line")
 	await poll(async () => (await tile("start-arrow").getAttribute("aria-pressed")) === "true", "the start arrowhead tile to show as chosen")
+	await use("Line")
 	assert.equal(await tile("start-none").getAttribute("aria-pressed"), "false")
 	await poll(async () => (await lines.nth(0).locator("path").count()) >= 3, "an arrowhead at each end")
 	await shot(page, "p4-8-line-options")
 })
 
 await step("the format painter copies one shape's look onto another", async () => {
+	await done()
 	await page.mouse.click(at(0, -300).x, at(0, -300).y)
+	await done()
 	await page.mouse.click(at(-200, 0).x, at(-200, 0).y) // the pink shape
 	await tile("painter").click()
+	await done()
 	await page.mouse.click(at(200, 0).x, at(200, 0).y) // the right shape
 	await poll(async () => (await shapes.nth(1).locator("rect").first().getAttribute("fill")) === "#FEE2E2", "the copied fill")
 	await poll(async () => (await page.getByTestId("tile-painter").getAttribute("aria-pressed")) !== "true", "the painter to be put down")
 })
 
 await step("the palette is gone for a view-only reader and while typing", async () => {
+	await done()
 	await page.mouse.dblclick(at(200, 0).x, at(200, 0).y)
 	await page.locator('[data-testid="text-editor"]').waitFor()
 	assert.equal(await palette.count(), 0)
@@ -288,7 +350,9 @@ await step("the palette is gone for a view-only reader and while typing", async 
 // ---- clipboard, guides, auto-pan ----
 
 await step("copy and paste put a copy 10 units over, in one undo step", async () => {
+	await done()
 	await page.mouse.click(at(0, -300).x, at(0, -300).y)
+	await done()
 	await page.mouse.click(at(-200, 0).x, at(-200, 0).y)
 	const before = await box(0)
 	await page.keyboard.press("Control+c")
@@ -306,6 +370,7 @@ await step("copy and paste put a copy 10 units over, in one undo step", async ()
 })
 
 await step("cut removes the shape, and paste brings it back", async () => {
+	await done()
 	await page.mouse.click(at(-200, 0).x, at(-200, 0).y)
 	await page.keyboard.press("Control+x")
 	await expectCount(shapes, 2, "shapes")
@@ -329,12 +394,17 @@ await step("pasting a picture from the clipboard offers it to the host, not as a
 })
 
 await step("smart guides show while a shape lines up with another, and go when it is let go", async () => {
+	await done()
 	await page.mouse.click(at(0, -300).x, at(0, -300).y)
+	await done()
 	await page.mouse.move(at(-200, 0).x, at(-200, 0).y)
+	await done()
 	await page.mouse.down()
+	await done()
 	await page.mouse.move(at(-200, 3).x, at(-200, 3).y, { steps: 3 }) // 3px off the top edge of the shape beside it
 	await poll(async () => (await page.locator("[data-guide]").count()) > 0, "a guide line")
 	await shot(page, "p4-9-guides")
+	await done()
 	await page.mouse.up()
 	await poll(async () => (await page.locator("[data-guide]").count()) === 0, "guides to go")
 	assert.equal((await box(0)).cy, 0, "the shape snapped back into line")
@@ -345,11 +415,16 @@ await step("holding a shape at the edge of the view scrolls it", async () => {
 	const edge = canvasBox.x + canvasBox.width - 4
 	const before = await shapes.nth(0).locator("rect").first().boundingBox()
 	const c = await box(2)
+	await done()
 	await page.mouse.click(at(0, -300).x, at(0, -300).y)
+	await done()
 	await page.mouse.move(at(c.cx, c.cy).x, at(c.cx, c.cy).y)
+	await done()
 	await page.mouse.down()
+	await done()
 	await page.mouse.move(edge, at(c.cx, c.cy).y, { steps: 8 })
 	await page.waitForTimeout(700)
+	await done()
 	await page.mouse.up()
 	const after = await shapes.nth(0).locator("rect").first().boundingBox()
 	assert.ok(after.x < before.x - 100, `the view should have scrolled right (moved ${before.x - after.x}px)`)
@@ -362,6 +437,7 @@ await step("holding a shape at the edge of the view scrolls it", async () => {
 const pictures = page.locator('[data-testid="objects"] image')
 
 await step("a picture chosen from the file picker is uploaded and drawn on the board", async () => {
+	await done()
 	await page.mouse.click(at(0, -300).x, at(0, -300).y)
 	await page.getByTestId("picture-input").setInputFiles({ name: "red dot.png", mimeType: "image/png", buffer: makePng(240, 120, [200, 30, 30]) })
 	await expectCount(pictures, 1, "pictures")
@@ -374,13 +450,16 @@ await step("a picture chosen from the file picker is uploaded and drawn on the b
 
 await step("the picture is selected and offers border, opacity and corner radius but no fill or text", async () => {
 	await palette.waitFor()
+	await use("Border")
 	await swatch("stroke", "#EF4444").waitFor()
-	assert.equal(await swatch("fill", "#FEE2E2").count(), 0)
+	assert.equal(await page.getByTestId("menu-Fill").count(), 0)
 	assert.equal(await page.getByTestId("text-size").count(), 0)
+	await use("Corner radius")
 	assert.equal(await page.getByTestId("radius").count(), 1)
 })
 
 await step("a picture can be flipped and the drawing mirrors", async () => {
+	await use("Rotate and flip")
 	await tile("flip-h").click()
 	await poll(async () => /scale\(-1 1\)/.test((await pictures.first().locator("xpath=..").getAttribute("transform")) || ""), "a mirrored picture")
 	await page.keyboard.press("Control+z")
@@ -423,6 +502,7 @@ const tables = page.locator('[data-testid="objects"] > g').filter({ has: page.lo
 const tableCount = () => page.locator('[data-testid="objects"] > g path[d^="M0 0 L0"]').count()
 
 await step("the size picker lights up squares and a click places a table of that size", async () => {
+	await done()
 	await page.mouse.click(at(0, -300).x, at(0, -300).y)
 	await page.getByTestId("table-button").click()
 	await page.getByTestId("table-size-picker").waitFor()
@@ -431,6 +511,7 @@ await step("the size picker lights up squares and a click places a table of that
 	await page.getByTestId("table-size-2x3").click()
 	await poll(async () => (await page.getByTestId("table-button").getAttribute("aria-pressed")) === "true", "the table tool")
 	await page.getByTestId("table-size-picker").waitFor({ state: "detached" })
+	await done()
 	await drag(at(-300, 260), at(-60, 340)) // 240 by 80 for 2 rows of 3: cells 80 by 40
 	await poll(async () => (await tableCount()) === 1, "a table on the board")
 	await shot(page, "p4-11-table")
@@ -438,12 +519,15 @@ await step("the size picker lights up squares and a click places a table of that
 
 await step("the table's tools appear, with the chosen cell outlined", async () => {
 	await palette.waitFor()
+	await use("Table")
 	await tile("row-below").waitFor()
+	await use("Rotate and flip")
 	assert.equal(await tile("flip-h").count(), 0, "a table is not flipped")
 	await page.getByTestId("active-cell").waitFor()
 })
 
 await step("double-clicking a cell types into that cell, and Tab moves to the next", async () => {
+	await done()
 	await page.mouse.dblclick(at(-260, 280).x, at(-260, 280).y) // the first cell
 	await page.locator('[data-testid="text-editor"]').waitFor()
 	await page.keyboard.type("Name")
@@ -460,10 +544,13 @@ await step("double-clicking a cell types into that cell, and Tab moves to the ne
 })
 
 await step("adding a row and a column grows the table, and undo takes them away", async () => {
+	await done()
 	await page.mouse.click(at(-260, 280).x, at(-260, 280).y)
 	const before = await page.locator('[data-testid="objects"] > g path[d^="M0 0 L0"]').first().getAttribute("d")
+	await use("Table")
 	await tile("row-below").click()
 	await poll(async () => (await page.locator('[data-testid="objects"] > g path[d^="M0 0 L0"]').first().getAttribute("d")) !== before, "a taller table")
+	await use("Table")
 	await tile("col-right").click()
 	await page.keyboard.press("Control+z")
 	await page.keyboard.press("Control+z")
@@ -471,9 +558,12 @@ await step("adding a row and a column grows the table, and undo takes them away"
 })
 
 await step("a cell can be filled and its text made bold from the palette", async () => {
+	await done()
 	await page.mouse.click(at(-260, 280).x, at(-260, 280).y)
+	await use("Table")
 	await swatch("cellFill", "#FEE2E2").click()
 	await poll(async () => (await page.locator('[data-testid="objects"] > g rect[fill="#FEE2E2"]').count()) >= 1, "the cell fill")
+	await use("Table")
 	await tile("cell-bold").click()
 	await poll(async () => (await page.locator('[data-testid="objects"] > g [font-weight="600"]').count()) >= 1, "bold cell text")
 	await shot(page, "p4-13-cell-format")
@@ -482,6 +572,7 @@ await step("a cell can be filled and its text made bold from the palette", async
 await step("resizing the table stretches its cells together", async () => {
 	const handle = await page.locator('[data-handle="se"]').boundingBox()
 	const start = await page.locator('[data-testid="objects"] > g path[d^="M0 0 L0"]').first().boundingBox()
+	await done()
 	await drag({ x: handle.x + handle.width / 2, y: handle.y + handle.height / 2 }, { x: handle.x + handle.width / 2 + 120, y: handle.y + handle.height / 2 + 40 })
 	await poll(async () => (await page.locator('[data-testid="objects"] > g path[d^="M0 0 L0"]').first().boundingBox()).width > start.width + 100, "a wider table")
 })
@@ -526,6 +617,7 @@ const looksLike = (bytes, mime, x = 0, y = 0) =>
 	)
 
 await step("the Export menu offers every format, and the selection only when something is selected", async () => {
+	await done()
 	await page.mouse.click(at(0, -300).x, at(0, -300).y)
 	await exportMenu()
 	for (const name of ["PNG", "PNG, double size", "JPEG", "SVG", "PDF", "Print…"]) await page.getByRole("menuitem", { name, exact: true }).first().waitFor()
@@ -598,6 +690,7 @@ await step("PDF is a real PDF with one page", async () => {
 })
 
 await step("a selection exports as a smaller picture than the whole board", async () => {
+	await done()
 	await page.mouse.click(at(-200, 0).x, at(-200, 0).y)
 	const part = await exportAs("PNG", 1)
 	const whole = await looksLike(png1.bytes, "image/png")
@@ -606,6 +699,7 @@ await step("a selection exports as a smaller picture than the whole board", asyn
 })
 
 await step("Ctrl+P prints the board alone, not the app around it", async () => {
+	await done()
 	await page.mouse.click(at(0, -300).x, at(0, -300).y)
 	await page.keyboard.press("Control+p")
 	await page.waitForFunction(() => document.querySelector("iframe[aria-hidden]")?.contentDocument?.querySelector("svg"))
@@ -619,6 +713,7 @@ await step("Ctrl+P prints the board alone, not the app around it", async () => {
 await step("a thumbnail is sent after edits, and loads as a PNG", async () => {
 	const sent = page.waitForResponse((response) => response.url().includes("save_thumbnail"), { timeout: 45000 })
 	sent.catch(() => {}) // reported where it is awaited, not as a crash if an earlier line fails first
+	await done()
 	await page.mouse.click(at(-200, 0).x, at(-200, 0).y)
 	await page.keyboard.press("ArrowRight") // any change will do
 	const response = await sent

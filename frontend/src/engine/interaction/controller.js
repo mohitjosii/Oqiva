@@ -27,17 +27,27 @@ import { HANDLES, resizeBox, rotationFor, snapAngle } from "../geometry/resize"
 import { panBy, toBoard, visibleRect, zoomAt } from "../geometry/viewport"
 import { autoHeight } from "../text/fit"
 import { connectorToolById } from "../model/connectorTools"
-import { createConnector, createObject, createTable, defaultRect } from "../model/factories"
+import {
+	createConnector,
+	createFrame,
+	createIcon,
+	createNote,
+	createObject,
+	createTable,
+	defaultRect,
+	NOTE_SIZE,
+} from "../model/factories"
+import { presetObject, pushRecentPreset } from "../model/library"
 import { newId } from "../model/ids"
-import { normalizeRotation, pageSize } from "../model/schema"
+import { GRID_SIZES, normalizeRotation, pageSize } from "../model/schema"
 import { toolById } from "../model/shapes"
-import { OPPOSITE, quickAddRect } from "./placement"
+import { libraryPlacement, OPPOSITE, quickAddRect } from "./placement"
 import { createConnectorPaths } from "../render/connectorPaths"
 import { expandToGroups } from "../store/arrange"
 import { cellAt, scaleTable, setTrackSize, withTable } from "../store/tableOps"
 import { paintOnto } from "./actions"
 import { snapToGuides } from "./guides"
-import { setViewport } from "./view"
+import { centerOn, setViewport } from "./view"
 
 const CLICK_SLOP_PX = 3 // a press that moves less than this is a click, not a drag
 const HIT_TOLERANCE_PX = 4
@@ -195,11 +205,11 @@ export class CanvasController {
 			if (!this.state.readonly) this.startConnector(connectorTool, point, screen)
 			return
 		}
-		if (this.state.tool === "table") {
+		if (["table", "note", "frame"].includes(this.state.tool)) {
 			if (!this.state.readonly)
 				this.drag = {
 					type: "draw",
-					tool: { id: "table" },
+					tool: { id: this.state.tool },
 					start: point,
 					startScreen: screen,
 				}
@@ -273,7 +283,8 @@ export class CanvasController {
 			}
 			const alreadySelected = this.state.selection.includes(hit.id)
 			if (!alreadySelected) this.store.select(members)
-			const ids = [...this.state.selection]
+			const picked = [...this.state.selection]
+			const ids = this.withFrameContents(picked)
 			this.drag = {
 				type: "move",
 				start: point,
@@ -282,7 +293,7 @@ export class CanvasController {
 				ids,
 				origins: new Map(ids.map((id) => [id, this.store.getItem(id)])),
 				// A click on one of several selected objects narrows the selection to it.
-				collapseTo: alreadySelected && ids.length > members.length ? members : null,
+				collapseTo: alreadySelected && picked.length > members.length ? members : null,
 				gesture: this.state.readonly ? null : this.store.beginGesture(ids),
 				...this.snapTargets(ids),
 			}
@@ -294,6 +305,26 @@ export class CanvasController {
 			start: point,
 			base: event.shiftKey ? [...this.state.selection] : [],
 		}
+	}
+
+	// Moving a frame moves what lies wholly inside it.
+	withFrameContents(ids) {
+		const objects = this.store.objects.value
+		const chosen = new Set(ids)
+		const frames = objects.filter((o) => chosen.has(o.id) && o.kind === "frame")
+		if (!frames.length) return ids
+		const extra = objects.filter((o) => {
+			if (chosen.has(o.id)) return false
+			const box = objectBounds(o)
+			return frames.some(
+				(f) =>
+					box.x >= f.x &&
+					box.y >= f.y &&
+					box.x + box.w <= f.x + f.w &&
+					box.y + box.h <= f.y + f.h,
+			)
+		})
+		return [...ids, ...extra.map((o) => o.id)]
 	}
 
 	pointerMove(event) {
@@ -691,6 +722,8 @@ export class CanvasController {
 			Math.hypot(screen.x - drag.startScreen.x, screen.y - drag.startScreen.y) >=
 			CLICK_SLOP_PX
 		if (drag.tool.id === "table") return this.createTableAt(drag, point, dragged, shiftKey)
+		if (drag.tool.id === "note") return this.createNoteAt(drag, point, dragged, shiftKey)
+		if (drag.tool.id === "frame") return this.createFrameAt(drag, point, dragged)
 		const rect = dragged
 			? this.drawRect(drag, point, shiftKey)
 			: defaultRect(drag.tool.id, drag.start)
@@ -710,6 +743,110 @@ export class CanvasController {
 		if (!this.store.addItems({ objects: [table] }, { label: "Add table" })) return
 		this.state.tool = "select"
 		this.state.tableCell = { id: table.id, row: 0, col: 0 }
+	}
+
+	// A sticky note: dragged out, or dropped at the click, then ready for typing.
+	createNoteAt(drag, point, dragged, shiftKey) {
+		const rect = dragged
+			? this.drawRect(drag, point, shiftKey)
+			: {
+					x: drag.start.x - NOTE_SIZE.w / 2,
+					y: drag.start.y - NOTE_SIZE.h / 2,
+					...NOTE_SIZE,
+				}
+		const note = createNote(rect, { z: this.store.nextZ() })
+		if (!this.store.addObjects([note], { label: "Add sticky note" })) return
+		this.state.tool = "select"
+		this.state.editingNew = false
+		this.state.editingId = note.id
+	}
+
+	createFrameAt(drag, point, dragged) {
+		const rect = dragged
+			? this.drawRect(drag, point, false)
+			: { x: drag.start.x - 240, y: drag.start.y - 160, w: 480, h: 320 }
+		const count = this.store.objects.value.filter((o) => o.kind === "frame").length
+		const frame = createFrame(rect, { name: `Section ${count + 1}`, z: this.store.nextBackZ() })
+		if (!this.store.addObjects([frame], { label: "Add section" })) return
+		this.state.tool = "select"
+	}
+
+	// The topmost frame a board point is inside, for highlighting where a dragged shape would land.
+	frameAtPoint(point) {
+		const frames = this.store.objects.value.filter((o) => o.kind === "frame")
+		for (let i = frames.length - 1; i >= 0; i--) {
+			const f = frames[i]
+			if (point.x >= f.x && point.x <= f.x + f.w && point.y >= f.y && point.y <= f.y + f.h)
+				return f
+		}
+		return null
+	}
+
+	// Where a new shape of ``size`` goes: at ``drop`` (a drag from the library), beside the one
+	// selected shape, or in a free spot near the middle of what is on screen.
+	spotFor(size, drop = null) {
+		const objects = this.store.objects.value
+		const [only, ...rest] = this.store.selectedObjects()
+		const alone = only && !rest.length && !this.store.selectedConnectors().length
+		const view = visibleRect(this.state.viewport, this.state.size)
+		return libraryPlacement({
+			size,
+			drop,
+			selected: alone && only.kind !== "frame" ? { box: objectBounds(only) } : null,
+			viewCenter: { x: view.x + view.w / 2, y: view.y + view.h / 2 },
+			obstacles: objects.filter((o) => o.kind !== "frame").map(objectBounds),
+			grid: GRID_SIZES[this.store.canvas.value.grid] || 0,
+		})
+	}
+
+	// Brings a new object into view if it landed off screen.
+	revealRect(rect) {
+		const view = visibleRect(this.state.viewport, this.state.size)
+		const inside =
+			rect.x >= view.x &&
+			rect.y >= view.y &&
+			rect.x + rect.w <= view.x + view.w &&
+			rect.y + rect.h <= view.y + view.h
+		if (!inside) centerOn(this.store, { x: rect.x + rect.w / 2, y: rect.y + rect.h / 2 })
+	}
+
+	// A library shape, placed and selected, with its label selected for typing over.
+	placePreset(preset, drop = null) {
+		if (this.state.readonly) return null
+		const rect = this.spotFor({ w: preset.w, h: preset.h }, drop)
+		const object = presetObject(
+			preset,
+			{ x: rect.x, y: rect.y },
+			{ theme: this.store.theme.value.preset, z: this.store.nextZ() },
+		)
+		if (!this.store.addObjects([object], { label: `Add ${preset.label.toLowerCase()}` }))
+			return null
+		this.state.recentPresets = pushRecentPreset(this.state.recentPresets, preset.key)
+		this.state.hintFrame = null
+		this.revealRect(rect)
+		if (object.text) {
+			this.state.editingNew = false
+			this.state.editingSelectAll = true
+			this.state.editingId = object.id
+		}
+		return object
+	}
+
+	// An icon or an emoji from the picker.
+	placeIcon(choice, drop = null) {
+		if (this.state.readonly) return null
+		const size = 64
+		const rect = this.spotFor({ w: size, h: size }, drop)
+		const object = createIcon({
+			...choice,
+			center: { x: rect.x + size / 2, y: rect.y + size / 2 },
+			size,
+			theme: this.store.theme.value.preset,
+			z: this.store.nextZ(),
+		})
+		if (!this.store.addObjects([object], { label: "Add icon" })) return null
+		this.revealRect(rect)
+		return object
 	}
 
 	delta(a, b) {

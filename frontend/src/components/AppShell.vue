@@ -42,6 +42,7 @@ const nav = computed(() => {
 		{ name: "recent", label: "Recent", icon: "clock" },
 		{ name: "favorites", label: "Favorites", icon: "star" },
 		{ name: "shared", label: "Shared with me", icon: "share-2" },
+		{ name: "templates", label: "Templates", icon: "layout" },
 		{ name: "notifications", label: "Notifications", icon: "bell" },
 		{ name: "archived", label: "Archive", icon: "archive" },
 		{ name: "trash", label: "Trash", icon: "trash-2" },
@@ -273,6 +274,18 @@ const userMenu = computed(() => [
 					<span class="flex-1 text-left">Search</span>
 					<kbd class="rounded border border-outline-gray-2 px-1 text-xs">Ctrl K</kbd>
 				</button>
+				<Button
+					v-if="powers.canCreate"
+					variant="subtle"
+					iconLeft="layout"
+					label="From template"
+					@click="
+						router.push({
+							name: 'templates',
+							params: { workspace: route.params.workspace },
+						})
+					"
+				/>
 				<Button
 					v-if="powers.canCreate"
 					variant="solid"
