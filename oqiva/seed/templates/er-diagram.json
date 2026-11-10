@@ -1,0 +1,561 @@
+{
+	"slug": "er-diagram",
+	"name": "Entity relationships",
+	"description": "Three tables and how they refer to each other.",
+	"category": "Engineering",
+	"tags": [
+		"database",
+		"er diagram",
+		"data model"
+	],
+	"sort_order": 62,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "users",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 300,
+				"h": 144,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#2563EB",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						150,
+						150
+					],
+					"rowH": [
+						36,
+						36,
+						36,
+						36
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "users"
+											}
+										]
+									}
+								]
+							},
+							null
+						],
+						[
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "id"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#64748B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "email"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#64748B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "text"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "name"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#64748B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "text"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#DBEAFE",
+							"#DBEAFE"
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "orders",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 420,
+				"y": 0,
+				"w": 300,
+				"h": 144,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#2563EB",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						150,
+						150
+					],
+					"rowH": [
+						36,
+						36,
+						36,
+						36
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "orders"
+											}
+										]
+									}
+								]
+							},
+							null
+						],
+						[
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "id"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#64748B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "user_id"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#64748B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "total"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#64748B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "decimal"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#DBEAFE",
+							"#DBEAFE"
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "items",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 840,
+				"y": 0,
+				"w": 300,
+				"h": 144,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#2563EB",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						150,
+						150
+					],
+					"rowH": [
+						36,
+						36,
+						36,
+						36
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "order_items"
+											}
+										]
+									}
+								]
+							},
+							null
+						],
+						[
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "id"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#64748B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "order_id"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#64748B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "int"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "sku"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 15,
+								"color": "#64748B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "text"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#DBEAFE",
+							"#DBEAFE"
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						],
+						[
+							null,
+							null
+						]
+					]
+				}
+			}
+		],
+		"connectors": [
+			{
+				"id": "line-1",
+				"from": {
+					"objectId": "users",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "orders",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "1 to many"
+				},
+				"z": 1
+			},
+			{
+				"id": "line-2",
+				"from": {
+					"objectId": "orders",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "items",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "1 to many"
+				},
+				"z": 2
+			}
+		],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

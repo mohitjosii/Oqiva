@@ -1,0 +1,17 @@
+{
+	"slug": "blank",
+	"name": "Blank board",
+	"description": "An empty infinite canvas. Start from scratch.",
+	"category": "Basics",
+	"tags": ["blank", "empty", "start"],
+	"sort_order": 0,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": { "mode": "infinite", "preset": "16:9", "background": null, "grid": "off" },
+		"theme": { "preset": "ocean" },
+		"objects": [],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

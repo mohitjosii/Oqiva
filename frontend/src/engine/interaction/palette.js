@@ -6,7 +6,17 @@
 // A marquee that catches shapes also catches the lines between them, and those lines follow
 // their shapes anyway, so for arrangement the lines are set aside rather than hiding it all.
 
-export const STYLE_SECTIONS = ["shapeType", "fill", "border", "text", "opacity", "radius", "line"]
+export const STYLE_SECTIONS = [
+	"shapeType",
+	"noteColor",
+	"frameName",
+	"fill",
+	"border",
+	"text",
+	"opacity",
+	"radius",
+	"line",
+]
 
 const OBJECT_ONLY = new Set(["fill", "text", "radius"])
 
@@ -29,6 +39,12 @@ export function capabilitiesOf(item) {
 			return new Set(["border", "opacity", "radius"])
 		case "table":
 			return new Set(["border", "opacity"])
+		case "note":
+			return new Set(["fill", "text", "opacity", "noteColor"])
+		case "icon":
+			return new Set(["border", "opacity"])
+		case "frame":
+			return new Set(["fill", "border", "opacity", "frameName"])
 		default:
 			return new Set() // a kind from a newer version: leave it alone
 	}
@@ -47,6 +63,7 @@ export function availableSections(objects, connectors = []) {
 		if (objects.every((object) => object.kind !== "table")) sections.add("flip") // mirrored cells would read backwards
 	}
 	if (objects.length === 1 && objects[0].kind === "table") sections.add("table")
+	if (objects.length === 1 && !connectors.length) sections.add("link")
 	if (objects.length >= 2) sections.add("removeGaps")
 	if (objects.length >= 3) sections.add("distribute")
 	if (objects.filter((object) => object.kind !== "table").length >= 2) sections.add("size")

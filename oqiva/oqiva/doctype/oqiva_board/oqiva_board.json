@@ -8,6 +8,7 @@
   "project",
   "title",
   "description",
+  "template",
   "sec_content",
   "document",
   "crdt_state",
@@ -54,6 +55,16 @@
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description"
+  },
+  {
+   "description": "The template this board was made from. Provenance only.",
+   "fieldname": "template",
+   "fieldtype": "Link",
+   "label": "Template",
+   "no_copy": 1,
+   "options": "Oqiva Template",
+   "read_only": 1,
+   "set_only_once": 1
   },
   {
    "fieldname": "sec_content",

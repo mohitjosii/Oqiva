@@ -3,17 +3,20 @@
 // every selected thing supports (interaction/palette.js) and nothing else. Every tile is one
 // click and one undo step.
 import { Dropdown } from "frappe-ui"
-import { computed, onMounted, watch } from "vue"
+import { computed, onMounted, ref, watch } from "vue"
 import { commonValue, availableSections } from "../interaction/palette"
 import { MAX_SIDES, MIN_SIDES, runAction, shapeToolOf } from "../interaction/actions"
 import { activeCell } from "../interaction/tables"
+import { NOTE_COLORS, sanitizeLink } from "../model/schema"
 import { SHAPE_TOOLS } from "../model/shapes"
+import BarMenu from "./BarMenu.vue"
 import ColorSwatches from "./ColorSwatches.vue"
 import PaletteTile from "./PaletteTile.vue"
 
 const props = defineProps({
 	store: { type: Object, required: true },
 	measure: { type: Function, required: true },
+	links: { type: Object, default: null }, // {searchBoards(query)} from the page
 })
 
 const SIZES = [12, 14, 16, 18, 20, 24, 32, 48, 64]
@@ -36,8 +39,13 @@ const SHAPE_ICONS = {
 	circle: "lucide-circle",
 	triangle: "lucide-triangle",
 	diamond: "lucide-diamond",
-	polygon: "lucide-hexagon",
+	polygon: "lucide-pentagon",
 	arrow: "lucide-arrow-big-right",
+	hexagon: "lucide-hexagon",
+	trapezoid: "lucide-box",
+	cylinder: "lucide-database",
+	document: "lucide-file-text",
+	cloud: "lucide-cloud",
 }
 
 const shapes = computed(() => objects.value.filter((o) => o.kind === "shape"))
@@ -57,6 +65,54 @@ const sideChoices = Array.from({ length: MAX_SIDES - MIN_SIDES + 1 }, (_, i) => 
 const canCommentHere = computed(
 	() => state.value.canComment && items.value.length === 1 && objects.value.length === 1,
 )
+
+// ----- link: a web address or another board, on the one selected object -----
+const object = computed(() => (objects.value.length === 1 ? objects.value[0] : null))
+const link = computed(() => object.value?.link || null)
+const urlDraft = ref("")
+const urlError = ref("")
+const boardQuery = ref("")
+const boardResults = ref([])
+const pickingBoard = ref(false)
+watch(
+	() => object.value?.id,
+	() => {
+		urlDraft.value = ""
+		urlError.value = ""
+		pickingBoard.value = false
+	},
+)
+function addUrl() {
+	const text = urlDraft.value.trim()
+	const value = /^[a-z][a-z0-9+.-]*:/i.test(text) ? text : `https://${text}`
+	if (!text || !sanitizeLink({ url: value })) {
+		urlError.value = "Enter a web address (https://…) or a mail address (mailto:…)."
+		return
+	}
+	urlError.value = ""
+	run({ name: "link", value: { url: value } })
+	urlDraft.value = ""
+}
+let searchTimer = null
+function searchBoards() {
+	clearTimeout(searchTimer)
+	searchTimer = setTimeout(async () => {
+		boardResults.value = (await props.links?.searchBoards?.(boardQuery.value)) || []
+	}, 200)
+}
+function startBoardPick() {
+	pickingBoard.value = true
+	boardQuery.value = ""
+	searchBoards()
+}
+function linkBoard(board) {
+	run({ name: "link", value: { board: board.name, title: board.title } })
+	pickingBoard.value = false
+}
+const frameName = computed(() => (object.value?.kind === "frame" ? object.value.name : ""))
+const nameDraft = ref("")
+watch(frameName, (name) => (nameDraft.value = name || ""), { immediate: true })
+const noteFill = computed(() => shared((item) => item.style?.fill))
 
 const run = (action) => runAction(props.store, action, { measure: props.measure })
 const cell = computed(() => activeCell(props.store))
@@ -152,9 +208,10 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 </script>
 
 <template>
-	<aside
+	<div
 		v-if="visible"
-		class="absolute bottom-24 right-4 top-16 z-10 flex w-60 flex-col gap-3 overflow-y-auto rounded-xl border border-outline-gray-2 bg-surface-white p-3 text-sm shadow-lg"
+		class="absolute left-1/2 top-3 z-10 flex max-w-[calc(100%-20rem)] -translate-x-1/2 items-center gap-0.5 rounded-xl border border-outline-gray-2 bg-surface-white p-1.5 text-sm shadow-lg"
+		role="toolbar"
 		aria-label="Selection options"
 		data-testid="right-palette"
 		data-print="hide"
@@ -164,7 +221,7 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 		@wheel.stop
 		@contextmenu.stop
 	>
-		<section v-if="has('shapeType')" aria-label="Shape">
+		<BarMenu v-if="has('shapeType')" label="Shape" icon="lucide-shapes">
 			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Shape</h3>
 			<div class="flex flex-wrap gap-0.5" data-testid="shape-types">
 				<PaletteTile
@@ -196,19 +253,131 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 					</button>
 				</Dropdown>
 			</div>
-		</section>
+		</BarMenu>
 
-		<section v-if="canCommentHere" aria-label="Comment">
+		<BarMenu
+			v-if="has('noteColor')"
+			label="Note colour"
+			icon="lucide-sticky-note"
+			:swatch="noteFill"
+		>
+			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Note colour</h3>
+			<div class="flex flex-wrap gap-1" data-testid="note-colors">
+				<button
+					v-for="c in NOTE_COLORS"
+					:key="c.name"
+					type="button"
+					class="h-6 w-6 rounded border border-outline-gray-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-5"
+					:class="noteFill === c.fill ? 'ring-2 ring-outline-gray-5 ring-offset-1' : ''"
+					:style="{ backgroundColor: c.fill }"
+					:title="`${c.name} note`"
+					:aria-label="`${c.name} note`"
+					:aria-pressed="noteFill === c.fill"
+					@click="style('fill', c.fill)"
+				/>
+			</div>
+		</BarMenu>
+
+		<BarMenu v-if="has('frameName')" label="Section name" icon="lucide-frame">
+			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Section name</h3>
+			<input
+				v-model="nameDraft"
+				type="text"
+				maxlength="200"
+				class="w-full rounded-md border border-outline-gray-2 bg-surface-white px-2 py-1 text-sm text-ink-gray-9 focus:border-outline-gray-4 focus:outline-none"
+				aria-label="Section name"
+				data-testid="frame-name"
+				@keydown.stop
+				@change="run({ name: 'frameName', value: nameDraft })"
+			/>
+		</BarMenu>
+
+		<BarMenu v-if="has('link')" label="Link" icon="lucide-link">
+			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Link</h3>
+			<div v-if="link" class="flex items-center gap-1" data-testid="link-current">
+				<span class="min-w-0 flex-1 truncate text-xs text-ink-gray-8">{{
+					link.url || link.title || link.board
+				}}</span>
+				<button
+					type="button"
+					class="rounded px-1.5 py-0.5 text-xs text-blue-700 hover:bg-surface-gray-2"
+					data-testid="link-remove"
+					@click="run({ name: 'link', value: null })"
+				>
+					Remove
+				</button>
+			</div>
+			<template v-else>
+				<form class="flex gap-1" @submit.prevent="addUrl">
+					<input
+						v-model="urlDraft"
+						type="text"
+						class="min-w-0 flex-1 rounded-md border border-outline-gray-2 bg-surface-white px-2 py-1 text-xs text-ink-gray-9 placeholder:text-ink-gray-4 focus:border-outline-gray-4 focus:outline-none"
+						placeholder="https://…"
+						aria-label="Link address"
+						data-testid="link-url"
+						@keydown.stop
+					/>
+					<button
+						type="submit"
+						class="rounded-md border border-outline-gray-2 px-2 text-xs text-ink-gray-8 hover:bg-surface-gray-2"
+						data-testid="link-add"
+					>
+						Add
+					</button>
+				</form>
+				<p v-if="urlError" class="mt-1 text-xs text-red-600" role="alert">{{ urlError }}</p>
+				<button
+					v-if="links && !pickingBoard"
+					type="button"
+					class="mt-1 text-xs text-blue-700 hover:underline"
+					data-testid="link-board"
+					@click="startBoardPick"
+				>
+					Or link to another board
+				</button>
+				<div v-if="pickingBoard" class="mt-1" data-testid="board-picker">
+					<input
+						v-model="boardQuery"
+						type="search"
+						class="w-full rounded-md border border-outline-gray-2 bg-surface-white px-2 py-1 text-xs text-ink-gray-9 placeholder:text-ink-gray-4 focus:border-outline-gray-4 focus:outline-none"
+						placeholder="Search boards"
+						aria-label="Search boards"
+						@keydown.stop
+						@input="searchBoards"
+					/>
+					<ul class="mt-1 max-h-32 overflow-y-auto">
+						<li v-for="b in boardResults" :key="b.name">
+							<button
+								type="button"
+								class="w-full truncate rounded px-1.5 py-1 text-left text-xs text-ink-gray-8 hover:bg-surface-gray-2"
+								@click="linkBoard(b)"
+							>
+								{{ b.title }}
+							</button>
+						</li>
+						<li v-if="!boardResults.length" class="px-1.5 py-1 text-xs text-ink-gray-5">
+							{{
+								boardQuery.trim().length < 2
+									? "Type two letters to search."
+									: "No boards found."
+							}}
+						</li>
+					</ul>
+				</div>
+			</template>
+		</BarMenu>
+
+		<div v-if="canCommentHere" aria-label="Comment">
 			<PaletteTile
 				icon="lucide-message-square"
-				label="Add comment"
-				title="Comment on this"
+				title="Add a comment to this"
 				testid="add-comment"
 				@click="run({ name: 'comment' })"
 			/>
-		</section>
+		</div>
 
-		<section v-if="has('arrange')" aria-label="Arrange">
+		<BarMenu v-if="has('arrange')" label="Arrange" icon="lucide-layers">
 			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Arrange</h3>
 			<div class="flex flex-wrap gap-0.5">
 				<PaletteTile
@@ -250,9 +419,9 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 					@click="run({ name: 'ungroup' })"
 				/>
 			</div>
-		</section>
+		</BarMenu>
 
-		<section v-if="has('align')" aria-label="Align">
+		<BarMenu v-if="has('align')" label="Align" icon="lucide-align-center-vertical">
 			<div class="mb-1 flex items-center justify-between">
 				<h3 class="text-xs font-medium text-ink-gray-6">Align to</h3>
 				<Dropdown :options="alignOptions">
@@ -303,9 +472,14 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 					@click="run({ name: 'align', mode: 'bottom' })"
 				/>
 			</div>
-		</section>
+		</BarMenu>
 
-		<section v-if="has('removeGaps') || has('size') || has('swap')" aria-label="Space and size">
+		<BarMenu
+			v-if="has('removeGaps') || has('size') || has('swap')"
+			label="Space and size"
+			icon="lucide-move-horizontal"
+			wide
+		>
 			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Space and size</h3>
 			<div class="flex flex-wrap gap-0.5">
 				<PaletteTile
@@ -365,9 +539,9 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 					@click="run({ name: 'swap' })"
 				/>
 			</div>
-		</section>
+		</BarMenu>
 
-		<section v-if="has('transform')" aria-label="Rotate and flip">
+		<BarMenu v-if="has('transform')" label="Rotate and flip" icon="lucide-rotate-cw">
 			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Rotate and flip</h3>
 			<div class="flex flex-wrap gap-0.5">
 				<PaletteTile
@@ -397,9 +571,9 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 					@click="run({ name: 'flip', axis: 'vertical' })"
 				/>
 			</div>
-		</section>
+		</BarMenu>
 
-		<section v-if="has('line')" aria-label="Line">
+		<BarMenu v-if="has('line')" label="Line" icon="lucide-spline" :swatch="stroke" wide>
 			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Line</h3>
 			<div class="flex flex-wrap gap-0.5">
 				<PaletteTile
@@ -472,9 +646,9 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 					@click="style('heads', { end: 'dot' })"
 				/>
 			</div>
-		</section>
+		</BarMenu>
 
-		<section v-if="has('table')" aria-label="Table">
+		<BarMenu v-if="has('table')" label="Table" icon="lucide-table" wide>
 			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">
 				Table{{ cell ? ` · row ${cell.row + 1}, column ${cell.col + 1}` : "" }}
 			</h3>
@@ -573,9 +747,9 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 				:recent="state.recentColors"
 				@pick="(c) => table('text', { target: 'textColor', value: c, recent: true })"
 			/>
-		</section>
+		</BarMenu>
 
-		<section v-if="has('fill')" aria-label="Fill">
+		<BarMenu v-if="has('fill')" label="Fill" icon="lucide-paint-bucket" :swatch="fill" wide>
 			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Fill</h3>
 			<ColorSwatches
 				name="fill"
@@ -585,9 +759,9 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 				none-label="No fill"
 				@pick="(c) => style('fill', c, { recent: true })"
 			/>
-		</section>
+		</BarMenu>
 
-		<section v-if="has('border')" aria-label="Border">
+		<BarMenu v-if="has('border')" label="Border" icon="lucide-square" :swatch="stroke" wide>
 			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">
 				{{ lineOnly ? "Line colour" : "Border" }}
 			</h3>
@@ -629,9 +803,15 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 					@click="style('dash', 'dotted')"
 				/>
 			</div>
-		</section>
+		</BarMenu>
 
-		<section v-if="has('text') && textual.length" aria-label="Text">
+		<BarMenu
+			v-if="has('text') && textual.length"
+			label="Text"
+			icon="lucide-type"
+			:swatch="textColor"
+			wide
+		>
 			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Text</h3>
 			<div class="mb-1 flex flex-wrap items-center gap-0.5">
 				<Dropdown :options="sizeOptions">
@@ -692,9 +872,9 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 				:recent="state.recentColors"
 				@pick="(c) => style('textColor', c, { recent: true })"
 			/>
-		</section>
+		</BarMenu>
 
-		<section v-if="has('opacity')" aria-label="Transparency">
+		<BarMenu v-if="has('opacity')" label="Transparency" icon="lucide-blend">
 			<label
 				class="mb-1 flex items-center justify-between text-xs font-medium text-ink-gray-6"
 				for="oqiva-opacity"
@@ -717,9 +897,9 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 					style('opacity', Number($event.target.value) / 100, { coalesce: 'opacity' })
 				"
 			/>
-		</section>
+		</BarMenu>
 
-		<section v-if="has('radius')" aria-label="Corner radius">
+		<BarMenu v-if="has('radius')" label="Corner radius" icon="lucide-square-round-corner">
 			<label
 				class="mb-1 flex items-center justify-between text-xs font-medium text-ink-gray-6"
 				for="oqiva-radius"
@@ -740,17 +920,16 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 				data-testid="radius"
 				@input="style('radius', Number($event.target.value), { coalesce: 'radius' })"
 			/>
-		</section>
+		</BarMenu>
 
-		<section v-if="items.length === 1" aria-label="Format painter">
+		<div v-if="items.length === 1" aria-label="Format painter">
 			<PaletteTile
 				icon="lucide-paintbrush-vertical"
-				label="Format painter"
 				title="Copy this format, then click another object"
 				:active="Boolean(state.painter)"
 				testid="painter"
 				@click="run({ name: 'painter' })"
 			/>
-		</section>
-	</aside>
+		</div>
+	</div>
 </template>

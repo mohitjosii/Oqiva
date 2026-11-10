@@ -50,6 +50,9 @@ doc_events = {
 }
 
 scheduler_events = {
+	"hourly": [
+		"oqiva.services.version_service.prune_all",
+	],
 	"daily": [
 		"oqiva.services.trash_service.purge_expired_trash",
 		"oqiva.services.trash_service.prune_board_views",

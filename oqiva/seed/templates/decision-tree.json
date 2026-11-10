@@ -1,0 +1,423 @@
+{
+	"slug": "decision-tree",
+	"name": "Decision tree",
+	"description": "Ask a question at each step until there is an answer.",
+	"category": "Flowcharts",
+	"tags": [
+		"flowchart",
+		"decision",
+		"process"
+	],
+	"sort_order": 11,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "q1",
+				"kind": "shape",
+				"shape": "diamond",
+				"x": 260,
+				"y": 0,
+				"w": 190,
+				"h": 120,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#F97316",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#9A3412",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Is it urgent?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "a1",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 160,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#166534",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Do it now"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "q2",
+				"kind": "shape",
+				"shape": "diamond",
+				"x": 520,
+				"y": 160,
+				"w": 190,
+				"h": 120,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#F97316",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#9A3412",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Can someone else do it?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "a2",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 260,
+				"y": 320,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Hand it over"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "q3",
+				"kind": "shape",
+				"shape": "diamond",
+				"x": 780,
+				"y": 320,
+				"w": 190,
+				"h": 120,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#F97316",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#9A3412",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Under two minutes?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "a3",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 520,
+				"y": 480,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#166534",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Do it now"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "a4",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1040,
+				"y": 480,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#F97316",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#9A3412",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Put it in the plan"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [
+			{
+				"id": "line-1",
+				"from": {
+					"objectId": "q1",
+					"anchor": "w"
+				},
+				"to": {
+					"objectId": "a1",
+					"anchor": "e"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "yes"
+				},
+				"z": 1
+			},
+			{
+				"id": "line-2",
+				"from": {
+					"objectId": "q1",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "q2",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "no"
+				},
+				"z": 2
+			},
+			{
+				"id": "line-3",
+				"from": {
+					"objectId": "q2",
+					"anchor": "w"
+				},
+				"to": {
+					"objectId": "a2",
+					"anchor": "e"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "yes"
+				},
+				"z": 3
+			},
+			{
+				"id": "line-4",
+				"from": {
+					"objectId": "q2",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "q3",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "no"
+				},
+				"z": 4
+			},
+			{
+				"id": "line-5",
+				"from": {
+					"objectId": "q3",
+					"anchor": "w"
+				},
+				"to": {
+					"objectId": "a3",
+					"anchor": "e"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "yes"
+				},
+				"z": 5
+			},
+			{
+				"id": "line-6",
+				"from": {
+					"objectId": "q3",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "a4",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "no"
+				},
+				"z": 6
+			}
+		],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

@@ -15,12 +15,19 @@ import { fitView } from "./interaction/view"
 import { attachCollab, prepareCollab } from "./collab/session"
 import { createComments } from "./comments/session"
 import { createAutosave } from "./persistence/autosave"
+import { parseDocument } from "./model/schema"
 import { createStore } from "./store/createStore"
 import { measureText, resetMeasureCache } from "./text/measure"
 import BoardCanvas from "./render/BoardCanvas.vue"
 import FloatingPalette from "./ui/FloatingPalette.vue"
 import CommentPanel from "./ui/CommentPanel.vue"
 import CommentPins from "./ui/CommentPins.vue"
+import FrameNameEditor from "./ui/FrameNameEditor.vue"
+import LinkBadges from "./ui/LinkBadges.vue"
+import Minimap from "./ui/Minimap.vue"
+import ShapeLibrary from "./ui/ShapeLibrary.vue"
+import VersionPanel from "./ui/VersionPanel.vue"
+import VersionPreview from "./ui/VersionPreview.vue"
 import ExportMenu from "./ui/ExportMenu.vue"
 import ShortcutsDialog from "./ui/ShortcutsDialog.vue"
 import LineLabelEditor from "./ui/LineLabelEditor.vue"
@@ -108,6 +115,77 @@ if (collab) {
 	)
 }
 
+// Small preferences kept in this browser: the shapes added lately, and whether the map shows.
+const PREFS = { recent: "oqiva.recentShapes", minimap: "oqiva.minimap" }
+function readPref(key, fallback) {
+	try {
+		const raw = window.localStorage.getItem(key)
+		return raw === null ? fallback : JSON.parse(raw)
+	} catch {
+		return fallback
+	}
+}
+function writePref(key, value) {
+	try {
+		window.localStorage.setItem(key, JSON.stringify(value))
+	} catch {
+		// private windows and blocked storage just forget it
+	}
+}
+const savedRecent = readPref(PREFS.recent, [])
+store.state.recentPresets = Array.isArray(savedRecent)
+	? savedRecent.filter((k) => typeof k === "string").slice(0, 4)
+	: []
+store.state.minimap = readPref(PREFS.minimap, true) !== false
+watch(
+	() => store.state.recentPresets,
+	(list) => writePref(PREFS.recent, list),
+)
+watch(
+	() => store.state.minimap,
+	(on) => writePref(PREFS.minimap, on),
+)
+
+// ----- version history -----
+const versionPanel = ref(null)
+const preview = ref(null) // {number, title, document} while an old version is being looked at
+const restoring = ref(false)
+const canRestore = computed(
+	() => Boolean(props.host.capabilities.can_edit) && !store.state.readonly,
+)
+const sayError = (error, fallback) => toast.error(error?.message || fallback)
+
+async function previewVersion(number) {
+	try {
+		const found = await props.host.versions.get(number)
+		const { document } = parseDocument(found.document)
+		preview.value = { number, title: found.label || `Version ${number}`, document }
+	} catch (error) {
+		sayError(error, "That version could not be opened.")
+	}
+}
+
+// Restoring is one ordinary edit of this board: the server keeps what is there now (Pre-restore),
+// and the old content is applied here, so people editing at the same time see it arrive like any
+// other change. Undo puts it all back.
+async function restoreVersion(number) {
+	if (restoring.value || !canRestore.value) return
+	restoring.value = true
+	try {
+		await autosave.flush() // so the copy the server keeps is what is on screen
+		const result = await props.host.versions.beginRestore(number)
+		const { document } = parseDocument(result.document)
+		store.replaceContent(document, { label: `Restore version ${number}` })
+		preview.value = null
+		toast.success(`Restored version ${number}. Press Undo to go back.`)
+		versionPanel.value?.refresh()
+	} catch (error) {
+		sayError(error, "That version could not be restored.")
+	} finally {
+		restoring.value = false
+	}
+}
+
 const fonts = ref(0)
 const showShortcuts = ref(false)
 
@@ -150,8 +228,13 @@ const unsubscribe = store.subscribe((event) => {
 const overlayOpen = () =>
 	Boolean(document.querySelector('[data-dismissable-layer][data-state="open"]'))
 
+// Undo and redo still work with a menu open (a colour or a tile was just chosen in it), as long as
+// the person is not typing in a box.
+const isHistoryKey = (event) =>
+	(event.ctrlKey || event.metaKey) && ["z", "y"].includes(event.key.toLowerCase())
+
 function onKeydown(event) {
-	if (overlayOpen()) return
+	if (overlayOpen() && !(isHistoryKey(event) && !isTypingTarget(event.target))) return
 	if (event.key === " " && !isTypingTarget(event.target) && !store.state.editingId) {
 		event.preventDefault()
 		controller.setSpaceHeld(true)
@@ -249,7 +332,44 @@ defineExpose({ flush: () => autosave.flush(), store, autosave, unsaved })
 			<TextEditorOverlay :store="store" :measure="measureText" />
 			<LineLabelEditor :store="store" :paths="controller.paths" />
 			<CommentPins v-if="comments" :store="store" />
+			<LinkBadges :store="store" :links="host.links" />
+			<FrameNameEditor :store="store" />
 		</BoardCanvas>
+		<ShapeLibrary :store="store" :controller="controller" />
+		<template v-if="host.versions">
+			<button
+				type="button"
+				class="absolute right-[8.25rem] top-3 z-10 flex items-center gap-1.5 rounded-lg bg-surface-gray-2 px-2.5 py-1.5 text-sm text-ink-gray-8 hover:bg-surface-gray-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-5"
+				:aria-expanded="store.state.versionsOpen"
+				title="Version history"
+				data-testid="history-button"
+				data-print="hide"
+				@pointerdown.stop
+				@click="store.state.versionsOpen = !store.state.versionsOpen"
+			>
+				<span class="lucide-history h-4 w-4" aria-hidden="true" />
+				History
+			</button>
+			<VersionPanel
+				ref="versionPanel"
+				:store="store"
+				:versions="host.versions"
+				:can-edit="canRestore"
+				@preview="previewVersion"
+				@restore="restoreVersion"
+			/>
+			<VersionPreview
+				v-if="preview"
+				:key="preview.number"
+				:document="preview.document"
+				:title="preview.title"
+				:can-restore="canRestore"
+				:busy="restoring"
+				@close="preview = null"
+				@restore="restoreVersion(preview.number)"
+			/>
+		</template>
+		<Minimap :store="store" />
 		<FloatingPalette :store="store" :controller="controller" @image="addImage" />
 		<ExportMenu v-if="canExport" :store="store" @export="runExport" />
 		<CommentPanel v-if="comments" :store="store" :comments="comments" />
@@ -261,7 +381,7 @@ defineExpose({ flush: () => autosave.flush(), store, autosave, unsaved })
 		>
 			Adding picture…
 		</div>
-		<RightPalette :store="store" :measure="measureText" />
+		<RightPalette :store="store" :measure="measureText" :links="host.links" />
 		<ShortcutsDialog v-model="showShortcuts" />
 	</div>
 </template>

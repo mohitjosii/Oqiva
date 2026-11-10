@@ -1,0 +1,473 @@
+{
+	"slug": "customer-journey",
+	"name": "Customer journey",
+	"description": "Five stages, with a note for what people do and feel at each.",
+	"category": "Product",
+	"tags": [
+		"journey",
+		"product",
+		"research"
+	],
+	"sort_order": 80,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "s1",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Aware"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s2",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 260,
+				"y": 0,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Consider"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s3",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 520,
+				"y": 0,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Buy"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s4",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 780,
+				"y": 0,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Use"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s5",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1040,
+				"y": 0,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Recommend"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n0",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 20,
+				"y": 170,
+				"w": 200,
+				"h": 140,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": []
+						}
+					]
+				}
+			},
+			{
+				"id": "n1",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 280,
+				"y": 170,
+				"w": 200,
+				"h": 140,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": []
+						}
+					]
+				}
+			},
+			{
+				"id": "n2",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 540,
+				"y": 170,
+				"w": 200,
+				"h": 140,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": []
+						}
+					]
+				}
+			},
+			{
+				"id": "n3",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 800,
+				"y": 170,
+				"w": 200,
+				"h": 140,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": []
+						}
+					]
+				}
+			},
+			{
+				"id": "n4",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1060,
+				"y": 170,
+				"w": 200,
+				"h": 140,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": []
+						}
+					]
+				}
+			},
+			{
+				"id": "q",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -70,
+				"w": 520,
+				"h": 29,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "What do they do, think and feel at each stage?"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [
+			{
+				"id": "line-1",
+				"from": {
+					"objectId": "s1",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "s2",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 1
+			},
+			{
+				"id": "line-2",
+				"from": {
+					"objectId": "s2",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "s3",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 2
+			},
+			{
+				"id": "line-3",
+				"from": {
+					"objectId": "s3",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "s4",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 3
+			},
+			{
+				"id": "line-4",
+				"from": {
+					"objectId": "s4",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "s5",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 4
+			}
+		],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

@@ -33,9 +33,21 @@ def open_board(board: str) -> dict:
 
 
 @frappe.whitelist(methods=["POST"])
-def create_board(workspace: str, project: str | None = None, title: str | None = None) -> dict:
-	"""Create an empty board."""
-	return board_service.create_board(current_user(), workspace, project, title)
+def create_board(
+	workspace: str,
+	project: str | None = None,
+	title: str | None = None,
+	template: str | None = None,
+) -> dict:
+	"""Create an empty board, or a copy of a published template when ``template`` names one."""
+	return board_service.create_board(current_user(), workspace, project, title, template)
+
+
+@frappe.whitelist(methods=["POST"])
+@rate_limit(limit=10, seconds=60, methods=["POST"], ip_based=False, user_based=True)
+def import_board(workspace: str, content: str, project: str | None = None, title: str | None = None) -> dict:
+	"""Make a new board from the text of an exported ``.oqiva.json`` file."""
+	return board_service.import_board(current_user(), workspace, project, content, title)
 
 
 @frappe.whitelist(methods=["POST"])

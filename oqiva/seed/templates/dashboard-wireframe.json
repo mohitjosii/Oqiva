@@ -1,0 +1,346 @@
+{
+	"slug": "dashboard-wireframe",
+	"name": "Dashboard wireframe",
+	"description": "A layout to start from: menu, key figures, a chart and a table.",
+	"category": "UX / UI",
+	"tags": [
+		"wireframe",
+		"ux",
+		"dashboard"
+	],
+	"sort_order": 50,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "screen",
+				"kind": "shape",
+				"shape": "desktop",
+				"x": 0,
+				"y": 0,
+				"w": 1100,
+				"h": 700,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": null
+			},
+			{
+				"id": "nav",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 24,
+				"y": 48,
+				"w": 1052,
+				"h": 48,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#F3F4F6",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1F2937",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Navigation"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "side",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 24,
+				"y": 112,
+				"w": 180,
+				"h": 560,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1F2937",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Menu"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "k1",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 224,
+				"y": 112,
+				"w": 210,
+				"h": 100,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1F2937",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Visitors"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "k2",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 450,
+				"y": 112,
+				"w": 210,
+				"h": 100,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1F2937",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Sign-ups"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "k3",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 676,
+				"y": 112,
+				"w": 210,
+				"h": 100,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1F2937",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Revenue"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "k4",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 902,
+				"y": 112,
+				"w": 174,
+				"h": 100,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1F2937",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Churn"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "chart",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 224,
+				"y": 228,
+				"w": 440,
+				"h": 220,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1F2937",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Chart"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "activity",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 680,
+				"y": 228,
+				"w": 396,
+				"h": 220,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1F2937",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Recent activity"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "table",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 224,
+				"y": 464,
+				"w": 852,
+				"h": 208,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#9CA3AF",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1F2937",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Table"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

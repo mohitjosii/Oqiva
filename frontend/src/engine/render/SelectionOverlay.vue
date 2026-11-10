@@ -197,6 +197,12 @@ const trackHandles = computed(() => {
 	return [...rows, ...cols]
 })
 
+// The frame a library shape being dragged would land in.
+const hintFrame = computed(() => {
+	const frame = props.store.getObject(state.value.hintFrame)
+	return frame ? toPoints(corners(frame)) : null
+})
+
 // Other people: where their pointers are, and what they have selected, in their colours.
 const peerPointers = computed(() =>
 	state.value.peers
@@ -246,6 +252,17 @@ const marquee = computed(() => {
 
 <template>
 	<g data-testid="selection-overlay">
+		<polygon
+			v-if="hintFrame"
+			:points="hintFrame"
+			fill="#2563eb"
+			fill-opacity="0.06"
+			:stroke="ACCENT"
+			stroke-width="2"
+			stroke-dasharray="6 4"
+			pointer-events="none"
+			data-testid="frame-hint"
+		/>
 		<polygon
 			v-for="outline in outlines"
 			:key="outline.id"

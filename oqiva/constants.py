@@ -65,4 +65,5 @@ BOARD_CHILD_DOCTYPES = (
 	("Oqiva Share Link", "board"),
 	("Oqiva Pending Invite", "board"),
 	("Oqiva Comment", "board"),
+	("Oqiva Board Version", "board"),
 )

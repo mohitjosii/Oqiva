@@ -1,0 +1,500 @@
+{
+	"slug": "user-signup-flow",
+	"name": "Sign-up flow",
+	"description": "From the sign-up form to a confirmed account, with the failure path.",
+	"category": "Flowcharts",
+	"tags": [
+		"flowchart",
+		"onboarding",
+		"product"
+	],
+	"sort_order": 10,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "start",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 150,
+				"h": 70,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 35
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Start"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "form",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 260,
+				"y": 0,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#111827",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#111827",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Fill in the sign-up form"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "valid",
+				"kind": "shape",
+				"shape": "diamond",
+				"x": 520,
+				"y": 0,
+				"w": 190,
+				"h": 120,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#F97316",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#9A3412",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Details valid?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "email",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 780,
+				"y": 0,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#111827",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#111827",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Send confirmation email"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "errors",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 520,
+				"y": -160,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#EF4444",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#991B1B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Show what to fix"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "confirmed",
+				"kind": "shape",
+				"shape": "diamond",
+				"x": 780,
+				"y": 160,
+				"w": 190,
+				"h": 120,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#F97316",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#9A3412",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Email confirmed?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "account",
+				"kind": "shape",
+				"shape": "document",
+				"x": 520,
+				"y": 160,
+				"w": 170,
+				"h": 100,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#111827",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#111827",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Create the account"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "welcome",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 260,
+				"y": 160,
+				"w": 150,
+				"h": 70,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 35
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Welcome"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [
+			{
+				"id": "line-1",
+				"from": {
+					"objectId": "start",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "form",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 1
+			},
+			{
+				"id": "line-2",
+				"from": {
+					"objectId": "form",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "valid",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 2
+			},
+			{
+				"id": "line-3",
+				"from": {
+					"objectId": "valid",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "email",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "yes"
+				},
+				"z": 3
+			},
+			{
+				"id": "line-4",
+				"from": {
+					"objectId": "valid",
+					"anchor": "n"
+				},
+				"to": {
+					"objectId": "errors",
+					"anchor": "s"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "no"
+				},
+				"z": 4
+			},
+			{
+				"id": "line-5",
+				"from": {
+					"objectId": "errors",
+					"anchor": "w"
+				},
+				"to": {
+					"objectId": "form",
+					"anchor": "e"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "dashed",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 5
+			},
+			{
+				"id": "line-6",
+				"from": {
+					"objectId": "email",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "confirmed",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 6
+			},
+			{
+				"id": "line-7",
+				"from": {
+					"objectId": "confirmed",
+					"anchor": "w"
+				},
+				"to": {
+					"objectId": "account",
+					"anchor": "e"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "yes"
+				},
+				"z": 7
+			},
+			{
+				"id": "line-8",
+				"from": {
+					"objectId": "account",
+					"anchor": "w"
+				},
+				"to": {
+					"objectId": "welcome",
+					"anchor": "e"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 8
+			}
+		],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

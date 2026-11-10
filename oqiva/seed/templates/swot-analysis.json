@@ -1,0 +1,245 @@
+{
+	"slug": "swot-analysis",
+	"name": "SWOT analysis",
+	"description": "Strengths, weaknesses, opportunities and threats in four boxes.",
+	"category": "Business",
+	"tags": [
+		"swot",
+		"strategy",
+		"analysis"
+	],
+	"sort_order": 71,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "frame-1",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 480,
+				"h": 320,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Strengths"
+			},
+			{
+				"id": "frame-2",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 520,
+				"y": 0,
+				"w": 480,
+				"h": 320,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Weaknesses"
+			},
+			{
+				"id": "frame-3",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 380,
+				"w": 480,
+				"h": 320,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Opportunities"
+			},
+			{
+				"id": "frame-4",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 520,
+				"y": 380,
+				"w": 480,
+				"h": 320,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Threats"
+			},
+			{
+				"id": "s",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 30,
+				"y": 40,
+				"w": 200,
+				"h": 120,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#86EFAC",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "What do we do well?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "w",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 550,
+				"y": 40,
+				"w": 200,
+				"h": 120,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#FDBA74",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#7C2D12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Where do we fall short?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "o",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 30,
+				"y": 420,
+				"w": 200,
+				"h": 120,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#93C5FD",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "What could we try?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 550,
+				"y": 420,
+				"w": 200,
+				"h": 120,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#F9A8D4",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "What could go wrong?"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

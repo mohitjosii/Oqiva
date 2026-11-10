@@ -1,0 +1,469 @@
+{
+	"slug": "data-pipeline",
+	"name": "Data pipeline",
+	"description": "Sources, a queue, processing and where the data ends up.",
+	"category": "Engineering",
+	"tags": [
+		"data",
+		"pipeline",
+		"etl"
+	],
+	"sort_order": 61,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "app",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 180,
+				"h": 100,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#5B21B6",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "App events"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "files",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 160,
+				"w": 170,
+				"h": 110,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#166534",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Files"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "queue",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 260,
+				"y": 0,
+				"w": 190,
+				"h": 70,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#FFEDD5",
+					"stroke": "#F97316",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#9A3412",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Event queue"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "ingest",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 520,
+				"y": 0,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#111827",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#111827",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Ingest"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "clean",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 780,
+				"y": 0,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#111827",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#111827",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Clean and join"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "lake",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 1040,
+				"y": 0,
+				"w": 160,
+				"h": 110,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#166534",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Data lake"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "wh",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 1040,
+				"y": 160,
+				"w": 160,
+				"h": 110,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#5B21B6",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Warehouse"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "bi",
+				"kind": "shape",
+				"shape": "ellipse",
+				"x": 1300,
+				"y": 160,
+				"w": 130,
+				"h": 110,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Reports"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [
+			{
+				"id": "line-1",
+				"from": {
+					"objectId": "app",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "queue",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 1
+			},
+			{
+				"id": "line-2",
+				"from": {
+					"objectId": "files",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "ingest",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 2
+			},
+			{
+				"id": "line-3",
+				"from": {
+					"objectId": "queue",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "ingest",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 3
+			},
+			{
+				"id": "line-4",
+				"from": {
+					"objectId": "ingest",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "clean",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 4
+			},
+			{
+				"id": "line-5",
+				"from": {
+					"objectId": "clean",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "lake",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 5
+			},
+			{
+				"id": "line-6",
+				"from": {
+					"objectId": "clean",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "wh",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 6
+			},
+			{
+				"id": "line-7",
+				"from": {
+					"objectId": "wh",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "bi",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 7
+			}
+		],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

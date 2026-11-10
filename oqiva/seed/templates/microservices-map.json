@@ -1,0 +1,496 @@
+{
+	"slug": "microservices-map",
+	"name": "Microservices map",
+	"description": "Services, the gateway in front and the queue between them.",
+	"category": "Architecture",
+	"tags": [
+		"architecture",
+		"microservices",
+		"queue"
+	],
+	"sort_order": 21,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "gateway",
+				"kind": "shape",
+				"shape": "hexagon",
+				"x": 0,
+				"y": 160,
+				"w": 170,
+				"h": 100,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#5B21B6",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "API gateway"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "users",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 260,
+				"y": 0,
+				"w": 180,
+				"h": 90,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#DBEAFE",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Users"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "orders",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 260,
+				"y": 160,
+				"w": 180,
+				"h": 90,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#DBEAFE",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Orders"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "catalog",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 260,
+				"y": 320,
+				"w": 180,
+				"h": 90,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#DBEAFE",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Catalogue"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "bus",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 520,
+				"y": 160,
+				"w": 190,
+				"h": 70,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#FFEDD5",
+					"stroke": "#F97316",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#9A3412",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Message bus"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "payments",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 780,
+				"y": 0,
+				"w": 180,
+				"h": 90,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#FFEDD5",
+					"stroke": "#F97316",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#9A3412",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Payments"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "mail",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 780,
+				"y": 320,
+				"w": 180,
+				"h": 90,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#FFEDD5",
+					"stroke": "#F97316",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#9A3412",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Notifications"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "db",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 780,
+				"y": 160,
+				"w": 160,
+				"h": 110,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#166534",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Orders database"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [
+			{
+				"id": "line-1",
+				"from": {
+					"objectId": "gateway",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "users",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 1
+			},
+			{
+				"id": "line-2",
+				"from": {
+					"objectId": "gateway",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "orders",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 2
+			},
+			{
+				"id": "line-3",
+				"from": {
+					"objectId": "gateway",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "catalog",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 3
+			},
+			{
+				"id": "line-4",
+				"from": {
+					"objectId": "orders",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "bus",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": {
+					"text": "order placed"
+				},
+				"z": 4
+			},
+			{
+				"id": "line-5",
+				"from": {
+					"objectId": "bus",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "payments",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 5
+			},
+			{
+				"id": "line-6",
+				"from": {
+					"objectId": "bus",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "mail",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 6
+			},
+			{
+				"id": "line-7",
+				"from": {
+					"objectId": "orders",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "db",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "dashed",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 7
+			},
+			{
+				"id": "line-8",
+				"from": {
+					"objectId": "payments",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "db",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 8
+			}
+		],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

@@ -3,6 +3,7 @@ import {
 	ANCHORS,
 	anchorDirection,
 	anchorPoint,
+	avoidanceKey,
 	axisOf,
 	bendFor,
 	connectorHit,
@@ -225,5 +226,101 @@ describe("routes", () => {
 		expect(distanceToPath(path, { x: 150, y: 0 })).toBe(50)
 		expect(connectorHit(path, { x: 50, y: 4 }, 5)).toBe(true)
 		expect(connectorHit(path, { x: 50, y: 9 }, 5)).toBe(false)
+	})
+})
+
+describe("curved lines that go round cards", () => {
+	const card = (id, x, y, w = 160, h = 100) => ({
+		id,
+		kind: "shape",
+		shape: "rectangle",
+		x,
+		y,
+		w,
+		h,
+		rotation: 0,
+		z: 1,
+	})
+	const curve = (from, to, extra = {}) => ({
+		id: "c",
+		from: { objectId: from[0], anchor: from[1] },
+		to: { objectId: to[0], anchor: to[1] },
+		geometry: "curved",
+		heads: { start: "none", end: "arrow" },
+		bend: 0,
+		...extra,
+	})
+	const pathOf = (connector, cards) => {
+		const byId = new Map(cards.map((c) => [c.id, c]))
+		return connectorPath(connector, resolveConnectors([connector], byId).get("c"))
+	}
+	// points of a path that lie strictly inside a card
+	const inside = (path, c, margin = 2) =>
+		path.points.filter(
+			(p) =>
+				p.x > c.x + margin &&
+				p.x < c.x + c.w - margin &&
+				p.y > c.y + margin &&
+				p.y < c.y + c.h - margin,
+		)
+
+	it("does not fold back through its own card when the other end is behind it", () => {
+		// leaves the right edge of a, but b is to the left and below
+		const a = card("a", 400, 0)
+		const b = card("b", 0, 300)
+		const path = pathOf(curve(["a", "e"], ["b", "e"]), [a, b])
+		expect(inside(path, a)).toEqual([])
+		expect(inside(path, b)).toEqual([])
+		expect(path.points[0].x).toBe(560) // it still starts at the anchor
+	})
+
+	it("steers round a card that sits in the way, and stays clear of it", () => {
+		const a = card("a", 0, 0)
+		const b = card("b", 600, 0)
+		const wall = card("w", 280, -60, 120, 220)
+		const straight = pathOf(curve(["a", "e"], ["b", "w"]), [a, b])
+		expect(inside(straight, wall).length).toBeGreaterThan(0) // without the card, the curve runs where it stands
+		const clear = pathOf(curve(["a", "e"], ["b", "w"]), [a, b, wall])
+		expect(inside(clear, wall, -10)).toEqual([]) // not even within the margin
+		expect(pathBounds(clear).h).toBeGreaterThan(pathBounds(straight).h) // it went round
+	})
+
+	it("keeps the plain curve when nothing is in the way, and ignores frames and its own cards", () => {
+		const a = card("a", 0, 0)
+		const b = card("b", 600, 0)
+		const frame = { ...card("f", 100, -200, 800, 500), kind: "frame" }
+		const plain = pathOf(curve(["a", "e"], ["b", "w"]), [a, b])
+		expect(pathOf(curve(["a", "e"], ["b", "w"]), [a, b, frame]).d).toBe(plain.d)
+	})
+
+	it("uses a bend the person set exactly as it is", () => {
+		const a = card("a", 0, 0)
+		const b = card("b", 600, 0)
+		const wall = card("w", 280, -60, 120, 220)
+		const set = pathOf(curve(["a", "e"], ["b", "w"], { bend: 30 }), [a, b, wall])
+		const alone = pathOf(curve(["a", "e"], ["b", "w"], { bend: 30 }), [a, b])
+		expect(set.d).toBe(alone.d)
+	})
+
+	it("is cheap to ask: a board of many cards still gives a path", () => {
+		const cards = [card("a", 0, 0), card("b", 600, 0)]
+		for (let i = 0; i < 2000; i++)
+			cards.push(card(`x${i}`, 2000 + (i % 50) * 200, Math.floor(i / 50) * 150))
+		const start = Date.now()
+		const path = pathOf(curve(["a", "e"], ["b", "w"]), cards)
+		expect(path.points.length).toBeGreaterThan(10)
+		expect(Date.now() - start).toBeLessThan(200)
+	})
+
+	it("changes the drawing key when a nearby card moves", () => {
+		const a = card("a", 0, 0)
+		const b = card("b", 600, 0)
+		const make = (wall) => {
+			const connector = curve(["a", "e"], ["b", "w"])
+			const byId = new Map([a, b, wall].map((c) => [c.id, c]))
+			return avoidanceKey(resolveConnectors([connector], byId).get("c"))
+		}
+		expect(make(card("w", 280, -60))).not.toBe(make(card("w", 280, 400)))
+		expect(make(card("w", 5000, 5000))).toBe("") // too far to matter
 	})
 })

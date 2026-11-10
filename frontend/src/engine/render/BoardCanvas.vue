@@ -134,7 +134,8 @@ const previewObject = computed(() => {
 		})
 		return { ...table, id: "preview", style: { ...table.style, fill: null, dash: "dashed" } }
 	}
-	const object = createObject(preview.tool, preview.rect, {
+	const toolId = preview.tool === "note" || preview.tool === "frame" ? "rectangle" : preview.tool
+	const object = createObject(toolId, preview.rect, {
 		theme: props.store.theme.value.preset,
 		z: 0,
 		sides: state.value.toolOptions.sides,

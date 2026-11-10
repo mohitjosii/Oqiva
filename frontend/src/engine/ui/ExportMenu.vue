@@ -26,6 +26,16 @@ const options = computed(() => [
 	{ group: "Export the whole board", items: formats("board") },
 	...(hasSelection.value ? [{ group: "Export the selection", items: formats("selection") }] : []),
 	{
+		group: "Keep or move this board",
+		items: [
+			{
+				label: "Board file (.oqiva.json)",
+				icon: "file",
+				onClick: () => emit("export", { format: "json", scope: "board" }),
+			},
+		],
+	},
+	{
 		group: "Paper",
 		items: [
 			{

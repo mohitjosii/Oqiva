@@ -9,6 +9,7 @@ from oqiva.access.guard import service_write
 from oqiva.access.rules import ROLE_RANK, AccessContext, capabilities
 from oqiva.constants import BOARD_CHILD_DOCTYPES, BOARD_DOCTYPE
 from oqiva.exceptions import OqivaConflict, OqivaError, OqivaForbidden, OqivaLimitExceeded
+from oqiva.services import audit_service, export_service, template_service
 from oqiva.utils.settings import get_setting
 from oqiva.utils.text import clean_line
 
@@ -273,9 +274,20 @@ def _assert_room(workspace: str) -> None:
 
 
 def _insert_board(
-	user: str, workspace: str, project: str | None, title: str, document: str, description: str | None = None
+	user: str,
+	workspace: str,
+	project: str | None,
+	title: str,
+	document: str,
+	description: str | None = None,
+	template: dict | None = None,
+	content: dict | None = None,
 ) -> str:
+	"""Insert a board. ``template`` (a published template's copy) or ``content`` (an imported file's
+	``{schema_version, object_count}``) say what the document holds."""
 	from oqiva.constants import empty_document_json
+
+	known = template or content
 
 	doc = service_write(frappe.new_doc(BOARD_DOCTYPE))
 	doc.update(
@@ -286,7 +298,9 @@ def _insert_board(
 			"description": description,
 			"document": document or empty_document_json(),
 			"revision": 1,
-			"schema_version": 1,
+			"schema_version": known["schema_version"] if known else 1,
+			"object_count": known["object_count"] if known else 0,
+			"template": template["slug"] if template else None,
 			"created_by_user": user,
 		}
 	)
@@ -294,14 +308,61 @@ def _insert_board(
 	return doc.name
 
 
-def create_board(user: str, workspace: str, project: str | None = None, title: str | None = None) -> dict:
-	"""Create an empty board. Members and above."""
+def create_board(
+	user: str,
+	workspace: str,
+	project: str | None = None,
+	title: str | None = None,
+	template: str | None = None,
+) -> dict:
+	"""Create a board, empty or from a published template. Members and above.
+
+	A template's document is copied on the server, so the board starts with its content and
+	nothing is seeded when it is first opened. With no title, the template's name is used."""
 	ctx = resolve.workspace_context(user, workspace)
 	require(ctx, "board:create")
 	_assert_project(workspace, project)
 	_assert_room(workspace)
-	name = clean_line(title or _("Untitled board"), _("Board name"), 120)
-	return get_board(user, _insert_board(user, workspace, project, name, ""))
+	copy = template_service.copy_for_board(template) if template else None
+	name = clean_line(title or (copy["name"] if copy else _("Untitled board")), _("Board name"), 120)
+	board = _insert_board(user, workspace, project, name, copy["document"] if copy else "", None, copy)
+	if copy:
+		audit_service.record("template_used", user, BOARD_DOCTYPE, board, {"template": copy["slug"]})
+	return get_board(user, board)
+
+
+def import_board(
+	user: str, workspace: str, project: str | None, content: str, title: str | None = None
+) -> dict:
+	"""Make a new board from an exported ``.oqiva.json`` file. Members and above.
+
+	Nothing in the file is trusted: its format and version are checked, its pictures are left out
+	(they live in the files of the board they came from), and the rest goes through the same checks
+	as a save, size and object limits included."""
+	ctx = resolve.workspace_context(user, workspace)
+	require(ctx, "board:create")
+	_assert_project(workspace, project)
+	_assert_room(workspace)
+	imported = export_service.read_board_file(content)
+	name = clean_line(title or imported["title"] or _("Imported board"), _("Board name"), 120)
+	board = _insert_board(
+		user,
+		workspace,
+		project,
+		name,
+		imported["document"],
+		content={"schema_version": imported["schema_version"], "object_count": imported["object_count"]},
+	)
+	audit_service.record(
+		"board_import",
+		user,
+		BOARD_DOCTYPE,
+		board,
+		{"objects": imported["object_count"], "dropped_pictures": imported["dropped_pictures"]},
+	)
+	result = get_board(user, board)
+	result["dropped_pictures"] = imported["dropped_pictures"]
+	return result
 
 
 def update_board(user: str, board: str, title: str | None = None, description: str | None = None) -> dict:

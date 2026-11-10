@@ -1,0 +1,270 @@
+{
+	"slug": "okr-tree",
+	"name": "Objectives and key results",
+	"description": "One objective, its key results and who owns them.",
+	"category": "Business",
+	"tags": [
+		"okr",
+		"goals",
+		"strategy"
+	],
+	"sort_order": 70,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "obj",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 260,
+				"y": 0,
+				"w": 240,
+				"h": 100,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Objective"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "kr1",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 160,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#111827",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#111827",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Key result 1"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "kr2",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 260,
+				"y": 160,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#111827",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#111827",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Key result 2"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "kr3",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 520,
+				"y": 160,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#111827",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#111827",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Key result 3"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "owner",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 20,
+				"y": 360,
+				"w": 520,
+				"h": 22,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Write one owner and one number under each key result."
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [
+			{
+				"id": "line-1",
+				"from": {
+					"objectId": "obj",
+					"anchor": "w"
+				},
+				"to": {
+					"objectId": "kr1",
+					"anchor": "e"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 1
+			},
+			{
+				"id": "line-2",
+				"from": {
+					"objectId": "obj",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "kr2",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 2
+			},
+			{
+				"id": "line-3",
+				"from": {
+					"objectId": "obj",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "kr3",
+					"anchor": "w"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 3
+			}
+		],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

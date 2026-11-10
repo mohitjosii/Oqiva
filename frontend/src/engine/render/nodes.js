@@ -6,7 +6,8 @@
 import { connectorPath } from "../geometry/connectors"
 import { layoutFor } from "../text/fit"
 import { layoutText } from "../text/layout"
-import { shapePath, textArea } from "../model/shapes"
+import { iconData } from "../model/icons"
+import { shapeArt, shapePath, textArea } from "../model/shapes"
 import { CELL_PADDING } from "../store/tableOps"
 
 export const FONT = "Inter, ui-sans-serif, system-ui, sans-serif"
@@ -73,17 +74,130 @@ function shapeBody(object, ctx) {
 			}),
 		]
 	}
+	const art = shapeArt(object)
+	if (art) return artNodes(object, art, paint)
 	const path = shapePath(object)
 	if (path) return [el("path", { d: path, ...paint })]
 	const radius = Math.min(object.style.radius, object.w / 2, object.h / 2)
 	return [el("rect", { width: object.w, height: object.h, rx: radius, ...paint })]
 }
 
+// A silhouette with its extra strokes, mirrored with the shape when it is flipped.
+function artNodes(object, art, paint) {
+	const nodes = [el("path", { d: art.d, ...paint })]
+	for (const detail of art.details) {
+		nodes.push(
+			el("path", {
+				d: detail.d,
+				fill: detail.fill === "stroke" ? paint.stroke : "none",
+				stroke: detail.fill === "stroke" ? "none" : paint.stroke,
+				"stroke-width": paint["stroke-width"],
+				"stroke-linecap": "round",
+				"stroke-linejoin": "round",
+			}),
+		)
+	}
+	if (!object.flipX && !object.flipY) return nodes
+	const flip = `translate(${object.flipX ? object.w : 0} ${object.flipY ? object.h : 0}) scale(${object.flipX ? -1 : 1} ${object.flipY ? -1 : 1})`
+	return [el("g", { transform: flip }, nodes)]
+}
+
+// A sticky note: the paper, a slight shadow under it, and its writing from the top.
+function noteBody(object, ctx) {
+	const { w, h } = object
+	const radius = Math.min(object.style.radius, w / 2, h / 2)
+	return [
+		el("rect", { x: 2, y: 4, width: w, height: h, rx: radius, fill: "#000000", opacity: 0.14 }),
+		el("rect", { width: w, height: h, rx: radius, fill: object.style.fill || "#FEF08A" }),
+		...shapeText(object, ctx),
+	]
+}
+
+// One icon from the icon set, or an emoji, filling the object's box.
+function iconBody(object) {
+	if (object.emoji) {
+		const size = Math.min(object.w, object.h)
+		return [
+			el(
+				"text",
+				{
+					x: object.w / 2,
+					y: object.h / 2,
+					"text-anchor": "middle",
+					"dominant-baseline": "central",
+					"font-size": size * 0.8,
+					"font-family":
+						"'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif",
+				},
+				[txt(object.emoji)],
+			),
+		]
+	}
+	const data = iconData(object.icon)
+	if (!data) {
+		return [
+			el("rect", {
+				width: object.w,
+				height: object.h,
+				fill: "none",
+				stroke: "#9CA3AF",
+				"stroke-dasharray": "4 3",
+			}),
+		]
+	}
+	const stroke = object.style.stroke || "#475569"
+	return [
+		el(
+			"g",
+			{
+				transform: `scale(${object.w / 24} ${object.h / 24})`,
+				fill: "none",
+				stroke,
+				"stroke-width": 2,
+				"stroke-linecap": "round",
+				"stroke-linejoin": "round",
+			},
+			data.shapes.map(([tag, attrs]) => el(tag, attrs)),
+		),
+	]
+}
+
+// A frame: a pale panel behind the work, with its name above the top-left corner.
+function frameBody(object, ctx) {
+	const radius = Math.min(object.style.radius, 16)
+	const nodes = [
+		el("rect", {
+			width: object.w,
+			height: object.h,
+			rx: radius,
+			...paintOf(object.style, ctx.detail),
+		}),
+	]
+	if (ctx.detail && object.name) {
+		nodes.push(
+			el(
+				"text",
+				{
+					x: 4,
+					y: -10,
+					"font-size": 14,
+					"font-weight": 600,
+					"font-family": FONT,
+					fill: "#475569",
+				},
+				[txt(object.name)],
+			),
+		)
+	}
+	return nodes
+}
+
 function shapeText(object, ctx) {
 	if (!ctx.detail || ctx.hideText || !object.text) return []
 	const layout = layoutFor(object, ctx.measure)
 	const area = textArea(object)
-	const top = object.kind === "text" ? area.y : area.y + Math.max(0, (area.h - layout.height) / 2)
+	const fromTop = object.kind === "text" || object.kind === "note"
+	const top = fromTop ? area.y : area.y + Math.max(0, (area.h - layout.height) / 2)
 	return textNodes(layout, object.text, { x: area.x, width: area.w, top })
 }
 
@@ -190,6 +304,9 @@ export function objectNode(object, ctx) {
 	let body
 	if (object.kind === "image") body = imageBody(object)
 	else if (object.kind === "table") body = tableBody(object, ctx)
+	else if (object.kind === "note") body = noteBody(object, ctx)
+	else if (object.kind === "icon") body = iconBody(object)
+	else if (object.kind === "frame") body = frameBody(object, ctx)
 	else body = [...shapeBody(object, ctx), ...shapeText(object, ctx)]
 	return el(
 		"g",
