@@ -164,6 +164,7 @@ watch(
 	(open) => {
 		if (open) {
 			state.value.commentsOpen = false // they share the left edge
+			state.value.outlineOpen = false
 			nextTick(() => search.value?.focus())
 		}
 	},

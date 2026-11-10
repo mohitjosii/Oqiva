@@ -307,7 +307,9 @@ class TestValidation(RestoresSettings, IntegrationTestCase):
 		raw = doc(
 			shape("a"),
 			connectors=[connector("c1"), connector("c2")],
-			mindmaps=[{"id": "m", "nodes": [{}, {}, {}]}],
+			mindmaps=[
+				mind_map(mind_node("root", None, 0), mind_node("n1", "root", 0), mind_node("n2", "root", 1))
+			],
 			flowcharts=[{"id": "f", "nodes": [{}]}],
 		)
 		self.assertEqual(self.parse(raw)[1], 7)
@@ -594,3 +596,124 @@ class TestCollaborationState(RestoresSettings, IntegrationTestCase):
 		)
 		loaded = document_service.load_document(self.w.member, self.w.board)
 		self.assertEqual((loaded["recovery"], loaded["crdt_state"]), ("corrupt", ""))
+
+
+def mind_node(node_id, parent=None, order=0, text="", **over):
+	item = {
+		"id": node_id,
+		"parentId": parent,
+		"order": order,
+		"text": text,
+		"collapsed": False,
+		"color": None,
+		"marker": None,
+		"note": "",
+	}
+	item.update(over)
+	return item
+
+
+def mind_map(*nodes, map_id="m1", crosslinks=(), **over):
+	item = {
+		"id": map_id,
+		"origin": {"x": 100, "y": 50},
+		"rootId": "root",
+		"layout": "both",
+		"nodes": list(nodes) or [mind_node("root", None, 0, "Central idea")],
+		"crosslinks": list(crosslinks),
+	}
+	item.update(over)
+	return item
+
+
+class TestMindMaps(IntegrationTestCase):
+	"""A mind map must be a real tree (T3.x): one root, parents that exist, no loops."""
+
+	def parse(self, *maps, objects=()):
+		return document_service.parse_document(doc(*objects, mindmaps=list(maps)))
+
+	def bad(self, *maps, objects=()):
+		with self.assertRaises(OqivaError):
+			self.parse(*maps, objects=objects)
+
+	def test_accepts_a_tree_with_markers_notes_and_cross_links(self):
+		tree = mind_map(
+			mind_node("root", None, 0, "Plan"),
+			mind_node(
+				"a", "root", 0, "A", color="#3B82F6", marker={"icon": "star", "dot": "#EF4444"}, note="why"
+			),
+			mind_node("b", "root", 1, "B", collapsed=True),
+			mind_node("b1", "b", 0, "B1"),
+			crosslinks=[{"id": "x1", "from": "a", "to": "b1", "label": "depends on"}],
+		)
+		document, count = self.parse(tree, objects=(shape("s1"),))
+		self.assertEqual(count, 5)  # 1 shape + 4 nodes
+		self.assertEqual(len(document["mindmaps"]), 1)
+
+	def test_accepts_a_font_size_for_a_node(self):
+		root = mind_node("root", None, 0, "R", fontSize=40)
+		self.assertEqual(self.parse(mind_map(root, mind_node("a", "root", 0, "A", fontSize=8.0)))[1], 2)
+
+	def test_refuses_a_map_that_is_not_a_tree(self):
+		root = mind_node("root", None, 0, "R")
+		for nodes in (
+			[mind_node("a", None, 0)],  # no root named by rootId
+			[root, mind_node("r2", None, 1)],  # two roots
+			[root, mind_node("a", "ghost", 0)],  # parent missing
+			[root, mind_node("a", "b", 0), mind_node("b", "a", 0)],  # a loop
+			[root, mind_node("a", "a", 0)],  # its own parent
+			[root, mind_node("root", "root", 0)],  # a repeated id
+		):
+			self.bad(mind_map(*nodes))
+
+	def test_refuses_bad_values(self):
+		root = mind_node("root", None, 0, "R")
+		for change in (
+			{"text": "x" * 501},
+			{"note": "n" * 2001},
+			{"color": "url(#x)"},
+			{"color": "red"},
+			{"order": -1},
+			{"order": 1.5},
+			{"collapsed": "yes"},
+			{"marker": "star"},
+			{"marker": {"icon": "../../x"}},
+			{"marker": {"dot": "#12"}},
+			{"fontSize": 7},
+			{"fontSize": 97},
+			{"fontSize": "big"},
+			{"id": "bad id!"},
+		):
+			self.bad(mind_map(root, {**mind_node("a", "root", 0), **change}))
+
+	def test_refuses_bad_cross_links_maps_and_limits(self):
+		root = mind_node("root", None, 0, "R")
+		a = mind_node("a", "root", 0, "A")
+		for link in (
+			{"id": "x", "from": "a", "to": "a", "label": ""},
+			{"id": "x", "from": "a", "to": "ghost", "label": ""},
+			{"id": "x", "from": "a", "to": "root", "label": "l" * 101},
+			{"id": "a", "from": "a", "to": "root", "label": ""},
+		):
+			self.bad(mind_map(root, a, crosslinks=[link]))
+		self.bad(mind_map(root, origin={"x": "left", "y": 1}))
+		self.bad(mind_map(root, layout="spiral"))
+		self.bad(mind_map(map_id="s1"), objects=(shape("s1"),))  # the id belongs to a shape
+		self.bad(mind_map(root), mind_map(root, map_id="m2"))  # node ids are used twice across maps
+		with self.assertRaises(OqivaLimitExceeded):
+			self.parse(
+				*[
+					mind_map(mind_node(f"r{i}", None, 0, "R"), map_id=f"m{i}", rootId=f"r{i}")
+					for i in range(51)
+				]
+			)
+		many = [root] + [mind_node(f"n{i}", "root", i, "x") for i in range(2000)]
+		self.bad(mind_map(*many))
+
+	def test_nodes_count_against_the_board_limit(self):
+		root = mind_node("root", None, 0, "R")
+		kids = [mind_node(f"n{i}", "root", i, "x") for i in range(10)]
+		frappe.db.set_single_value("Oqiva Settings", "max_objects_per_board", 5)
+		self.addCleanup(frappe.db.set_single_value, "Oqiva Settings", "max_objects_per_board", 3000)
+		with self.assertRaises(OqivaLimitExceeded):
+			self.parse(mind_map(root, *kids))

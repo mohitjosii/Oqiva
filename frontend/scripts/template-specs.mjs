@@ -128,19 +128,43 @@ export const TEMPLATES = [
 	{
 		slug: "project-mind-map",
 		name: "Project mind map",
-		description: "A centre idea with four branches to fill in.",
+		description: "A central idea with branches to grow: goals, people, risks and a plan.",
 		category: "Mind maps",
 		tags: ["mind map", "planning", "brainstorm"],
 		sort_order: 30,
-		nodes: [
-			n("centre", "user-actor", "The project", 1, 1, { w: 200, h: 120, label: "The project" }),
-			n("goals", "process", "Goals", 1, 0, { y: -140 }),
-			n("people", "process", "People", 2, 1, { x: 560 }),
-			n("risks", "process", "Risks", 1, 2, { y: 420 }),
-			n("plan", "process", "Plan", 0, 1, { x: -40 }),
+		maps: [
+			{
+				origin: { x: 0, y: 0 },
+				tree: [
+					"The project",
+					["Goals", ["Ship this quarter"], ["Delight our users"], ["Stay on budget"]],
+					["People", ["Design"], ["Engineering"], ["Support"]],
+					["Risks", ["Scope creep"], ["Hiring"], ["Dependencies"]],
+					["Plan", ["Milestones"], ["Owners"], ["Review dates"]],
+				],
+			},
 		],
-		edges: [e("centre", "goals"), e("centre", "people"), e("centre", "risks"), e("centre", "plan")],
-		notes: [note("hint", "Click a box and type. Press N to add a note.", "Yellow", 640, -80)],
+	},
+	{
+		slug: "brainstorm",
+		name: "Brainstorm",
+		description:
+			"Start from a question and branch out. Press Tab for a branch and Enter for the next idea.",
+		category: "Mind maps",
+		tags: ["mind map", "brainstorm", "ideas"],
+		sort_order: 31,
+		maps: [
+			{
+				origin: { x: 0, y: 0 },
+				tree: [
+					"What should we try next?",
+					["Quick wins", ["Fix the slow page"], ["Clearer pricing"]],
+					["Big bets", ["A new product line"], ["A partner programme"]],
+					["Things to stop", ["Weekly status meeting"]],
+					["Questions", ["Who is it for?"], ["How will we know it worked?"]],
+				],
+			},
+		],
 	},
 	{
 		slug: "retrospective",

@@ -45,6 +45,10 @@ import { libraryPlacement, OPPOSITE, quickAddRect, quickTarget } from "./placeme
 import { createConnectorPaths } from "../render/connectorPaths"
 import { expandToGroups } from "../store/arrange"
 import { cellAt, scaleTable, setTrackSize, withTable } from "../store/tableOps"
+import { createMapLayouts, sized } from "../modes/mindmap/layouts"
+import { runMindmapCommand } from "../modes/mindmap/commands"
+import { applyChange as applyMapChange } from "../modes/mindmap/storeOps"
+import * as mapTree from "../modes/mindmap/tree"
 import { paintOnto } from "./actions"
 import { snapToGuides } from "./guides"
 import { centerOn, setViewport } from "./view"
@@ -60,12 +64,97 @@ const EDGE_ZONE_PX = 40 // dragging this close to the edge of the view scrolls i
 const EDGE_SPEED = 700 // board pixels per second at the very edge
 
 export class CanvasController {
-	constructor(store, { bounds = () => ({ left: 0, top: 0 }), measure }) {
+	constructor(store, { bounds = () => ({ left: 0, top: 0 }), measure, ask = null }) {
 		this.store = store
 		this.bounds = bounds
 		this.measure = measure
+		this.ask = ask // (message) -> Promise<boolean>, for questions such as deleting a whole branch
 		this.drag = null
 		this.paths = createConnectorPaths(store)
+		// Where every mind map's nodes are, worked out from the trees and kept up to date.
+		this.maps = createMapLayouts(store, sized(measure), () => store.state.fontsTick)
+	}
+
+	// The mind map node under a board point: {layout, node, box}, or null.
+	nodeAt(point, slop = 0) {
+		for (const layout of this.maps.value.values()) {
+			const b = layout.bounds
+			if (
+				point.x < b.x - slop ||
+				point.y < b.y - slop ||
+				point.x > b.x + b.w + slop ||
+				point.y > b.y + b.h + slop
+			)
+				continue
+			for (const node of layout.nodes) {
+				const box = layout.boxes.get(node.id)
+				if (
+					box &&
+					point.x >= box.x - slop &&
+					point.x <= box.x + box.w + slop &&
+					point.y >= box.y - slop &&
+					point.y <= box.y + box.h + slop
+				)
+					return { layout, node, box }
+			}
+		}
+		return null
+	}
+
+	// Where a dragged node would land if it were let go at ``point``: onto another node (becomes its
+	// child), or just above or below one (becomes its sibling). Never inside its own subtree.
+	mapDropTarget(layout, draggedId, point) {
+		const nodes = layout.nodes
+		const own = new Set(mapTree.subtreeIds(nodes, draggedId))
+		for (const node of nodes) {
+			if (own.has(node.id)) continue
+			const box = layout.boxes.get(node.id)
+			if (!box || point.x < box.x - 6 || point.x > box.x + box.w + 6) continue
+			if (point.y < box.y - 10 || point.y > box.y + box.h + 10) continue
+			const third = box.h / 3
+			if (node.parentId && point.y < box.y + third) return { type: "before", id: node.id }
+			if (node.parentId && point.y > box.y + box.h - third)
+				return { type: "after", id: node.id }
+			return { type: "into", id: node.id }
+		}
+		return null
+	}
+
+	// Puts the dragged node where the drop target says, as one step. False if it would change nothing.
+	dropNode(layout, draggedId, target) {
+		const nodes = layout.nodes
+		let parentId = target.id
+		let index = null
+		if (target.type !== "into") {
+			const anchor = nodes.find((n) => n.id === target.id)
+			parentId = anchor.parentId
+			const siblings = mapTree.childrenOf(nodes, parentId).filter((n) => n.id !== draggedId)
+			const at = siblings.findIndex((n) => n.id === target.id)
+			index = at + (target.type === "after" ? 1 : 0)
+		}
+		const change = mapTree.reparent(nodes, draggedId, parentId, index)
+		return applyMapChange(this.store, layout.map.id, change, {
+			label: "Move node",
+			select: draggedId,
+			selectUndo: [draggedId],
+		})
+	}
+
+	// Mind map commands from a button or the pointer (Tab, Enter, collapse...). They share the
+	// keyboard's code, so a click on "+" does exactly what Tab does.
+	mapHost() {
+		return {
+			layout: (id) => this.maps.value.get(id),
+			ask: this.ask,
+			viewCenter: () => {
+				const view = visibleRect(this.state.viewport, this.state.size)
+				return { x: view.x + view.w / 2, y: view.y + view.h / 2 }
+			},
+		}
+	}
+
+	mapCommand(command) {
+		return runMindmapCommand(this.store, command, this.mapHost())
 	}
 
 	get state() {
@@ -193,6 +282,8 @@ export class CanvasController {
 		}
 		if (event.button !== 0) return
 		this.state.editingId = null // pressing anywhere else ends text editing, which saves it
+		if (!event.target?.closest?.("[data-mmnode],[data-mmadd],[data-mmtoggle]"))
+			this.state.editingNodeId = null
 		if (!event.target?.dataset?.quick) this.state.hoverId = null
 		const point = this.boardPoint(event)
 		if (this.state.tool === "comment") {
@@ -227,6 +318,20 @@ export class CanvasController {
 	pressInSelectMode(event, point, screen) {
 		const quick = event.target?.dataset?.quick
 		if (quick && !this.state.readonly) return this.quickAdd(quick)
+		const toggle = event.target?.closest?.("[data-mmtoggle]")?.dataset.mmtoggle
+		if (toggle) {
+			this.store.select([toggle])
+			this.mapCommand({ name: "mm.toggle" })
+			return
+		}
+		const add = event.target?.closest?.("[data-mmadd]")?.dataset.mmadd
+		if (add && !this.state.readonly) {
+			this.store.select([add])
+			this.mapCommand({ name: "mm.child" })
+			return
+		}
+		const hitNode = this.nodeAt(point, HIT_TOLERANCE_PX / this.state.viewport.scale)
+		if (hitNode && !this.state.painter) return this.pressNode(event, point, screen, hitNode)
 		const handle = event.target?.dataset?.handle
 		const selected = this.store.selectedObjects()
 		const lines = this.store.selectedConnectors()
@@ -307,6 +412,33 @@ export class CanvasController {
 		}
 	}
 
+	// A press on a mind map node: select it (Shift adds or removes), and get ready to drag it.
+	pressNode(event, point, screen, { layout, node }) {
+		const selected = this.state.selection
+		if (event.shiftKey) {
+			const onlyNodes = selected.every((id) => this.store.getMapNode(id))
+			this.store.select(
+				selected.includes(node.id)
+					? selected.filter((id) => id !== node.id)
+					: onlyNodes
+						? [...selected, node.id]
+						: [node.id],
+			)
+			return
+		}
+		if (!selected.includes(node.id) || selected.length > 1) this.store.select([node.id])
+		if (this.state.readonly) return
+		this.drag = {
+			type: "node",
+			layout,
+			id: node.id,
+			isRoot: node.id === layout.map.rootId,
+			start: point,
+			startScreen: screen,
+			moved: false,
+		}
+	}
+
 	// Moving a frame moves what lies wholly inside it.
 	withFrameContents(ids) {
 		const objects = this.store.objects.value
@@ -352,6 +484,29 @@ export class CanvasController {
 			case "table-track":
 				this.moveTrack(drag, point)
 				break
+			case "node": {
+				if (
+					!drag.moved &&
+					Math.hypot(screen.x - drag.startScreen.x, screen.y - drag.startScreen.y) <
+						CLICK_SLOP_PX
+				)
+					break
+				drag.moved = true
+				if (drag.isRoot) {
+					this.state.mapDrag = {
+						mapId: drag.layout.map.id,
+						dx: point.x - drag.start.x,
+						dy: point.y - drag.start.y,
+					}
+				} else {
+					this.state.mapDrag = {
+						nodeId: drag.id,
+						point,
+						target: this.mapDropTarget(drag.layout, drag.id, point),
+					}
+				}
+				break
+			}
 			case "rotate": {
 				const angle = rotationFor(drag.object, point)
 				drag.gesture.set([
@@ -711,6 +866,37 @@ export class CanvasController {
 			case "table-track":
 				drag.gesture.commit(drag.axis === "row" ? "Resize row" : "Resize column")
 				break
+			case "node": {
+				const feedback = this.state.mapDrag
+				this.state.mapDrag = null
+				if (!drag.moved) break
+				if (drag.isRoot && feedback?.mapId) {
+					const origin = drag.layout.map.origin
+					this.store.applyOps(
+						[
+							{
+								t: "update",
+								list: "maps",
+								changes: [
+									{
+										id: drag.layout.map.id,
+										patch: {
+											origin: {
+												x: Math.round(origin.x + feedback.dx),
+												y: Math.round(origin.y + feedback.dy),
+											},
+										},
+									},
+								],
+							},
+						],
+						{ label: "Move mind map", select: [drag.id], selectUndo: [drag.id] },
+					)
+				} else if (feedback?.target) {
+					this.dropNode(drag.layout, drag.id, feedback.target)
+				}
+				break
+			}
 			case "marquee":
 				this.state.marquee = null
 				break
@@ -925,6 +1111,7 @@ export class CanvasController {
 		this.state.marquee = null
 		this.state.guides = []
 		this.state.dragging = false
+		this.state.mapDrag = null
 		this.lastMove = null
 		this.clearConnectHints()
 		if (drag?.gesture) drag.gesture.cancel()
@@ -939,6 +1126,14 @@ export class CanvasController {
 			this.store.select([line.id])
 			this.state.editingNew = false
 			this.state.editingId = line.id
+			return
+		}
+		// A double-click on a mind map node edits its text, and never makes a shape under it.
+		const node = this.nodeAt(point, tolerance)
+		if (node) {
+			this.store.select([node.node.id])
+			this.state.editingNodeNew = false
+			this.state.editingNodeId = node.node.id
 			return
 		}
 		const hit = topObjectAt(this.store.objects.value, point, tolerance)

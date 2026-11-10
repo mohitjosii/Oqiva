@@ -443,6 +443,8 @@ The DocType's `document`, `schema_version`, `object_count` and a small `preview`
 ```
 Positions in mind maps are derived by the layout engine and never stored. Flowchart nodes store x/y plus a `manual` flag (Tidy clears it). Every item has a stable id. Arrays are keyed by id in the Y.Doc.
 
+**As built (Phase 8).** In the store and the Yjs document the mind maps are three flat lists, `maps`, `mapnodes` and `crosslinks`; `store.snapshot()` nests them back into `mindmaps`. A node is `{id, mapId, parentId, order, text, collapsed, color, marker, note}`; the layout (`modes/mindmap/layout.js`) works out every box from the tree, `layouts.js` keeps it as a computed value per map, and `render/mindmapScene.js` describes how a map is drawn, for the editor and for export alike. The controller holds `maps` (the layouts) and does the node hit test, the drag to re-parent and the drop target; the keyboard maps to `mm.*` commands only while the selection is nodes (`nodesOwnKeys`). The bridge repairs a map after every remote change (`dropBrokenMaps`), and `parseDocument` repairs one on every read (`sanitizeMindmaps`).
+
 ---
 
 ## 16. Scheduled jobs (`scheduler_events`)

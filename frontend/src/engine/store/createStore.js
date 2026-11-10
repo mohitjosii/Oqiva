@@ -9,6 +9,7 @@ import { isAttached } from "../geometry/connectors"
 import { createViewport } from "../geometry/viewport"
 import { countObjects } from "../model/schema"
 import { History } from "./history"
+import { flattenMindmaps, nestMindmaps } from "../modes/mindmap/document"
 import { cloneSelection } from "./clone"
 
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b)
@@ -21,7 +22,10 @@ function wholePatch(before, after) {
 	}
 	return patch
 }
-const LISTS = ["objects", "connectors"]
+// Objects and lines keep drawing order (``z``). Mind maps live in three flat lists: the maps, their
+// nodes and their cross-links (the document nests them; see modes/mindmap/document.js).
+const LISTS = ["objects", "connectors", "maps", "mapnodes", "crosslinks"]
+const BY_Z = new Set(["objects", "connectors"])
 
 function withPatch(item, patch) {
 	const next = { ...item }
@@ -38,14 +42,19 @@ export function createStore(document, { readonly = false } = {}) {
 		connectors: initialConnectors = [],
 		canvas: initialCanvas,
 		theme: initialTheme,
+		mindmaps: initialMindmaps = [],
 		...extra
 	} = document
+	const flat = flattenMindmaps(initialMindmaps)
 	const data = {
 		objects: [...initialObjects].sort((a, b) => a.z - b.z),
 		connectors: [...initialConnectors].sort((a, b) => a.z - b.z),
+		maps: flat.maps,
+		mapnodes: flat.nodes,
+		crosslinks: flat.crosslinks,
 	}
-	const index = { objects: new Map(), connectors: new Map() }
-	const refs = { objects: shallowRef(data.objects), connectors: shallowRef(data.connectors) }
+	const index = Object.fromEntries(LISTS.map((list) => [list, new Map()]))
+	const refs = Object.fromEntries(LISTS.map((list) => [list, shallowRef(data[list])]))
 	for (const list of LISTS) index[list] = new Map(data[list].map((item) => [item.id, item]))
 	const canvasRef = shallowRef({ ...initialCanvas })
 	const themeRef = shallowRef({ ...initialTheme })
@@ -91,6 +100,14 @@ export function createStore(document, { readonly = false } = {}) {
 		openThread: null, // the thread being looked at
 		cursor: null, // where this person's pointer is on the board: {x, y}
 		versionsOpen: false, // the version history panel is showing
+		editingNodeId: null, // the mind map node whose text is being typed
+		editingNodeNew: false, // that node was just made, so leaving it empty throws it away
+		nodeDraft: null, // {id, text}: what is being typed in that node, so the map follows it
+		fontsTick: 0, // changes when web fonts finish loading, so measured widths are redone
+		mapDrag: null, // a node being dragged: {id, point, target}, or a whole map: {mapId, dx, dy}
+		outlineOpen: false, // the outline panel of a mind map is showing
+		focusBranch: false, // dim everything but the selected branch of a mind map
+		notePanel: null, // the node whose note is open in the side panel
 		libraryOpen: false, // the shape library panel is showing
 		recentPresets: [], // keys of library shapes placed lately, newest first
 		hintFrame: null, // the frame a dragged library shape would land in
@@ -100,7 +117,7 @@ export function createStore(document, { readonly = false } = {}) {
 	})
 
 	const publish = (list) => {
-		data[list] = [...data[list]].sort((a, b) => a.z - b.z)
+		data[list] = BY_Z.has(list) ? [...data[list]].sort((a, b) => a.z - b.z) : [...data[list]]
 		index[list] = new Map(data[list].map((item) => [item.id, item]))
 		refs[list].value = data[list]
 	}
@@ -266,6 +283,9 @@ export function createStore(document, { readonly = false } = {}) {
 		history,
 		objects: refs.objects,
 		connectors: refs.connectors,
+		maps: refs.maps,
+		mapNodes: refs.mapnodes,
+		crosslinks: refs.crosslinks,
 		canvas: canvasRef,
 		theme: themeRef,
 		historyVersion,
@@ -283,6 +303,18 @@ export function createStore(document, { readonly = false } = {}) {
 		getObject: (id) => (void refs.objects.value, index.objects.get(id) || null),
 		getConnector: (id) => (void refs.connectors.value, index.connectors.get(id) || null),
 		getItem: (id) => (void refs.objects.value, void refs.connectors.value, find(id)),
+		getMap: (id) => (void refs.maps.value, index.maps.get(id) || null),
+		getMapNode: (id) => (void refs.mapnodes.value, index.mapnodes.get(id) || null),
+		getCrosslink: (id) => (void refs.crosslinks.value, index.crosslinks.get(id) || null),
+		// The nodes of one map, in no particular order.
+		nodesOfMap: (mapId) => (
+			void refs.mapnodes.value,
+			data.mapnodes.filter((n) => n.mapId === mapId)
+		),
+		crosslinksOfMap: (mapId) => (
+			void refs.crosslinks.value,
+			data.crosslinks.filter((l) => l.mapId === mapId)
+		),
 		nextZ: () => (data.objects.length ? data.objects[data.objects.length - 1].z + 1 : 1),
 		// Behind everything, where frames sit.
 		nextBackZ: () => (data.objects.length ? data.objects[0].z - 1 : 1),
@@ -301,6 +333,7 @@ export function createStore(document, { readonly = false } = {}) {
 			theme: themeRef.value,
 			objects: data.objects,
 			connectors: data.connectors,
+			mindmaps: nestMindmaps(data.maps, data.mapnodes, data.crosslinks),
 		}),
 
 		setReadonly(value) {
@@ -326,6 +359,10 @@ export function createStore(document, { readonly = false } = {}) {
 		selectedConnectors: () => (
 			void refs.connectors.value,
 			ofList(state.selection, "connectors").map((id) => index.connectors.get(id))
+		),
+		selectedNodes: () => (
+			void refs.mapnodes.value,
+			ofList(state.selection, "mapnodes").map((id) => index.mapnodes.get(id))
 		),
 
 		// --- document changes ---
@@ -450,13 +487,42 @@ export function createStore(document, { readonly = false } = {}) {
 			return transact("Theme", () => run({ t: "theme", patch: { preset: name } }))
 		},
 
+		// Raw operations ({t, list, ...}) as ONE undoable step. Mind map edits use this: a change
+		// can touch nodes, cross-links and the map together. Adds are checked against the limit.
+		applyOps(ops, { label = "Edit", select, selectUndo, coalesce } = {}) {
+			if (!ops.length) return false
+			const added = ops.reduce((n, op) => n + (op.t === "add" ? op.items.length : 0), 0)
+			if (added && countAfterAdding(added) > maxObjects) {
+				emit({ type: "limit", maxObjects })
+				return false
+			}
+			const ok = transact(label, () => ops.forEach(run), {
+				selectUndo: selectUndo ?? [...state.selection],
+				selectRedo: select ?? [...state.selection],
+				coalesce,
+			})
+			if (ok) {
+				if (select) state.selection = exists(select)
+				else state.selection = exists(state.selection)
+			}
+			return ok
+		},
+
 		// Makes the board's content equal to ``next`` ({objects, connectors, canvas, theme}) as ONE
 		// ordinary edit: what is gone is removed, what changed is updated, what is new is added.
 		// Peers see it as a normal change, and one undo puts everything back. Used to restore a version.
 		replaceContent(next, { label = "Restore version" } = {}) {
+			const flatNext = flattenMindmaps(next.mindmaps)
+			const nextLists = {
+				objects: next.objects,
+				connectors: next.connectors,
+				maps: flatNext.maps,
+				mapnodes: flatNext.nodes,
+				crosslinks: flatNext.crosslinks,
+			}
 			return transact(label, () => {
 				for (const list of LISTS) {
-					const wanted = new Map((next[list] || []).map((item) => [item.id, item]))
+					const wanted = new Map((nextLists[list] || []).map((item) => [item.id, item]))
 					const gone = data[list]
 						.filter((item) => !wanted.has(item.id))
 						.map((item) => item.id)

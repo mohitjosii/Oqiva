@@ -19,6 +19,9 @@ import {
 	sanitizeText,
 } from "../src/engine/model/schema"
 import { setCellFill, setCellText } from "../src/engine/store/tableOps"
+import { nestMindmaps } from "../src/engine/modes/mindmap/document"
+import { createMap } from "../src/engine/modes/mindmap/model"
+import { treeToChange } from "../src/engine/modes/mindmap/paste"
 import { COL, ROW, TEMPLATES } from "./template-specs.mjs"
 
 const OUT = path.resolve("../oqiva/seed/templates")
@@ -109,13 +112,15 @@ function build(spec) {
 		const dx = b.x - a.x
 		const dy = b.y - a.y
 		const horizontal = Math.abs(dx) >= Math.abs(dy) * 0.6
-		const [from, to] = edge.anchors ? edge.anchors : horizontal
-			? dx >= 0
-				? ["e", "w"]
-				: ["w", "e"]
-			: dy >= 0
-				? ["s", "n"]
-				: ["n", "s"]
+		const [from, to] = edge.anchors
+			? edge.anchors
+			: horizontal
+				? dx >= 0
+					? ["e", "w"]
+					: ["w", "e"]
+				: dy >= 0
+					? ["s", "n"]
+					: ["n", "s"]
 		const aligned = !edge.anchors && (Math.abs(dx) < 8 || Math.abs(dy) < 8)
 		const line = createConnector({
 			from: { objectId: edge.from, anchor: from },
@@ -130,7 +135,35 @@ function build(spec) {
 		if (edge.dashed) line.style = { ...line.style, dash: "dashed" }
 		lines.push(line)
 	})
-	const document = { ...createDocument({ theme: THEME }), objects, connectors: lines }
+	// Mind maps: a nested array ["Root", ["Child", ["Grandchild"]], ...] becomes a tree with fixed ids.
+	const mapRecords = []
+	const mapNodes = []
+	;(spec.maps || []).forEach((entry, m) => {
+		const { map, root } = createMap({ origin: entry.origin, id: `${spec.slug}-map${m + 1}` })
+		const toTree = ([text, ...children]) => ({ text, children: children.map(toTree) })
+		const top = toTree(entry.tree)
+		const change = treeToChange({
+			mapId: map.id,
+			parentId: root.id,
+			startOrder: 0,
+			tree: top.children,
+		})
+		const nodes = [{ ...root, text: top.text }, ...change.add]
+		const renamed = new Map(nodes.map((n, i) => [n.id, `${map.id}-n${i}`]))
+		for (const node of nodes)
+			mapNodes.push({
+				...node,
+				id: renamed.get(node.id),
+				parentId: node.parentId ? renamed.get(node.parentId) : null,
+			})
+		mapRecords.push({ ...map, rootId: renamed.get(root.id) })
+	})
+	const document = {
+		...createDocument({ theme: THEME }),
+		objects,
+		connectors: lines,
+		mindmaps: nestMindmaps(mapRecords, mapNodes, []),
+	}
 	const { document: clean, issues } = parseDocument(JSON.parse(JSON.stringify(document)))
 	if (issues.length) throw new Error(`${spec.slug}: ${issues.join(", ")}`)
 	const ids = new Set(clean.objects.map((o) => o.id))
@@ -152,6 +185,6 @@ for (const spec of TEMPLATES) {
 	}
 	fs.writeFileSync(path.join(OUT, `${spec.slug}.json`), `${JSON.stringify(file, null, "\t")}\n`)
 	console.log(
-		`${spec.slug}: ${document.objects.length} objects, ${document.connectors.length} lines`,
+		`${spec.slug}: ${document.objects.length} objects, ${document.connectors.length} lines, ${document.mindmaps.length} maps`,
 	)
 }

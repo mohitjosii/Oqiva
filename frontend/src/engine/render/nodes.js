@@ -28,7 +28,7 @@ const paintOf = (style, detail) => ({
 })
 
 // Text lines of a laid-out block, as SVG <text> elements. ``top`` is where the block starts.
-function textNodes(layout, text, { x, width, top }) {
+export function textNodes(layout, text, { x, width, top }) {
 	const align = text.align
 	const lx = align === "left" ? x : align === "right" ? x + width : x + width / 2
 	const anchor = align === "left" ? "start" : align === "right" ? "end" : "middle"

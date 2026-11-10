@@ -26,6 +26,16 @@ export const SHORTCUTS = [
 	{ group: "Tools", keys: ["N"], label: "Sticky note" },
 	{ group: "Tools", keys: ["F"], label: "Frame (a named section)" },
 	{ group: "Tools", keys: ["Shift", "S"], label: "Shape library" },
+	{ group: "Mind map", keys: ["M"], label: "New mind map in the middle of the screen" },
+	{ group: "Mind map", keys: ["Tab"], label: "Add a child to the selected node" },
+	{ group: "Mind map", keys: ["Enter"], label: "Add a sibling after it" },
+	{ group: "Mind map", keys: ["Shift", "Tab"], label: "Move a node up one level" },
+	{ group: "Mind map", keys: ["Arrows"], label: "Walk through the nodes" },
+	{ group: "Mind map", keys: ["Alt", "Up / Down"], label: "Move a node among its siblings" },
+	{ group: "Mind map", keys: ["F2"], label: "Edit the text (or double-click)" },
+	{ group: "Mind map", keys: ["- / +"], label: "Collapse or expand a node" },
+	{ group: "Mind map", keys: ["Delete"], label: "Delete a node and what grows from it" },
+	{ group: "Mind map", keys: ["Shift", "Enter"], label: "New line while editing a node" },
 	{ group: "Edit", keys: ["Tab"], label: "In a note: write the next note beside it" },
 	{ group: "Lines", keys: ["Click a hover arrow"], label: "Add a connected copy" },
 	{ group: "Lines", keys: ["Drag an end"], label: "Move or re-attach a line end" },
@@ -64,6 +74,7 @@ const VIEW_ONLY = new Set([
 	"escape",
 	"shortcuts",
 	"tool",
+	"mm.nav",
 ])
 
 // Inputs that take no typed text (a slider, a checkbox) must not swallow shortcuts such as undo.
@@ -85,7 +96,33 @@ export function isTypingTarget(target) {
 	return tag === "TEXTAREA" || tag === "SELECT" || Boolean(target.isContentEditable)
 }
 
-function lookup(event) {
+// With only mind map nodes selected, the mind map owns these keys (a Tab on a node is not a Tab
+// anywhere else, and the arrows walk the tree instead of nudging).
+const MM_ARROWS = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" }
+function mindmapLookup(event) {
+	const key = event.key
+	const mod = event.ctrlKey || event.metaKey
+	if (mod) return null
+	if (event.altKey) {
+		if (key === "ArrowUp") return { name: "mm.moveUp" }
+		if (key === "ArrowDown") return { name: "mm.moveDown" }
+		return null
+	}
+	if (key === "Tab") return { name: event.shiftKey ? "mm.promote" : "mm.child" }
+	if (key === "Enter" && !event.shiftKey) return { name: "mm.sibling" }
+	if (key in MM_ARROWS) return { name: "mm.nav", direction: MM_ARROWS[key] }
+	if (key === "Delete" || key === "Backspace") return { name: "mm.delete" }
+	if (key === "F2") return { name: "mm.edit" }
+	if (key === "-") return { name: "mm.toggle", collapsed: true }
+	if (key === "+" || key === "=") return { name: "mm.toggle", collapsed: false }
+	return null
+}
+
+function lookup(event, mindmap = false) {
+	if (mindmap) {
+		const found = mindmapLookup(event)
+		if (found) return found
+	}
 	const mod = event.ctrlKey || event.metaKey
 	const key = event.key
 	if (mod) {
@@ -113,15 +150,19 @@ function lookup(event) {
 		const step = event.shiftKey ? 10 : 1
 		return { name: "nudge", dx: ARROWS[key][0] * step, dy: ARROWS[key][1] * step }
 	}
+	if (!event.shiftKey && key.toLowerCase() === "m") return { name: "mm.new" }
 	if (!event.shiftKey && key.length === 1 && key.toLowerCase() in TOOL_KEYS) {
 		return { name: "tool", tool: TOOL_KEYS[key.toLowerCase()] }
 	}
 	return null
 }
 
-export function commandFor(event, { editing = false, readonly = false, canComment = false } = {}) {
+export function commandFor(
+	event,
+	{ editing = false, readonly = false, canComment = false, mindmap = false } = {},
+) {
 	if (editing || isTypingTarget(event.target)) return null
-	const command = lookup(event)
+	const command = lookup(event, mindmap)
 	if (!command) return null
 	if (readonly) {
 		if (!VIEW_ONLY.has(command.name)) return null
@@ -131,5 +172,6 @@ export function commandFor(event, { editing = false, readonly = false, canCommen
 			(command.tool === "comment" && canComment)
 		if (command.name === "tool" && !allowed) return null
 	}
+	if (readonly && command.name.startsWith("mm.") && command.name !== "mm.nav") return null
 	return command
 }
