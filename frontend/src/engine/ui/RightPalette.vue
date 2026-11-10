@@ -5,8 +5,9 @@
 import { Dropdown } from "frappe-ui"
 import { computed, onMounted, watch } from "vue"
 import { commonValue, availableSections } from "../interaction/palette"
-import { runAction } from "../interaction/actions"
+import { MAX_SIDES, MIN_SIDES, runAction, shapeToolOf } from "../interaction/actions"
 import { activeCell } from "../interaction/tables"
+import { SHAPE_TOOLS } from "../model/shapes"
 import ColorSwatches from "./ColorSwatches.vue"
 import PaletteTile from "./PaletteTile.vue"
 
@@ -26,6 +27,36 @@ const visible = computed(
 	() => items.value.length > 0 && !state.value.readonly && !state.value.editingId,
 )
 const has = (name) => sections.value.has(name)
+
+// Spelled out in full so the icon classes are found when the stylesheet is built.
+const SHAPE_ICONS = {
+	rectangle: "lucide-rectangle-horizontal",
+	square: "lucide-square",
+	ellipse: "lucide-egg",
+	circle: "lucide-circle",
+	triangle: "lucide-triangle",
+	diamond: "lucide-diamond",
+	polygon: "lucide-hexagon",
+	arrow: "lucide-arrow-big-right",
+}
+
+const shapes = computed(() => objects.value.filter((o) => o.kind === "shape"))
+// Which kind the selected shapes are (undefined when they differ), and how many sides a polygon has.
+const shapeTool = computed(() => commonValue(shapes.value, shapeToolOf))
+const polygonSides = computed(() =>
+	commonValue(
+		shapes.value.filter((o) => o.shape === "polygon"),
+		(o) => o.sides,
+	),
+)
+const hasPolygon = computed(() => shapes.value.some((o) => o.shape === "polygon"))
+const sideChoices = Array.from({ length: MAX_SIDES - MIN_SIDES + 1 }, (_, i) => {
+	const n = MIN_SIDES + i
+	return { label: `${n} sides`, value: n }
+})
+const canCommentHere = computed(
+	() => state.value.canComment && items.value.length === 1 && objects.value.length === 1,
+)
 
 const run = (action) => runAction(props.store, action, { measure: props.measure })
 const cell = computed(() => activeCell(props.store))
@@ -133,6 +164,50 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 		@wheel.stop
 		@contextmenu.stop
 	>
+		<section v-if="has('shapeType')" aria-label="Shape">
+			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Shape</h3>
+			<div class="flex flex-wrap gap-0.5" data-testid="shape-types">
+				<PaletteTile
+					v-for="tool in SHAPE_TOOLS"
+					:key="tool.id"
+					:icon="SHAPE_ICONS[tool.id]"
+					:title="`Make it a ${tool.label.toLowerCase()}`"
+					:active="shapeTool === tool.id"
+					:testid="`shape-${tool.id}`"
+					@click="run({ name: 'shape', tool: tool.id })"
+				/>
+			</div>
+			<div v-if="hasPolygon" class="mt-1.5">
+				<Dropdown
+					:options="
+						sideChoices.map((c) => ({
+							label: c.label,
+							icon: c.value === polygonSides ? 'check' : null,
+							onClick: () => run({ name: 'sides', value: c.value }),
+						}))
+					"
+				>
+					<button
+						type="button"
+						class="whitespace-nowrap rounded border border-outline-gray-2 px-2 py-0.5 text-xs text-ink-gray-8 hover:bg-surface-gray-2"
+						data-testid="polygon-sides"
+					>
+						{{ polygonSides === undefined ? "Mixed" : `${polygonSides} sides` }}
+					</button>
+				</Dropdown>
+			</div>
+		</section>
+
+		<section v-if="canCommentHere" aria-label="Comment">
+			<PaletteTile
+				icon="lucide-message-square"
+				label="Add comment"
+				title="Comment on this"
+				testid="add-comment"
+				@click="run({ name: 'comment' })"
+			/>
+		</section>
+
 		<section v-if="has('arrange')" aria-label="Arrange">
 			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Arrange</h3>
 			<div class="flex flex-wrap gap-0.5">

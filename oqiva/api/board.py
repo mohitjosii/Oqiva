@@ -99,9 +99,24 @@ def get_revision(board: str) -> dict:
 
 
 @frappe.whitelist(methods=["POST"])
-def save_document(board: str, document: str, base_revision: int, save_id: str) -> dict:
-	"""Save a board's content against the revision the client last saw."""
-	return document_service.save_document(current_user(), board, document, base_revision, save_id)
+def save_document(
+	board: str,
+	document: str,
+	base_revision: int,
+	save_id: str,
+	crdt_state: str | None = None,
+	resync: bool = False,
+) -> dict:
+	"""Save a board's content, with the collaboration state that goes with it."""
+	return document_service.save_document(
+		current_user(), board, document, base_revision, save_id, crdt_state, bool(resync)
+	)
+
+
+@frappe.whitelist()
+def get_crdt_state(board: str) -> dict:
+	"""The collaboration state and revision the server holds, to merge before saving again."""
+	return document_service.get_crdt_state(current_user(), board)
 
 
 def _sent_file() -> bytes:

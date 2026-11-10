@@ -101,3 +101,21 @@ Where each is tested is noted in brackets. `test_files.py` is the backend file, 
 - **T9.10** The audit log cannot be written outside a service, and entries older than 365 days are pruned. [`TestAuditLog`]
 - **T9.11** An exported SVG contains no link to a private file and no script; text, labels and picture descriptions are escaped. [`export.test.js`, browser run]
 
+## 10. Phase 5 coverage (sharing, links, comments, collaboration)
+Where each case of sections 3 to 6 is proved. `test_sharing.py`, `test_links.py`, `test_comments.py`, `test_notifications.py` and `test_phase5_api.py` are backend; the relay harness is `realtime/harness/relay.test.mjs`; browser runs are in `e2e/`.
+
+- **T3.2, T3.3, T3.4** view, comment and edit boundaries through the endpoints. [`test_phase5_api.py` TestSharedPeopleBoundaries]
+- **T3.6** a member cannot revoke a share someone else made; the board's creator, an Admin and the sharer can. [`test_sharing.py` TestChangingAndRevoking]
+- **T3.7** the comment author edits, an Admin deletes but cannot edit. [`test_comments.py` TestEditingAndDeleting]
+- **T4.1 to T4.3, T4.5** secrets shown once and only hashed; uniform not-found; revoke ends access at once; no anonymous Commenter or Editor links. [`test_links.py`]
+- **T4.4** the 21st redemption in a minute from one address is refused. [`test_phase5_api.py` TestRedeemRateLimit]
+- **T4.6** a visitor sees the board read-only; every signed-in endpoint refuses a Guest; a picture comes only through the link and only the board's own. [`test_links.py` TestVisitorsWhoAreNotSignedIn, `test_phase5_api.py` TestGuests; browser `phase5.e2e.mjs`]
+- **T4.7** redeem attempts are written to the audit log without the secret. [`test_links.py`]
+- **T5.1 to T5.4** stale save carries the server revision; replay returns the same result; the save lock; an invalid or oversized collaboration state is refused and nothing is written. [`test_document.py` TestCollaborationState and earlier]
+- **T5.5** comments are flagged when their shape is removed and cleared when it returns. [`test_comments.py` TestPinsFollowTheBoard]
+- **T5.6** two people who lose the connection both keep drawing and both shapes survive; offline work is saved on return. [`collab.e2e.mjs`; merge logic in `bridge.test.js`, `provider.test.js`, `autosave.test.js`]
+- **T6.1 to T6.7** join without access, viewers cannot write, awareness caps and throttle, revoked and disabled people cut off within the window, other sites cannot reach a room, oversized payloads refused. [`realtime/harness/relay.test.mjs`; the revocation seen live in `collab.e2e.mjs`]
+- **T2.1, T2.3** a stranger gets not-found from every new endpoint, and the generic list and read layer shows no comments of boards they cannot see. [`test_phase5_api.py` TestOutsiderCannotReachTheNewSurface, `test_comments.py` TestWhoCanSeeCommentsThroughFrappe]
+- **T7.1** comment text is stored as plain text and shown as text; markup never runs. [`test_comments.py` TestAdding; browser `comments.e2e.mjs`]
+- **Not covered:** a peer with edit rights storing a corrupt collaboration state is handled by every loader sanitising (unit-tested in `bridge.test.js`) but not by the server, which cannot read it.
+

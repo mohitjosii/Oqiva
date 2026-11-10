@@ -6,7 +6,7 @@
 // A marquee that catches shapes also catches the lines between them, and those lines follow
 // their shapes anyway, so for arrangement the lines are set aside rather than hiding it all.
 
-export const STYLE_SECTIONS = ["fill", "border", "text", "opacity", "radius", "line"]
+export const STYLE_SECTIONS = ["shapeType", "fill", "border", "text", "opacity", "radius", "line"]
 
 const OBJECT_ONLY = new Set(["fill", "text", "radius"])
 
@@ -16,6 +16,7 @@ export function capabilitiesOf(item) {
 	switch (item.kind) {
 		case "shape":
 			return new Set([
+				"shapeType",
 				"fill",
 				"border",
 				"text",

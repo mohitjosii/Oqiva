@@ -15,9 +15,12 @@ UNIQUE_CONSTRAINTS = (
 	("Oqiva Favorite", ["user", "board"], "oqiva_unique_favorite"),
 	("Oqiva Board View", ["board", "user"], "oqiva_unique_board_view"),
 	("Oqiva Pending Invite", ["email", "workspace"], "oqiva_unique_pending_invite"),
+	("Oqiva Link Grant", ["share_link", "user"], "oqiva_unique_link_grant"),
 )
 
 INDEXES = (
+	("Oqiva Comment", ["board", "resolved"], "oqiva_comment_board_resolved"),
+	("Oqiva Comment", ["board", "shape_id"], "oqiva_comment_board_shape"),
 	("Oqiva Board", ["workspace", "is_trashed", "modified"], "oqiva_board_workspace_state"),
 	("Oqiva Board", ["project", "is_trashed"], "oqiva_board_project_state"),
 	("Oqiva Project", ["workspace", "is_trashed"], "oqiva_project_workspace_state"),

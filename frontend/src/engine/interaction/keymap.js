@@ -22,6 +22,7 @@ export const SHORTCUTS = [
 	{ group: "Tools", keys: ["O"], label: "Ellipse" },
 	{ group: "Tools", keys: ["T"], label: "Text box" },
 	{ group: "Tools", keys: ["L"], label: "Line or arrow (last one used)" },
+	{ group: "Tools", keys: ["C"], label: "Comment (click a shape or a place)" },
 	{ group: "Lines", keys: ["Click a hover arrow"], label: "Add a connected copy" },
 	{ group: "Lines", keys: ["Drag an end"], label: "Move or re-attach a line end" },
 	{ group: "File", keys: ["Ctrl/Cmd", "P"], label: "Print the board" },
@@ -41,6 +42,7 @@ const TOOL_KEYS = {
 	o: "ellipse",
 	t: "text",
 	l: "connector",
+	c: "comment",
 }
 const ARROWS = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }
 
@@ -110,14 +112,17 @@ function lookup(event) {
 	return null
 }
 
-export function commandFor(event, { editing = false, readonly = false } = {}) {
+export function commandFor(event, { editing = false, readonly = false, canComment = false } = {}) {
 	if (editing || isTypingTarget(event.target)) return null
 	const command = lookup(event)
 	if (!command) return null
 	if (readonly) {
 		if (!VIEW_ONLY.has(command.name)) return null
-		if (command.name === "tool" && command.tool !== "select" && command.tool !== "hand")
-			return null
+		const allowed =
+			command.tool === "select" ||
+			command.tool === "hand" ||
+			(command.tool === "comment" && canComment)
+		if (command.name === "tool" && !allowed) return null
 	}
 	return command
 }

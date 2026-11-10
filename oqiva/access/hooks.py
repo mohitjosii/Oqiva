@@ -107,17 +107,18 @@ def invite_has_permission(doc, ptype=None, user=None, debug=False):
 
 
 def board_query_conditions(user=None, doctype=None) -> str:
-	"""Boards in workspaces where the user is a Member or better.
-
-	Boards shared with the user are added by Frappe's own DocShare handling.
-	"""
+	"""Boards in workspaces where the user is a Member or better, and boards they hold a live
+	share-link grant on. Boards shared by name are added by Frappe's own DocShare handling."""
 	user = user or frappe.session.user
 	if _is_unrestricted(user):
 		return ""
 	if user == "Guest":
 		return "1=0"
+	from oqiva.access import resolve
+
 	sub = _member_workspaces_sql(user, ("Owner", "Admin", "Member"))
-	return "`tabOqiva Board`.`workspace` in ({0})".format(sub)
+	links = resolve.live_link_boards_sql(user)
+	return "(`tabOqiva Board`.`workspace` in ({0}) or `tabOqiva Board`.`name` in ({1}))".format(sub, links)
 
 
 def project_query_conditions(user=None, doctype=None) -> str:
@@ -181,3 +182,35 @@ def invite_query_conditions(user=None, doctype=None) -> str:
 		return "1=0"
 	sub = _member_workspaces_sql(user, ("Owner", "Admin"))
 	return "`tabOqiva Pending Invite`.`workspace` in ({0})".format(sub)
+
+
+def comment_query_conditions(user=None, doctype=None) -> str:
+	"""Comments on boards the user can see: through a workspace, a share, or a live link."""
+	from oqiva.access import resolve
+
+	user = user or frappe.session.user
+	if _is_unrestricted(user):
+		return ""
+	if user == "Guest":
+		return "1=0"
+	sub = _member_workspaces_sql(user, ("Owner", "Admin", "Member"))
+	shared = (
+		"select share_name from `tabDocShare` where share_doctype = 'Oqiva Board' "
+		"and user = {0} and `read` = 1"
+	).format(frappe.db.escape(user))
+	return (
+		"`tabOqiva Comment`.`board` in (select name from `tabOqiva Board` where workspace in ({0})) "
+		"or `tabOqiva Comment`.`board` in ({1}) or `tabOqiva Comment`.`board` in ({2})"
+	).format(sub, shared, resolve.live_link_boards_sql(user))
+
+
+def comment_has_permission(doc, ptype=None, user=None, debug=False):
+	"""Anyone who may see the board may read its comments. Nothing is written except by the services."""
+	from oqiva.services import comment_service
+
+	user = user or frappe.session.user
+	if _is_unrestricted(user):
+		return True
+	if ptype not in READ_ONLY_PTYPES:
+		return False
+	return comment_service.may_view_comments(user, doc.board)

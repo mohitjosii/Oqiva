@@ -31,6 +31,7 @@ permission_query_conditions = {
 	"Oqiva Favorite": "oqiva.access.hooks.favorite_query_conditions",
 	"Oqiva Board View": "oqiva.access.hooks.board_view_query_conditions",
 	"Oqiva Pending Invite": "oqiva.access.hooks.invite_query_conditions",
+	"Oqiva Comment": "oqiva.access.hooks.comment_query_conditions",
 }
 
 has_permission = {
@@ -41,6 +42,7 @@ has_permission = {
 	"Oqiva Favorite": "oqiva.access.hooks.own_row_has_permission",
 	"Oqiva Board View": "oqiva.access.hooks.own_row_has_permission",
 	"Oqiva Pending Invite": "oqiva.access.hooks.invite_has_permission",
+	"Oqiva Comment": "oqiva.access.hooks.comment_has_permission",
 }
 
 doc_events = {

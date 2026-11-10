@@ -4,22 +4,31 @@
 // kept and retried. A retry of unchanged content reuses its save id, so if the first attempt
 // did reach the server (and only the reply was lost) the retry is recognised, not refused as
 // a conflict.
+//
+// When someone else saved first, the editor does not stop. It merges what the server holds into
+// its own collaboration state (``recover``), which cannot lose either side's work, and saves
+// again on top of the new revision, a few times with a pause between.
 
 import { newId } from "../model/ids"
 import { classifyFailure, isUncertain } from "./failures"
 
 export const SAVE_DEBOUNCE_MS = 1500
 export const RETRY_DELAYS_MS = [2000, 5000, 15000, 30000]
+export const STALE_ATTEMPTS = 5
+export const STALE_DELAYS_MS = [0, 300, 1000, 2000, 4000]
 
 // status: saved | pending | saving | offline | error | conflict
 export function createAutosave({
 	save,
 	getDocument,
+	getCrdtState = () => null, // the collaboration state that matches getDocument()
+	recover = null, // async () => the server's revision, after merging its state into ours
 	getRevisionInfo,
 	onStatus = () => {},
 	revision = 0,
 	debounceMs = SAVE_DEBOUNCE_MS,
 	retryDelays = RETRY_DELAYS_MS,
+	staleDelays = STALE_DELAYS_MS,
 	setTimer = setTimeout,
 	clearTimer = clearTimeout,
 	makeSaveId = () => newId(16),
@@ -30,6 +39,8 @@ export function createAutosave({
 	let inFlight = null
 	let timer = null
 	let retries = 0
+	let staleRetries = 0
+	let needResync = false // the content is too big for the live link: the server must tell everyone
 	let attempt = null // {saveId, json, uncertain} for the last save that did not finish cleanly
 	let disposed = false
 
@@ -66,15 +77,26 @@ export function createAutosave({
 	async function run() {
 		clearTimer(timer)
 		const json = JSON.stringify(getDocument())
+		const crdtState = getCrdtState()
+		const key = `${json}\n${crdtState}`
 		dirty = false
-		const saveId = attempt && attempt.json === json ? attempt.saveId : makeSaveId()
-		attempt = { saveId, json, uncertain: attempt?.uncertain && attempt.json === json }
+		const saveId = attempt && attempt.json === key ? attempt.saveId : makeSaveId()
+		attempt = { saveId, json: key, uncertain: attempt?.uncertain && attempt.json === key }
+		const resync = needResync
 		setStatus("saving")
 		try {
-			const result = await save({ document: json, baseRevision: revision, saveId })
+			const result = await save({
+				document: json,
+				crdtState,
+				baseRevision: revision,
+				saveId,
+				resync,
+			})
 			revision = result.revision
 			attempt = null
 			retries = 0
+			staleRetries = 0
+			if (resync) needResync = false
 		} catch (error) {
 			await fail(error)
 			return
@@ -91,6 +113,7 @@ export function createAutosave({
 				schedule(0)
 				return
 			}
+			if (recover && staleRetries < staleDelays.length) return mergeAndRetry(error)
 			setStatus("conflict", error.message)
 			return
 		}
@@ -102,6 +125,26 @@ export function createAutosave({
 		} else {
 			setStatus("error", error.message) // refused for good: wait for the person to change something
 		}
+	}
+
+	// Someone else saved first. Merge what the server holds into our state, then save on top.
+	async function mergeAndRetry(error) {
+		const delay = staleDelays[staleRetries++]
+		try {
+			const next = await recover()
+			if (next == null) return setStatus("conflict", error.message) // the server holds nothing we can merge
+			revision = next
+		} catch (failure) {
+			dirty = true
+			const kind = classifyFailure(failure)
+			setStatus(kind === "offline" ? "offline" : "error", failure.message || error.message)
+			schedule(retryDelays[Math.min(retries++, retryDelays.length - 1)])
+			return
+		}
+		attempt = null // the merged content is different content, so it gets a new save id
+		dirty = true
+		setStatus("pending")
+		schedule(delay)
 	}
 
 	function flush() {
@@ -135,6 +178,11 @@ export function createAutosave({
 			if (!inFlight) schedule(debounceMs)
 		},
 		flush,
+		// The next save carries the flag that makes the server ask everyone to fetch the board.
+		requestResync() {
+			needResync = true
+			this.markDirty()
+		},
 		// Try again now, as when the browser comes back online.
 		retryNow() {
 			if (frozen() || status === "saved" || inFlight) return flush()

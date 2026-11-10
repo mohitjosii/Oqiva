@@ -30,6 +30,8 @@ import {
 	withTable,
 } from "../store/tableOps"
 import { emptyText } from "../model/factories"
+import { CONNECTOR_TOOLS, connectorToolById } from "../model/connectorTools"
+import { SHAPE_TOOLS } from "../model/shapes"
 import { capabilitiesOf, pushRecent } from "./palette"
 import { activeCell } from "./tables"
 
@@ -100,6 +102,15 @@ export function runAction(store, action, { measure } = {}) {
 			)
 		case "table":
 			return tableAction(store, action, measure)
+		case "shape":
+			return apply(
+				fitText(shapeTypeChanges(store, objects, action), objects, measure),
+				"Change shape",
+			)
+		case "sides":
+			return apply(sidesChanges(objects, action.value), "Change sides")
+		case "comment":
+			return startComment(store, objects)
 		case "style":
 			return applyStyle(store, [...objects, ...connectors], action, measure)
 		case "painter":
@@ -136,7 +147,7 @@ function fitText(changes, objects, measure) {
 		if (!needed || needed <= object.h) return change
 		return {
 			id: change.id,
-			patch: { ...change.patch, h: needed, y: change.patch.y - (needed - object.h) / 2 },
+			patch: { ...change.patch, h: needed, y: object.y - (needed - object.h) / 2 },
 		}
 	})
 }
@@ -217,7 +228,18 @@ function applyStyle(store, items, action, measure) {
 	const ok = store.updateItems(changes, { label: "Change style", coalesce: action.coalesce })
 	if (ok && action.recent && typeof action.value === "string" && action.value.startsWith("#"))
 		store.state.recentColors = pushRecent(store.state.recentColors, action.value)
+	if (ok && action.target === "geometry") rememberGeometry(store, action.value)
 	return ok
+}
+
+// A line type chosen by hand sticks: new lines, and the arrows that add a connected shape, use it
+// until it is changed again. The arrowheads of the last tool are kept.
+export function rememberGeometry(store, geometry) {
+	const last = connectorToolById(store.state.lastConnectorTool)
+	const wanted = CONNECTOR_TOOLS.find(
+		(tool) => tool.geometry === geometry && tool.arrow === (last ? last.arrow : true),
+	)
+	if (wanted) store.state.lastConnectorTool = wanted.id
 }
 
 // --- format painter ---
@@ -345,4 +367,69 @@ function styleCells(table, cell, action) {
 		const styled = base && textStylePatch(base, action)
 		return styled ? setCellText(next, c.row, c.col, styled) : next
 	}, table)
+}
+
+// --- changing a shape's kind, and comments from the palette ---
+
+export const MIN_SIDES = 3
+export const MAX_SIDES = 12
+
+// The shapes menu's tool (rectangle, square, ellipse, circle, ...) that a shape currently is.
+export function shapeToolOf(object) {
+	if (object.kind !== "shape") return null
+	const square = Math.abs(object.w - object.h) < 1
+	const options = SHAPE_TOOLS.filter((tool) => tool.shape === object.shape)
+	return (
+		(options.find((tool) => Boolean(tool.ratio) === square) || options[0] || null)?.id || null
+	)
+}
+
+// Turns each selected shape into another kind, keeping its place, text and style. A square or a
+// circle becomes as wide as the shape's longer side; a polygon keeps its sides or gets the tool's.
+function shapeTypeChanges(store, objects, action) {
+	const tool = SHAPE_TOOLS.find((t) => t.id === action.tool)
+	if (!tool) return []
+	return objects
+		.filter((object) => object.kind === "shape")
+		.map((object) => {
+			const patch = {
+				shape: tool.shape,
+				sides:
+					tool.shape === "polygon"
+						? object.sides || store.state.toolOptions.sides
+						: undefined,
+			}
+			if (tool.ratio) {
+				const side = Math.max(object.w, object.h)
+				patch.w = side
+				patch.h = side
+				patch.x = object.x - (side - object.w) / 2
+				patch.y = object.y - (side - object.h) / 2
+			}
+			return { id: object.id, patch }
+		})
+		.filter(({ id, patch }) => {
+			const object = objects.find((o) => o.id === id)
+			return Object.keys(patch).some(
+				(key) => JSON.stringify(object[key]) !== JSON.stringify(patch[key]),
+			)
+		})
+}
+
+function sidesChanges(objects, value) {
+	const sides = Math.min(MAX_SIDES, Math.max(MIN_SIDES, Math.round(Number(value))))
+	if (!Number.isFinite(sides)) return []
+	return objects
+		.filter((o) => o.kind === "shape" && o.shape === "polygon" && o.sides !== sides)
+		.map((o) => ({ id: o.id, patch: { sides } }))
+}
+
+// "Add comment" from the palette: a comment on the selected thing, with no clicking on the board.
+function startComment(store, objects) {
+	if (!store.state.canComment || objects.length !== 1 || store.selectedConnectors().length)
+		return false
+	store.state.commentDraft = { anchor_type: "shape", shape_id: objects[0].id }
+	store.state.commentsOpen = true
+	store.state.openThread = null
+	return true
 }

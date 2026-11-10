@@ -116,6 +116,20 @@ export function fitRow(table, row, measure) {
 	return Math.min(TABLE_LIMITS.maxSize, needed)
 }
 
+// Sets one row's height or one column's width. A row never gets shorter than its text, and a
+// narrower column makes its rows taller where the text wraps.
+export function setTrackSize(table, axis, index, size, measure) {
+	if (axis === "row") {
+		const alone = { ...table, rowH: table.rowH.map((h, r) => (r === index ? 0 : h)) }
+		const floor = measure ? fitRow(alone, index, measure) : 0
+		const next = clamp(Math.max(size, floor))
+		return { ...table, rowH: table.rowH.map((h, r) => (r === index ? next : h)) }
+	}
+	let next = { ...table, colW: table.colW.map((w, c) => (c === index ? clamp(size) : w)) }
+	if (measure) for (let row = 0; row < next.rowH.length; row++) next = growRow(next, row, measure)
+	return next
+}
+
 export function growRow(table, row, measure) {
 	const needed = fitRow(table, row, measure)
 	if (needed <= table.rowH[row]) return table

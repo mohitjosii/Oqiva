@@ -2,7 +2,15 @@ import { describe, expect, it } from "vitest"
 import { createConnector, createImage, createObject, createTable } from "../model/factories"
 import { createDocument } from "../model/schema"
 import { createStore } from "../store/createStore"
-import { copyFormat, paintOnto, pasteFormat, runAction, stylePatch } from "./actions"
+import {
+	MAX_SIDES,
+	copyFormat,
+	paintOnto,
+	pasteFormat,
+	runAction,
+	shapeToolOf,
+	stylePatch,
+} from "./actions"
 import { activeCell } from "./tables"
 import { availableSections, commonValue, pushRecent, RECENT_LIMIT } from "./palette"
 
@@ -527,5 +535,69 @@ describe("tables in the palette", () => {
 		store.select(["t"])
 		store.state.tableCell = { id: "t", row: 9, col: 9 }
 		expect(activeCell(store)).toBeNull() // that cell is gone
+	})
+})
+
+describe("changing the kind of a shape, and commenting from the palette", () => {
+	const make = (objects) => {
+		const store = createStore({
+			...createDocument(),
+			objects: objects.map((o, i) => ({ ...o, z: i + 1 })),
+			connectors: [],
+		})
+		store.state.size = { width: 1000, height: 700 }
+		return store
+	}
+
+	it("offers the shape section for shapes only", () => {
+		const store = make([shape("a", 0)])
+		store.select(["a"])
+		expect(availableSections(store.selectedObjects(), []).has("shapeType")).toBe(true)
+	})
+
+	it("turns a rectangle into an ellipse and keeps its text and style", () => {
+		const store = make([shape("a", 0)])
+		const before = store.getObject("a")
+		store.select(["a"])
+		expect(runAction(store, { name: "shape", tool: "ellipse" })).toBe(true)
+		const after = store.getObject("a")
+		expect(after.shape).toBe("ellipse")
+		expect(after.text).toEqual(before.text)
+		expect(after.style).toEqual(before.style)
+		expect([after.x, after.w, after.h]).toEqual([before.x, before.w, before.h])
+		expect(shapeToolOf(after)).toBe("ellipse")
+	})
+
+	it("makes a square or a circle from the longer side, and undoes in one step", () => {
+		const store = make([{ ...shape("a", 0), w: 200, h: 100 }])
+		store.select(["a"])
+		runAction(store, { name: "shape", tool: "square" })
+		const square = store.getObject("a")
+		expect(square.w).toBe(square.h)
+		store.undo()
+		expect(store.getObject("a").w).toBe(200)
+		expect(store.getObject("a").shape).toBe("rectangle")
+	})
+
+	it("sets the sides of a polygon within bounds", () => {
+		const store = make([shape("a", 0)])
+		store.select(["a"])
+		runAction(store, { name: "shape", tool: "polygon" })
+		expect(store.getObject("a").shape).toBe("polygon")
+		runAction(store, { name: "sides", value: 8 })
+		expect(store.getObject("a").sides).toBe(8)
+		runAction(store, { name: "sides", value: 99 })
+		expect(store.getObject("a").sides).toBeLessThanOrEqual(MAX_SIDES)
+	})
+
+	it("starts a comment on the selected shape only when commenting is allowed", () => {
+		const store = make([shape("a", 0)])
+		store.select(["a"])
+		store.state.canComment = false
+		expect(runAction(store, { name: "comment" })).toBe(false)
+		store.state.canComment = true
+		expect(runAction(store, { name: "comment" })).toBe(true)
+		expect(store.state.commentDraft).toEqual({ anchor_type: "shape", shape_id: "a" })
+		expect(store.state.commentsOpen).toBe(true)
 	})
 })

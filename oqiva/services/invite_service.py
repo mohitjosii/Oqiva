@@ -82,9 +82,12 @@ def convert_for_email(user: str, email: str | None) -> int:
 	address = (email or "").strip().lower()
 	if not address:
 		return 0
+	from oqiva.services import share_service
+
+	share_service.convert_board_invites(user, address)
 	invites = frappe.get_all(
 		"Oqiva Pending Invite",
-		filters={"email": address},
+		filters={"email": address, "workspace": ["is", "set"]},
 		fields=["name", "workspace", "role"],
 		limit_page_length=0,
 	)

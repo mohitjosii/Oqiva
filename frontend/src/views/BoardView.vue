@@ -1,12 +1,15 @@
 <script setup>
-import { Badge, Button, FeatherIcon, toast } from "frappe-ui"
+import { Avatar, Badge, Button, FeatherIcon, toast } from "frappe-ui"
 import { computed, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import BoardTitle from "@/components/BoardTitle.vue"
 import ErrorState from "@/components/ErrorState.vue"
+import NotificationBell from "@/components/NotificationBell.vue"
+import ShareDialog from "@/components/ShareDialog.vue"
 import { useAsync } from "@/composables/useAsync"
 import { api, upload } from "@/data/api"
-import { findWorkspace, homeWorkspace } from "@/data/session"
+import { getSocket } from "@/data/socket"
+import { findWorkspace, homeWorkspace, session } from "@/data/session"
 import BoardEditor from "@/engine/BoardEditor.vue"
 import { parseDocument } from "@/engine/model/schema"
 import SaveIndicator from "@/engine/ui/SaveIndicator.vue"
@@ -59,14 +62,45 @@ const prepared = computed(() => {
 				capabilities: loaded.capabilities,
 				limits: loaded.limits,
 				api: {
-					save: ({ document: json, baseRevision, saveId }) =>
+					save: ({ document: json, crdtState, baseRevision, saveId, resync }) =>
 						api("board.save_document", {
 							board: boardName.value,
 							document: json,
 							base_revision: baseRevision,
 							save_id: saveId,
+							crdt_state: crdtState,
+							resync: resync ? 1 : 0,
 						}),
 					getRevision: () => api("board.get_revision", { board: boardName.value }),
+				},
+				collab: {
+					board: boardName.value,
+					state: loaded.crdt_state || "",
+					socket: getSocket(),
+					user: {
+						id: session.user.name,
+						name: session.user.full_name || session.user.name,
+						image: session.user.user_image,
+					},
+					fetchState: () => api("board.get_crdt_state", { board: boardName.value }),
+				},
+				comments: {
+					list: () => api("comment.list_comments", { board: boardName.value }),
+					people: () => api("comment.people", { board: boardName.value }),
+					add: ({ anchor_type, shape_id, x, y, content }) =>
+						api("comment.add_comment", {
+							board: boardName.value,
+							content,
+							anchor_type,
+							shape_id,
+							x,
+							y,
+						}),
+					reply: (comment, content) => api("comment.reply", { comment, content }),
+					edit: (comment, content) => api("comment.edit_comment", { comment, content }),
+					remove: (comment) => api("comment.delete_comment", { comment }),
+					resolve: (comment, resolved) =>
+						api("comment.set_resolved", { comment, resolved: resolved ? 1 : 0 }),
 				},
 				images: {
 					upload: (file) =>
@@ -106,6 +140,7 @@ function goBack() {
 const caps = computed(() => board.data.value?.capabilities || {})
 const readonly = computed(() => !caps.value.can_edit)
 const access = computed(() => {
+	if (liveLevel.value !== null) return LEVEL_LABELS[liveLevel.value] || "No access"
 	if (caps.value.can_edit) return "Can edit"
 	return caps.value.can_comment ? "Can comment" : "View only"
 })
@@ -119,6 +154,21 @@ async function rename(title) {
 	}
 }
 
+const showShare = ref(false)
+
+// Other people on the board, one avatar each however many tabs they have open.
+const peers = ref([])
+const people = computed(() => {
+	const seen = new Map()
+	for (const peer of peers.value)
+		if (!seen.has(peer.id || peer.clientId)) seen.set(peer.id || peer.clientId, peer)
+	return [...seen.values()]
+})
+const SHOWN_PEOPLE = 5
+
+// Access announced while the board is open (revoked, lowered) takes over from what loaded.
+const liveLevel = ref(null)
+const LEVEL_LABELS = { edit: "Can edit", comment: "Can comment", view: "View only" }
 const reload = () => window.location.reload()
 const failed = computed(() => board.error.value || content.error.value)
 </script>
@@ -137,11 +187,49 @@ const failed = computed(() => board.error.value || content.error.value)
 				@rename="rename"
 			/>
 			<div class="flex-1" />
+			<div
+				v-if="people.length"
+				class="flex items-center -space-x-1.5"
+				role="group"
+				aria-label="People on this board"
+				data-testid="presence"
+			>
+				<span
+					v-for="person in people.slice(0, SHOWN_PEOPLE)"
+					:key="person.id || person.clientId"
+					class="rounded-full ring-2"
+					:style="{ '--tw-ring-color': person.color }"
+					:title="person.name"
+					data-testid="presence-person"
+				>
+					<Avatar :label="person.name" :image="person.image" size="md" />
+				</span>
+				<span
+					v-if="people.length > SHOWN_PEOPLE"
+					class="pl-3 text-xs text-ink-gray-6"
+					:title="
+						people
+							.slice(SHOWN_PEOPLE)
+							.map((p) => p.name)
+							.join(', ')
+					"
+					>+{{ people.length - SHOWN_PEOPLE }}</span
+				>
+			</div>
 			<SaveIndicator
 				v-if="prepared?.host"
 				:status="status.status"
 				:message="status.message"
 				:readonly="readonly"
+			/>
+			<NotificationBell />
+			<Button
+				v-if="caps.can_share"
+				label="Share"
+				icon-left="users"
+				variant="solid"
+				data-testid="share-button"
+				@click="showShare = true"
 			/>
 			<Badge
 				v-if="board.data.value"
@@ -149,6 +237,12 @@ const failed = computed(() => board.error.value || content.error.value)
 				:theme="caps.can_edit ? 'green' : 'gray'"
 			/>
 		</header>
+
+		<ShareDialog
+			v-if="board.data.value && caps.can_share"
+			v-model="showShare"
+			:board="{ name: boardName, title: board.data.value.title }"
+		/>
 
 		<div
 			v-if="status.status === 'conflict'"
@@ -188,6 +282,8 @@ const failed = computed(() => board.error.value || content.error.value)
 				:key="boardName"
 				:host="prepared.host"
 				@status="status = $event"
+				@peers="peers = $event"
+				@access="liveLevel = $event || 'none'"
 			/>
 			<div v-else-if="prepared?.recovery" class="flex h-full items-center justify-center p-6">
 				<div

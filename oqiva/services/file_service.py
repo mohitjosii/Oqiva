@@ -149,3 +149,20 @@ def _may_view(user: str, board: str) -> bool:
 	except OqivaNotFound, OqivaForbidden:
 		return False
 	return may(ctx, "board:view")
+
+
+def read_board_picture(board: str, src: str) -> tuple[str, bytes]:
+	"""The type and bytes of a picture attached to ``board``, for a viewer the file system's own
+	permission check cannot know (a visitor with a link). Only that board's own pictures."""
+	name = frappe.db.get_value(
+		"File",
+		{"file_url": src, "attached_to_doctype": BOARD_DOCTYPE, "attached_to_name": board, "is_private": 1},
+	)
+	if not name:
+		raise OqivaNotFound()
+	with open(frappe.get_doc("File", name).get_full_path(), "rb") as handle:
+		content = handle.read()
+	kind = sniff_image(content)
+	if not kind:
+		raise OqivaNotFound()
+	return kind[1], content

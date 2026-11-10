@@ -5,7 +5,7 @@ import { computed } from "vue"
 import { boundsOfObjects, centerOf, corners, rotatePoint } from "../geometry/bounds"
 import { ANCHORS, anchorDirection, anchorPoint } from "../geometry/connectors"
 import { activeCell } from "../interaction/tables"
-import { cellRect } from "../store/tableOps"
+import { cellRect, offsetOf } from "../store/tableOps"
 import { HANDLE_NAMES, handlePoint, rotationHandlePoint } from "../geometry/resize"
 import { toScreen } from "../geometry/viewport"
 
@@ -95,19 +95,33 @@ const anchorDots = computed(() => {
 	})
 })
 
-const QUICK_OFFSET_PX = 20
+// How far each arrow sits from its shape's edge. The one above is further out, so it clears the
+// rotation handle.
+const QUICK_OFFSETS_PX = { n: 46, e: 36, s: 36, w: 36 }
 const QUICK_SIDES = ["n", "e", "s", "w"]
-// The little arrows beside a hovered shape that add a connected copy.
+// The little arrows beside a shape that add a connected copy: the hovered shape, or the one shape
+// that is selected (a touch screen cannot hover).
+const quickSource = computed(() => {
+	if (state.value.readonly || state.value.tool !== "select") return null
+	const hovered = props.store.getObject(state.value.hoverId)
+	if (hovered?.kind === "shape") return hovered
+	const only = single.value
+	return only?.kind === "shape" ? only : null
+})
 const quickArrows = computed(() => {
-	const object = props.store.getObject(state.value.hoverId)
-	if (!object || state.value.marquee || state.value.panning || state.value.editingId) return []
+	const object = quickSource.value
+	if (!object) return []
+	const busy =
+		state.value.marquee || state.value.panning || state.value.editingId || state.value.dragging
+	if (busy) return []
 	return QUICK_SIDES.map((side) => {
 		const dir = anchorDirection(object, side)
 		const base = toPx(anchorPoint(object, side))
+		const reach = QUICK_OFFSETS_PX[side]
 		return {
 			side,
-			x: base.x + dir.x * QUICK_OFFSET_PX,
-			y: base.y + dir.y * QUICK_OFFSET_PX,
+			x: base.x + dir.x * reach,
+			y: base.y + dir.y * reach,
 			angle: (Math.atan2(dir.y, dir.x) * 180) / Math.PI,
 		}
 	})
@@ -160,6 +174,57 @@ const cellOutline = computed(() => {
 		})
 		.join(" ")
 })
+
+// The borders between the rows and between the columns of a selected table, each a handle for
+// resizing that one row or column (it may be turned with the table).
+const trackHandles = computed(() => {
+	const object = single.value
+	if (!object || object.kind !== "table" || !editable.value) return []
+	const { rowH, colW } = object.table
+	const centre = centerOf(object)
+	const place = (x, y) => {
+		const board = { x: object.x + x, y: object.y + y }
+		return toPx(object.rotation ? rotatePoint(board, centre, object.rotation) : board)
+	}
+	const rows = rowH.map((_, i) => {
+		const y = offsetOf(rowH, i + 1)
+		return { name: `row-${i}`, cursor: "row-resize", a: place(0, y), b: place(object.w, y) }
+	})
+	const cols = colW.map((_, i) => {
+		const x = offsetOf(colW, i + 1)
+		return { name: `col-${i}`, cursor: "col-resize", a: place(x, 0), b: place(x, object.h) }
+	})
+	return [...rows, ...cols]
+})
+
+// Other people: where their pointers are, and what they have selected, in their colours.
+const peerPointers = computed(() =>
+	state.value.peers
+		.filter((peer) => peer.cursor)
+		.map((peer) => ({
+			key: peer.clientId,
+			name: peer.name,
+			color: peer.color,
+			...toPx(peer.cursor),
+		})),
+)
+const peerSelections = computed(() =>
+	state.value.peers.flatMap((peer) =>
+		peer.selection
+			.map((id) => props.store.getObject(id))
+			.filter(Boolean)
+			.map((object) => ({
+				key: `${peer.clientId}:${object.id}`,
+				color: peer.color,
+				points: corners(object)
+					.map((corner) => {
+						const p = toPx(corner)
+						return `${p.x},${p.y}`
+					})
+					.join(" "),
+			})),
+	),
+)
 
 const GUIDE = "#ec4899"
 const guideLines = computed(() =>
@@ -274,6 +339,19 @@ const marquee = computed(() => {
 				style="cursor: grab"
 			/>
 		</template>
+		<line
+			v-for="track in trackHandles"
+			:key="track.name"
+			:x1="track.a.x"
+			:y1="track.a.y"
+			:x2="track.b.x"
+			:y2="track.b.y"
+			stroke-width="10"
+			class="stroke-transparent hover:stroke-blue-500/40"
+			pointer-events="stroke"
+			:data-handle="track.name"
+			:style="{ cursor: track.cursor }"
+		/>
 		<rect
 			v-for="handle in handles"
 			:key="handle.name"
@@ -298,6 +376,47 @@ const marquee = computed(() => {
 			pointer-events="none"
 			data-testid="active-cell"
 		/>
+		<polygon
+			v-for="outline in peerSelections"
+			:key="outline.key"
+			:points="outline.points"
+			fill="none"
+			:stroke="outline.color"
+			stroke-width="2"
+			stroke-dasharray="5 3"
+			pointer-events="none"
+			data-testid="peer-selection"
+		/>
+		<g
+			v-for="pointer in peerPointers"
+			:key="pointer.key"
+			:transform="`translate(${pointer.x} ${pointer.y})`"
+			pointer-events="none"
+			data-testid="peer-cursor"
+		>
+			<path
+				d="M0 0 L0 15 L4 11.5 L7 18 L9.5 17 L6.5 10.5 L12 10.5 Z"
+				:fill="pointer.color"
+				stroke="#fff"
+				stroke-width="1"
+			/>
+			<rect
+				x="12"
+				y="14"
+				:width="pointer.name.length * 7 + 12"
+				height="18"
+				rx="9"
+				:fill="pointer.color"
+			/>
+			<text
+				x="18"
+				y="27"
+				font-size="11"
+				fill="#fff"
+				font-family="Inter, system-ui, sans-serif"
+				>{{ pointer.name }}</text
+			>
+		</g>
 		<line
 			v-for="guide in guideLines"
 			:key="`guide-${guide.key}`"

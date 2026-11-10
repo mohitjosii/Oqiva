@@ -174,6 +174,7 @@ function pointerUp(event) {
 		@pointerdown="pointerDown"
 		@pointermove="controller.pointerMove($event)"
 		@pointerup="pointerUp"
+		@pointerleave="controller.leave()"
 		@pointercancel="controller.cancel()"
 		@dblclick="controller.doubleClick($event)"
 		@wheel.prevent="controller.wheel($event)"

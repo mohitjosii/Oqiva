@@ -12,11 +12,15 @@ import { insertImage } from "./interaction/images"
 import { exportBoard } from "./export/exporter"
 import { createThumbnailer, renderThumbnail } from "./export/thumbnail"
 import { fitView } from "./interaction/view"
+import { attachCollab, prepareCollab } from "./collab/session"
+import { createComments } from "./comments/session"
 import { createAutosave } from "./persistence/autosave"
 import { createStore } from "./store/createStore"
 import { measureText, resetMeasureCache } from "./text/measure"
 import BoardCanvas from "./render/BoardCanvas.vue"
 import FloatingPalette from "./ui/FloatingPalette.vue"
+import CommentPanel from "./ui/CommentPanel.vue"
+import CommentPins from "./ui/CommentPins.vue"
 import ExportMenu from "./ui/ExportMenu.vue"
 import ShortcutsDialog from "./ui/ShortcutsDialog.vue"
 import LineLabelEditor from "./ui/LineLabelEditor.vue"
@@ -27,9 +31,15 @@ const props = defineProps({
 	// {document, revision, capabilities, limits, api: {save, getRevision}}
 	host: { type: Object, required: true },
 })
-const emit = defineEmits(["status"])
+const emit = defineEmits(["status", "peers", "access"])
 
-const store = createStore(props.host.document, { readonly: !props.host.capabilities.can_edit })
+// With collaboration the board starts from the shared document, which may hold more than the
+// saved content (changes a peer made that are not saved yet are merged in as they arrive).
+const collabStart = props.host.collab ? prepareCollab(props.host) : null
+const readonlyAtStart = !props.host.capabilities.can_edit
+const store = createStore(collabStart ? collabStart.initial : props.host.document, {
+	readonly: readonlyAtStart,
+})
 store.setLimits({ maxObjects: props.host.limits.max_objects_per_board })
 const controller = new CanvasController(store, { measure: measureText })
 
@@ -37,12 +47,66 @@ const autosave = createAutosave({
 	save: props.host.api.save,
 	getRevisionInfo: props.host.api.getRevision,
 	getDocument: () => store.snapshot(),
+	getCrdtState: () => collab?.encode() ?? null,
+	recover: props.host.collab ? () => collab.recover() : null,
 	revision: props.host.revision,
 	onStatus: (status) => {
 		emit("status", status)
 		if (status.status === "conflict") store.setReadonly(true) // never write over someone else's work
 	},
 })
+
+const say = (message) => toast.error(message)
+const levelWords = { comment: "comment on", view: "view" }
+// The relay or the server says this person's access changed: follow it, and tell them.
+function accessChanged(level) {
+	emit("access", level)
+	if (level === "edit") return
+	toast.warning(
+		level
+			? `Your access changed: you can now only ${levelWords[level]} this board.`
+			: "You no longer have access to this board.",
+	)
+}
+// Comments: the threads live in the store; the page supplies the port that reads and writes them.
+const comments = props.host.comments
+	? createComments({
+			store,
+			port: props.host.comments,
+			notify: { error: (message) => toast.error(message) },
+		})
+	: null
+if (comments) {
+	store.state.canComment = Boolean(props.host.capabilities.can_comment)
+	comments.refresh()
+}
+
+const collab = collabStart
+	? attachCollab({
+			host: props.host,
+			store,
+			doc: collabStart.doc,
+			autosave,
+			notify: { warning: (m) => toast.warning(m) },
+			onAccess: accessChanged,
+			onComment: () => comments?.scheduleRefresh(),
+			readonlyAtStart,
+		})
+	: null
+if (collab) {
+	watch(
+		() => store.state.peers,
+		(peers) => emit("peers", peers),
+	)
+	watch(
+		() => store.state.cursor,
+		(point) => collab.presence.setCursor(point),
+	)
+	watch(
+		() => store.state.selection,
+		(ids) => collab.presence.setSelection(ids),
+	)
+}
 
 const fonts = ref(0)
 const showShortcuts = ref(false)
@@ -74,7 +138,7 @@ async function runExport({ format, scope = "board", scale = 1 }) {
 
 const unsubscribe = store.subscribe((event) => {
 	if (event.type === "change") {
-		autosave.markDirty()
+		if (event.origin !== "remote") autosave.markDirty() // a peer's changes are theirs to save
 		thumbnailer?.request()
 	}
 	if (event.type === "limit")
@@ -96,6 +160,7 @@ function onKeydown(event) {
 	const command = commandFor(event, {
 		editing: Boolean(store.state.editingId),
 		readonly: store.state.readonly,
+		canComment: store.state.canComment,
 	})
 	if (!command) return
 	if (command.name === "print" && !canExport) return // leave the browser's own print alone
@@ -105,7 +170,6 @@ function onKeydown(event) {
 		print: () => runExport({ format: "print" }),
 	})
 }
-const say = (message) => toast.error(message)
 const addImage = (file, center) => insertImage(store, props.host, file, { center, notify: say })
 const addFiles = (files, center) => {
 	for (const file of files) addImage(file, center)
@@ -169,6 +233,8 @@ onBeforeUnmount(() => {
 	document.fonts?.removeEventListener("loadingdone", onFontsLoaded)
 	unsubscribe()
 	thumbnailer?.dispose()
+	collab?.dispose()
+	comments?.dispose()
 	store.state.editingId = null // lets the text editor commit what is being typed
 	autosave.flush().finally(() => autosave.dispose())
 })
@@ -182,9 +248,11 @@ defineExpose({ flush: () => autosave.flush(), store, autosave, unsaved })
 		<BoardCanvas :store="store" :controller="controller" :fonts="fonts" @files="addFiles">
 			<TextEditorOverlay :store="store" :measure="measureText" />
 			<LineLabelEditor :store="store" :paths="controller.paths" />
+			<CommentPins v-if="comments" :store="store" />
 		</BoardCanvas>
 		<FloatingPalette :store="store" :controller="controller" @image="addImage" />
 		<ExportMenu v-if="canExport" :store="store" @export="runExport" />
+		<CommentPanel v-if="comments" :store="store" :comments="comments" />
 		<div
 			v-if="store.state.uploads"
 			class="absolute left-1/2 top-4 z-10 -translate-x-1/2 rounded-full border border-outline-gray-2 bg-surface-white px-3 py-1 text-sm text-ink-gray-7 shadow"

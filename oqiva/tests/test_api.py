@@ -12,7 +12,18 @@ from oqiva.constants import ROLE_USER
 from oqiva.exceptions import OqivaNotFound
 from oqiva.tests.utils import make_user, make_world, share_board
 
-API_MODULES = ("boot", "workspace", "project", "board", "search", "realtime")
+API_MODULES = (
+	"boot",
+	"workspace",
+	"project",
+	"board",
+	"search",
+	"realtime",
+	"export",
+	"share",
+	"comment",
+	"notification",
+)
 READ_ONLY_ENDPOINTS = {
 	"list_workspaces",
 	"list_members",
@@ -24,6 +35,15 @@ READ_ONLY_ENDPOINTS = {
 	"authorize",
 	"load_document",
 	"get_revision",
+	"get_crdt_state",
+	"list_shares",
+	"list_links",
+	"view_shared",
+	"link_file",
+	"list_comments",
+	"people",
+	"list_notifications",
+	"unread_count",
 }
 
 

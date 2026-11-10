@@ -1,11 +1,14 @@
 """Loading and saving a board's content (T5.1 to T5.4, T7.4)."""
 
+import base64
 import json
 import threading
+from unittest.mock import patch
 
 import frappe
 from frappe.tests import IntegrationTestCase
 
+from oqiva.constants import BOARD_DOCTYPE
 from oqiva.exceptions import (
 	OqivaDocumentTooNew,
 	OqivaError,
@@ -501,3 +504,89 @@ def remove_committed_world(world) -> None:
 		if user.endswith("@oqiva.test"):
 			frappe.delete_doc("User", user, force=True, ignore_permissions=True)
 	frappe.db.commit()  # nosemgrep -- clean-up of data this test committed
+
+
+class TestCollaborationState(RestoresSettings, IntegrationTestCase):
+	"""The collaboration state saved beside the document (ARCHITECTURE section 8.2)."""
+
+	def setUp(self):
+		super().setUp()
+		self.w = make_world("crdt")
+		self.state = base64.b64encode(b"\x00\x01a collaboration state").decode()
+
+	def save(self, state=None, base=None, save_id="s1", **kwargs):
+		current = frappe.db.get_value(BOARD_DOCTYPE, self.w.board, "revision")
+		return document_service.save_document(
+			self.w.member,
+			self.w.board,
+			doc(shape("a")),
+			current if base is None else base,
+			save_id,
+			state,
+			**kwargs,
+		)
+
+	def test_the_state_is_stored_with_the_document_and_handed_back_on_load(self):
+		self.save(self.state)
+		self.assertEqual(frappe.db.get_value(BOARD_DOCTYPE, self.w.board, "crdt_state"), self.state)
+		self.assertEqual(
+			document_service.load_document(self.w.member, self.w.board)["crdt_state"], self.state
+		)
+		fetched = document_service.get_crdt_state(self.w.member, self.w.board)
+		self.assertEqual(fetched, {"revision": 2, "crdt_state": self.state})
+
+	def test_a_save_without_a_state_clears_the_stored_one(self):
+		self.save(self.state)
+		self.save(None, save_id="s2")
+		self.assertEqual(frappe.db.get_value(BOARD_DOCTYPE, self.w.board, "crdt_state") or "", "")
+
+	def test_a_state_that_is_not_base64_or_not_text_is_refused_and_nothing_is_written(self):
+		before = frappe.db.get_value(BOARD_DOCTYPE, self.w.board, "revision")
+		for bad in ("not base64!!", "abc", "====", 5, ["x"], "QUJD\nREVG"):
+			with self.assertRaises(OqivaError):
+				self.save(bad, save_id=f"bad-{bad!r}")
+		self.assertEqual(frappe.db.get_value(BOARD_DOCTYPE, self.w.board, "revision"), before)
+
+	def test_a_state_over_twice_the_document_limit_is_refused(self):
+		frappe.db.set_single_value("Oqiva Settings", "max_document_bytes", 30)
+		small = base64.b64encode(b"x" * 20).decode()
+		huge = base64.b64encode(b"x" * 200).decode()
+		with self.assertRaises(OqivaLimitExceeded):
+			document_service.check_crdt_state(huge)
+		self.assertEqual(document_service.check_crdt_state(small), small)
+
+	def test_a_stale_save_says_which_revision_the_server_is_at(self):
+		self.save(self.state)
+		with self.assertRaises(OqivaStaleRevision) as caught:
+			self.save(self.state, base=1, save_id="late")
+		self.assertEqual(caught.exception.revision, 2)
+
+	def test_replaying_a_save_id_changes_nothing_even_with_a_different_state(self):
+		first = self.save(self.state, save_id="same")
+		other = base64.b64encode(b"different").decode()
+		again = document_service.save_document(self.w.member, self.w.board, doc(shape("a")), 1, "same", other)
+		self.assertEqual(again, {"revision": first["revision"], "replayed": True})
+		self.assertEqual(frappe.db.get_value(BOARD_DOCTYPE, self.w.board, "crdt_state"), self.state)
+
+	def test_a_save_tells_everyone_with_the_board_open_and_a_big_one_asks_them_to_fetch_it(self):
+		with patch("oqiva.utils.realtime.frappe.publish_realtime") as publish:
+			self.save(self.state)
+		events = [c.args[0] for c in publish.call_args_list]
+		self.assertEqual(events, ["oqiva:saved"])
+		self.assertEqual(publish.call_args.kwargs["room"], f"oqiva:board:{self.w.board}")
+		self.assertTrue(publish.call_args.kwargs["after_commit"])
+		self.assertEqual(publish.call_args.args[1]["save_id"], "s1")
+		with patch("oqiva.utils.realtime.frappe.publish_realtime") as publish:
+			self.save(self.state, save_id="s2", resync=True)
+		self.assertEqual([c.args[0] for c in publish.call_args_list], ["oqiva:saved", "oqiva:resync"])
+
+	def test_only_people_who_may_view_can_fetch_the_state(self):
+		with self.assertRaises(OqivaNotFound):
+			document_service.get_crdt_state(self.w.outsider, self.w.board)
+
+	def test_a_corrupt_stored_board_gives_no_state_to_load(self):
+		frappe.db.set_value(
+			BOARD_DOCTYPE, self.w.board, {"document": json.dumps({"x": 1}), "crdt_state": self.state}
+		)
+		loaded = document_service.load_document(self.w.member, self.w.board)
+		self.assertEqual((loaded["recovery"], loaded["crdt_state"]), ("corrupt", ""))
