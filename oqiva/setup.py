@@ -119,10 +119,24 @@ def grant_user_role(user: str) -> None:
 	doc.add_roles(ROLE_USER)
 
 
+def remove_pictures() -> None:
+	"""Delete every picture and thumbnail attached to an Oqiva record, including the file on disk (a
+	File row alone would leave the picture behind on the server)."""
+	for name in frappe.get_all("File", filters={"attached_to_doctype": ["like", "Oqiva %"]}, pluck="name"):
+		frappe.delete_doc("File", name, ignore_permissions=True, force=True)
+
+
 def before_uninstall() -> None:
-	"""Remove what Oqiva created outside its own doctypes."""
+	"""Remove what Oqiva created outside its own doctypes: shares, notifications, pictures (and their files on
+	disk), change history, the stored AI key, the welcome flags and the roles."""
 	frappe.db.delete("DocShare", {"share_doctype": BOARD_DOCTYPE})
 	frappe.db.delete("Notification Log", {"document_type": ["like", "Oqiva %"]})
+	remove_pictures()
+	frappe.db.delete("Version", {"ref_doctype": ["like", "Oqiva %"]})
+	frappe.db.delete("Deleted Document", {"deleted_doctype": ["like", "Oqiva %"]})
+	frappe.db.delete("Comment", {"reference_doctype": ["like", "Oqiva %"]})
+	frappe.db.delete("__Auth", {"doctype": "Oqiva Settings"})
+	frappe.db.delete("DefaultValue", {"defkey": "oqiva_welcomed"})
 	for role, _desk in APP_ROLES:
 		if frappe.db.exists("Role", role):
 			frappe.db.delete("Has Role", {"role": role})

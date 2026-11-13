@@ -616,3 +616,25 @@ Things worth knowing:
 - **A description is untrusted input twice.** The server cleans it, and `cleanSpec` reads it again in the browser (bounds, ids, loops, repeated edges) before any record is made.
 - **Architecture layout.** Depth is the longest path along the edges with the edges that close a cycle ignored; lanes are columns in order of first appearance; a lane is drawn as a `frame` named for it (only when there is more than one lane).
 
+## 25. Implementation notes for Phase 13 (hardening and release)
+
+| Area | Files | What it does |
+|---|---|---|
+| Security sweep | `tests/test_security_sweep.py` | Lists every whitelisted endpoint and checks: signed-out callers are refused (except three named anonymous ones), a stranger gets exactly not-found from each record-scoped endpoint, a viewer cannot change a board, every argument is typed and every endpoint has a return type and a docstring. A new endpoint fails the test until it is added to one list or the other. |
+| Performance | `engine/performance.test.js`, `tests/test_performance.py`, `e2e/perf.e2e.mjs`, `docs/PERFORMANCE.md` | Timings at the limits with generous failure bounds; the report holds the measurements. |
+| Accessibility | `e2e/a11y.e2e.mjs`, `utils/dialogLabels.js`, `index.css` | See ADR-024. |
+| Journey | `e2e/journeys.e2e.mjs` | A new person, welcome to Trash and back. The other journeys are in `phase5` and `collab`. |
+| Welcome flag | `api/boot.py` (`is_welcomed`, `mark_welcomed`), `data/session.js`, `router.js` | Server-side, per person. |
+| Uninstall | `setup.py` (`before_uninstall`, `remove_pictures`) | Removes shares, notifications, pictures and their files, history, comments, the AI key and flags, roles. |
+| Shared-document safety | `collab/ydoc.js` (`yMapToObject`) | An item that is not a Y.Map reads as empty and is dropped by the sanitisers. Before, it threw and could break the editor for everyone on the board. |
+
+Things worth knowing:
+
+- **A save without a collaboration state is only for new content.** The server clears the stored state on such a
+  save, so a board replaced behind the back of a live session or of a device's local copy can merge old and new
+  content when they meet. The app's clients always send the state; the HTTP fallback for oversized updates
+  (`resync`) is tested at 3,000 shapes and reloads the same.
+- **Tests must not delete real files.** `before_uninstall` deletes picture files from disk, which no rollback
+  restores, so the tests replace that step and test it with mocks.
+- **Semgrep only scans tracked files.** Name new files on the command line when checking them before a commit.
+

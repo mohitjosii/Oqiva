@@ -21,12 +21,12 @@ defineEmits(["use"])
 		</div>
 		<div class="flex min-w-0 flex-1 flex-col gap-1.5 p-3">
 			<div class="flex items-start justify-between gap-2">
-				<h3
+				<h2
 					:id="`template-${template.slug}`"
 					class="min-w-0 truncate text-base font-semibold text-ink-gray-9"
 				>
 					{{ template.name }}
-				</h3>
+				</h2>
 				<span
 					class="shrink-0 rounded-full bg-surface-gray-2 px-2 py-0.5 text-xs text-ink-gray-6"
 					>{{ template.category }}</span

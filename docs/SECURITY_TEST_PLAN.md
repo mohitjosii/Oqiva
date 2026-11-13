@@ -141,3 +141,32 @@ Where each case of sections 3 to 6 is proved. `test_sharing.py`, `test_links.py`
 - **Applying.** One undo step for each kind, convergence for a peer, no overlap with existing content, read-only boards refused, the object limit respected, the result exports and survives a reload. [`engine/ai/diagram.test.js`; browser `phase12`]
 - **Not covered:** a real provider answer (no key was available), and a background worker under load.
 
+## 12. Phase 13 coverage (the whole surface)
+`test_security_sweep.py` is backend; `a11y.e2e.mjs` and `journeys.e2e.mjs` are browser runs.
+
+- **Every endpoint accounted for.** The sweep finds every whitelisted function in `oqiva.api` and fails if one is
+  in neither the record-scoped list nor the "own or global" list, so a new endpoint cannot ship without a place
+  in the security tests. [`TestEveryEndpointIsAccountedFor`]
+- **Signed-out callers.** Every endpoint except `share.redeem_link`, `share.view_shared` and `share.link_file`
+  raises a permission error for Guest, and those three are the only guest-callable ones. [same class]
+- **T2.1 to T2.4 for all of them.** A stranger holding the ids of a workspace, project, board, comment or link
+  gets exactly `OqivaNotFound` from each of 50 record-scoped endpoints, never forbidden (the older tests accepted
+  either). [`TestStrangerGetsNotFoundFromEverything`]
+- **T3.2 for all of them.** A person with only view access is refused (forbidden) by every endpoint that changes
+  a board, shares it, reads its links or versions, or comments. [`TestAViewerCanOnlyLook`]
+- **Typing.** Every argument of every endpoint is annotated (Frappe casts "0" and "False" from them), every
+  endpoint has a return type and a docstring. [`test_every_endpoint_has_typed_arguments...`]
+- **Review against the Akhilam standards and Frappe's semgrep rules.** No commit in a controller or API
+  (four reviewed exceptions: three scheduled jobs and the csrf token on the app page), no f-string SQL, no bare
+  `except`, no `print`, no `set_user` outside tests, three guest endpoints (reviewed, rate limited). One loop that
+  asked the database once per invite was changed to one query. Remaining loops that ask the database are bounded
+  (at most 20 notifications, the install-time role list) and left.
+- **Dependencies.** `yarn audit` on the shipped packages: two moderate advisories, both inside frappe-ui's own
+  dependencies (echarts, which the app does not use and which is not in the built code, and a build-time CSS
+  parser). The licence check passes (276 packages).
+- **Uninstall.** Shares, notifications, pictures (deleted through Frappe so the files go too), history,
+  comments, the AI key and flags and roles are removed. [`test_api.py` TestUninstall, with the file step tested
+  on its own through mocks]
+- **A damaged shared document.** An item in the shared document that is not a map is ignored. [`bridge.test.js`]
+- **Not covered:** the real providers, a penetration test, load beyond ten editors.
+

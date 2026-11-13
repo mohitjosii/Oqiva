@@ -189,6 +189,8 @@ function pointerUp(event) {
 		class="absolute inset-0 select-none overflow-hidden touch-none"
 		:style="{ cursor, backgroundColor: preset ? PAGE_BG : pageFill }"
 		data-testid="board-canvas"
+		role="application"
+		aria-label="Board canvas. Press the question mark key for keyboard shortcuts."
 		@mousedown="keepFocus"
 		@pointerdown="pointerDown"
 		@pointermove="controller.pointerMove($event)"

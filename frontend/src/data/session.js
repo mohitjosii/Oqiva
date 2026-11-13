@@ -13,6 +13,7 @@ export const session = reactive({
 	personalWorkspace: null,
 	limits: {},
 	isAdmin: false,
+	welcomed: false, // this person has seen the welcome page on some device
 })
 
 export async function boot() {
@@ -24,6 +25,7 @@ export async function boot() {
 		session.personalWorkspace = data.personal_workspace
 		session.limits = data.limits
 		session.isAdmin = data.is_admin
+		session.welcomed = Boolean(data.welcomed)
 		session.ready = true
 		startNotifications()
 	} catch (error) {

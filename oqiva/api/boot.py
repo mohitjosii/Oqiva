@@ -7,6 +7,16 @@ from oqiva.api import current_user
 from oqiva.services import invite_service, workspace_service
 from oqiva.utils.settings import get_setting
 
+WELCOMED_DEFAULT = "oqiva_welcomed"
+
+
+def is_welcomed(user: str) -> bool:
+	"""Has this person already been through the welcome page, on any device? Someone who already
+	owns a board certainly has."""
+	return bool(frappe.defaults.get_user_default(WELCOMED_DEFAULT, user)) or bool(
+		frappe.db.exists("Oqiva Board", {"owner": user})
+	)
+
 
 def has_app_permission() -> bool:
 	"""Show Oqiva on the apps screen to every signed-in user."""
@@ -40,5 +50,14 @@ def get_boot() -> dict:
 			"trash_retention_days": get_setting("trash_retention_days"),
 		},
 		"is_admin": "Oqiva Admin" in frappe.get_roles(user),
+		"welcomed": is_welcomed(user),
 		"server_now": frappe.utils.now_datetime().replace(microsecond=0).isoformat(),
 	}
+
+
+@frappe.whitelist(methods=["POST"])
+def mark_welcomed() -> dict:
+	"""Remember that this person has seen the welcome page, so a new device does not show it again."""
+	user = current_user()
+	frappe.defaults.set_user_default(WELCOMED_DEFAULT, "1", user)
+	return {"welcomed": True}

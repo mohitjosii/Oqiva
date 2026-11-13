@@ -3,6 +3,7 @@ import { createApp } from "vue"
 
 import App from "./App.vue"
 import { applyTheme } from "./data/preferences"
+import { labelDialogButtons } from "./utils/dialogLabels"
 import router from "./router"
 import "./index.css"
 
@@ -11,6 +12,7 @@ import "./index.css"
 setConfig("resourceFetcher", frappeRequest)
 
 applyTheme()
+labelDialogButtons()
 
 const app = createApp(App)
 // Realtime arrives with collaboration (Phase 5), so the socket stays off until then.

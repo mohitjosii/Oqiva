@@ -371,6 +371,16 @@
 | P12.04 | QA | Tests with a mocked provider (invalid JSON, oversized output, timeout) | – | 1 |
 
 ## Phase 13: Hardening and release (about 2.5 weeks) → **M3 v1.1**
+> **Status (2026-11-13).** All six tasks are done, with the gaps below. Checks at the time of the commit: 376 backend tests (and the 18 relay tests), 1,290 frontend tests, ruff, prettier, the licence check (276 packages) and Frappe semgrep (0 findings, new files named explicitly). Browser runs: `editor`, `phase4` to `phase10` and `collab` passed in the final full run; `perf`, `a11y`, `journeys` and `phase12` each passed on their own; `home` failed once in that run only because the test users kept a welcome flag from earlier runs (the cleanup script now removes it); `comments` has its three known failing steps; `fixes`, `ux`, `journeys` and `a11y` were still running when this was committed.
+>
+> - **P13.01 security:** `tests/test_security_sweep.py` checks every endpoint (found no leak: a stranger gets not-found from all 50 record-scoped ones, a viewer is refused by every write); reviewed against the Akhilam standards (one per-row query batched); `yarn audit` shows two moderate advisories inside frappe-ui only; uninstall now also removes pictures with their files, history, comments, the AI key and flags. One real bug found and fixed: an item in the shared document that is not a map crashed the editor (`yMapToObject`).
+> - **P13.02 performance:** `docs/PERFORMANCE.md`. A 3,000-shape board is comfortable at normal zoom (about 20 ms per frame while panning), slower zoomed out (50 to 65 ms in software drawing), and slow for whole-board edits; a 600-node mind map and ten people editing one board work (a new shape reaches ten screens in about 0.5 s). No tuning was needed.
+> - **P13.03 accessibility:** `e2e/a11y.e2e.mjs` found and fixed: unnamed dialog close buttons, an unnamed canvas, low-contrast secondary text and green badge text, a heading that skipped a level, a header wider than a 320 px screen, and focus lost after the Help dialogs. **Not done:** the other browsers (Firefox, Safari, Edge) because they are a download of several hundred MB that was not approved, and a screen-reader pass.
+> - **P13.04 journeys:** `e2e/journeys.e2e.mjs` is journey A. It found that a returning person saw the welcome page again on a new device: the flag is now kept on the server. Journeys B, C and D are the existing `phase5` and `collab` runs.
+> - **P13.05 runbook:** `docs/DEPLOYMENT.md`. The multi-host advice is untried; the uninstall cleanup is tested with mocks only (no scratch site could be made: no database root access here).
+> - **P13.06 guides:** `docs/USER_GUIDE.md`, `docs/ADMIN_GUIDE.md`, `docs/RELEASE_NOTES.md`, and a README that no longer says "Phases 1 to 3".
+> - **Known open items:** the Phase 11 work stays set aside; real touch and stylus untested; both AI providers tested only against local stand-ins; the three `comments` steps.
+
 | ID | Lane | Task | Days |
 |---|---|---|---|
 | P13.01 | QA | Full `SECURITY_TEST_PLAN` run and fixes; Akhilam standards and semgrep review | 2 |
