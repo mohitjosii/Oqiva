@@ -380,17 +380,30 @@ const LABEL_SIZE = 13
 // A connector: the line, its two ends, and a label in a pill the colour of the canvas.
 export function connectorNode(connector, path, ctx) {
 	const style = connector.style
-	const nodes = [
-		el("path", {
-			d: path.d,
-			fill: "none",
-			stroke: style.stroke,
-			"stroke-width": style.strokeWidth,
-			"stroke-dasharray": ctx.detail ? DASHES[style.dash] : null,
-			"stroke-linecap": "round",
-			"stroke-linejoin": "round",
-		}),
-	]
+	// hand-drawn style: the line's own choice, else the board's (the heads and the label stay clean)
+	const wobbly = ctx.detail && (style.sketch ?? ctx.sketch)
+	const nodes = wobbly
+		? sketchNodes(
+				connector.id,
+				{ kind: "path", w: 0, h: 0, d: path.d },
+				{
+					fill: null,
+					stroke: style.stroke,
+					width: style.strokeWidth,
+					dash: DASHES[style.dash],
+				},
+			)
+		: [
+				el("path", {
+					d: path.d,
+					fill: "none",
+					stroke: style.stroke,
+					"stroke-width": style.strokeWidth,
+					"stroke-dasharray": ctx.detail ? DASHES[style.dash] : null,
+					"stroke-linecap": "round",
+					"stroke-linejoin": "round",
+				}),
+			]
 	const start = headNode(
 		connector.heads.start,
 		path.p0,

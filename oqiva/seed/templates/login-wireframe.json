@@ -1,12 +1,16 @@
 {
 	"slug": "login-wireframe",
 	"name": "Sign-in screen",
-	"description": "A mobile sign-in screen to start from.",
+	"description": "Five mobile screens for authentication: sign in, sign-in with an error, sign up, forgot password and email code, each with fields, buttons, states and design notes.",
 	"category": "UX / UI",
 	"tags": [
 		"wireframe",
 		"mobile",
-		"login"
+		"login",
+		"sign in",
+		"sign up",
+		"authentication",
+		"forms"
 	],
 	"sort_order": 52,
 	"document": {
@@ -22,200 +26,14 @@
 		},
 		"objects": [
 			{
-				"id": "screen",
-				"kind": "shape",
-				"shape": "mobile",
-				"x": 0,
-				"y": 0,
-				"w": 280,
-				"h": 520,
-				"rotation": 0,
-				"z": 1,
-				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#9CA3AF",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": null
-			},
-			{
-				"id": "email",
-				"kind": "shape",
-				"shape": "rectangle",
-				"x": 30,
-				"y": 150,
-				"w": 220,
-				"h": 40,
-				"rotation": 0,
-				"z": 2,
-				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#9CA3AF",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 6
-				},
-				"text": {
-					"align": "left",
-					"size": 16,
-					"color": "#1F2937",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Email"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "pass",
-				"kind": "shape",
-				"shape": "rectangle",
-				"x": 30,
-				"y": 210,
-				"w": 220,
-				"h": 40,
-				"rotation": 0,
-				"z": 3,
-				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#9CA3AF",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 6
-				},
-				"text": {
-					"align": "left",
-					"size": 16,
-					"color": "#1F2937",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Password"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "remember",
-				"kind": "shape",
-				"shape": "checkbox",
-				"x": 30,
-				"y": 266,
-				"w": 180,
-				"h": 28,
-				"rotation": 0,
-				"z": 4,
-				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#9CA3AF",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "left",
-					"size": 16,
-					"color": "#1F2937",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Remember me"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "go",
-				"kind": "shape",
-				"shape": "rectangle",
-				"x": 30,
-				"y": 312,
-				"w": 220,
-				"h": 40,
-				"rotation": 0,
-				"z": 5,
-				"style": {
-					"fill": "#3B82F6",
-					"stroke": "#3B82F6",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#FFFFFF",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Sign in"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "role",
-				"kind": "shape",
-				"shape": "dropdown",
-				"x": 30,
-				"y": 380,
-				"w": 220,
-				"h": 40,
-				"rotation": 0,
-				"z": 6,
-				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#9CA3AF",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "left",
-					"size": 16,
-					"color": "#1F2937",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Choose a workspace"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
 				"id": "title",
 				"kind": "text",
 				"shape": "rectangle",
-				"x": 40,
-				"y": 80,
-				"w": 520,
-				"h": 42,
+				"x": 0,
+				"y": -130,
+				"w": 1900,
+				"h": 44,
 				"rotation": 0,
-				"z": 7,
 				"style": {
 					"fill": null,
 					"stroke": null,
@@ -226,18 +44,2835 @@
 				},
 				"text": {
 					"align": "left",
-					"size": 26,
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Sign-in screens",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 1
+			},
+			{
+				"id": "subtitle",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1900,
+				"h": 26,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Mobile authentication set: sign in, sign-in error, sign up, forgot password and email code. Replace the example brand, copy and fields."
+								}
+							]
+						}
+					]
+				},
+				"z": 2
+			},
+			{
+				"id": "l1",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 340,
+				"h": 904,
+				"rotation": 0,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "1 · Sign in",
+				"z": 3
+			},
+			{
+				"id": "phone1",
+				"kind": "shape",
+				"shape": "mobile",
+				"x": 20,
+				"y": 24,
+				"w": 300,
+				"h": 700,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": null,
+				"z": 4
+			},
+			{
+				"id": "l2",
+				"kind": "icon",
+				"shape": "rectangle",
+				"x": 150.0,
+				"y": 68,
+				"w": 40,
+				"h": 40,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"icon": "layers",
+				"z": 5
+			},
+			{
+				"id": "l3",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 20,
+				"y": 114,
+				"w": 300,
+				"h": 26,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 20,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Northwind",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 6
+			},
+			{
+				"id": "l4",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 44,
+				"y": 158,
+				"w": 252,
+				"h": 32,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 22,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Welcome back",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 7
+			},
+			{
+				"id": "l5",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 44,
+				"y": 194,
+				"w": 252,
+				"h": 22,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Sign in to continue"
+								}
+							]
+						}
+					]
+				},
+				"z": 8
+			},
+			{
+				"id": "l6",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 44,
+				"y": 244,
+				"w": 252,
+				"h": 18,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 12,
+					"color": "#334155",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Email",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 9
+			},
+			{
+				"id": "l7",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 44,
+				"y": 266,
+				"w": 252,
+				"h": 44,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "name@company.com",
+									"c": "#94A3B8"
+								}
+							]
+						}
+					]
+				},
+				"z": 10
+			},
+			{
+				"id": "l8",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 44,
+				"y": 326,
+				"w": 252,
+				"h": 18,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 12,
+					"color": "#334155",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Password",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 11
+			},
+			{
+				"id": "l9",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 44,
+				"y": 348,
+				"w": 252,
+				"h": 44,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "••••••••"
+								}
+							]
+						}
+					]
+				},
+				"z": 12
+			},
+			{
+				"id": "l10",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 230,
+				"y": 360,
+				"w": 54,
+				"h": 20,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "right",
+					"size": 12,
+					"color": "#2563EB",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Show",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 13
+			},
+			{
+				"id": "l11",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 146,
+				"y": 402,
+				"w": 150,
+				"h": 22,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "right",
+					"size": 13,
+					"color": "#2563EB",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Forgot password?",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 14
+			},
+			{
+				"id": "l12",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 44,
+				"y": 436,
+				"w": 252,
+				"h": 48,
+				"rotation": 0,
+				"style": {
+					"fill": "#2563EB",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#FFFFFF",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Sign in",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 15
+			},
+			{
+				"id": "l13",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 44,
+				"y": 512,
+				"w": 106.0,
+				"h": 1,
+				"rotation": 0,
+				"style": {
+					"fill": "#CBD5E1",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"z": 16
+			},
+			{
+				"id": "l14",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 156.0,
+				"y": 502,
+				"w": 28,
+				"h": 20,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 12,
+					"color": "#94A3B8",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "or"
+								}
+							]
+						}
+					]
+				},
+				"z": 17
+			},
+			{
+				"id": "l15",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 190.0,
+				"y": 512,
+				"w": 106.0,
+				"h": 1,
+				"rotation": 0,
+				"style": {
+					"fill": "#CBD5E1",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"z": 18
+			},
+			{
+				"id": "l16",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 44,
+				"y": 532,
+				"w": 252,
+				"h": 48,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#334155",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Continue with Google",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 19
+			},
+			{
+				"id": "l17",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 44,
+				"y": 652,
+				"w": 252,
+				"h": 22,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 13,
 					"color": "#1E293B",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Welcome back"
+									"t": "New here? ",
+									"c": "#64748B"
+								},
+								{
+									"t": "Create an account",
+									"c": "#2563EB",
+									"b": 1
 								}
 							]
 						}
 					]
-				}
+				},
+				"z": 20
+			},
+			{
+				"id": "l18",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 20,
+				"y": 744,
+				"w": 300,
+				"h": 140,
+				"rotation": 0,
+				"style": {
+					"fill": "#93C5FD",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Primary action",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "One filled button per screen; social sign-in is secondary. Keep 'Forgot password?' next to the password field. Use email as the username."
+								}
+							]
+						}
+					]
+				},
+				"z": 21
+			},
+			{
+				"id": "l19",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 380,
+				"y": 0,
+				"w": 340,
+				"h": 904,
+				"rotation": 0,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "2 · Sign in, error state",
+				"z": 22
+			},
+			{
+				"id": "phone2",
+				"kind": "shape",
+				"shape": "mobile",
+				"x": 400,
+				"y": 24,
+				"w": 300,
+				"h": 700,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": null,
+				"z": 23
+			},
+			{
+				"id": "l20",
+				"kind": "icon",
+				"shape": "rectangle",
+				"x": 530.0,
+				"y": 68,
+				"w": 40,
+				"h": 40,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"icon": "layers",
+				"z": 24
+			},
+			{
+				"id": "l21",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 400,
+				"y": 114,
+				"w": 300,
+				"h": 26,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 20,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Northwind",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 25
+			},
+			{
+				"id": "l22",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 424,
+				"y": 158,
+				"w": 252,
+				"h": 32,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 22,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Welcome back",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 26
+			},
+			{
+				"id": "l23",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 424,
+				"y": 194,
+				"w": 252,
+				"h": 22,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Sign in to continue"
+								}
+							]
+						}
+					]
+				},
+				"z": 27
+			},
+			{
+				"id": "l24",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 424,
+				"y": 244,
+				"w": 252,
+				"h": 18,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 12,
+					"color": "#334155",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Email",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 28
+			},
+			{
+				"id": "l25",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 424,
+				"y": 266,
+				"w": 252,
+				"h": 44,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "maya@northwind.com"
+								}
+							]
+						}
+					]
+				},
+				"z": 29
+			},
+			{
+				"id": "l26",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 424,
+				"y": 326,
+				"w": 252,
+				"h": 18,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 12,
+					"color": "#334155",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Password",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 30
+			},
+			{
+				"id": "l27",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 424,
+				"y": 348,
+				"w": 252,
+				"h": 44,
+				"rotation": 0,
+				"style": {
+					"fill": "#FEF2F2",
+					"stroke": "#DC2626",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "••••••••"
+								}
+							]
+						}
+					]
+				},
+				"z": 31
+			},
+			{
+				"id": "l28",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 610,
+				"y": 360,
+				"w": 54,
+				"h": 20,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "right",
+					"size": 12,
+					"color": "#2563EB",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Hide",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 32
+			},
+			{
+				"id": "l29",
+				"kind": "icon",
+				"shape": "rectangle",
+				"x": 424,
+				"y": 398,
+				"w": 14,
+				"h": 14,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": "#DC2626",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"icon": "triangle-alert",
+				"z": 33
+			},
+			{
+				"id": "l30",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 444,
+				"y": 396,
+				"w": 232,
+				"h": 18,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 11,
+					"color": "#DC2626",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Incorrect password. 2 attempts left."
+								}
+							]
+						}
+					]
+				},
+				"z": 34
+			},
+			{
+				"id": "l31",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 526,
+				"y": 428,
+				"w": 150,
+				"h": 22,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "right",
+					"size": 13,
+					"color": "#2563EB",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Forgot password?",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 35
+			},
+			{
+				"id": "l32",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 424,
+				"y": 462,
+				"w": 252,
+				"h": 48,
+				"rotation": 0,
+				"style": {
+					"fill": "#2563EB",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#FFFFFF",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Sign in",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 36
+			},
+			{
+				"id": "l33",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 424,
+				"y": 530,
+				"w": 252,
+				"h": 44,
+				"rotation": 0,
+				"style": {
+					"fill": "#EFF6FF",
+					"stroke": "#BFDBFE",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 12,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Tip: ",
+									"b": 1
+								},
+								{
+									"t": "you can also sign in with a link emailed to you."
+								}
+							]
+						}
+					]
+				},
+				"z": 37
+			},
+			{
+				"id": "l34",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 424,
+				"y": 652,
+				"w": 252,
+				"h": 22,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 13,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "New here? ",
+									"c": "#64748B"
+								},
+								{
+									"t": "Create an account",
+									"c": "#2563EB",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 38
+			},
+			{
+				"id": "l35",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 400,
+				"y": 744,
+				"w": 300,
+				"h": 140,
+				"rotation": 0,
+				"style": {
+					"fill": "#F9A8D4",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Errors",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Say what went wrong and how to fix it, right next to the field. Keep what the person typed. After 3 failures, offer a reset link and do not reveal whether the email exists."
+								}
+							]
+						}
+					]
+				},
+				"z": 39
+			},
+			{
+				"id": "l36",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 760,
+				"y": 0,
+				"w": 340,
+				"h": 904,
+				"rotation": 0,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "3 · Sign up",
+				"z": 40
+			},
+			{
+				"id": "phone3",
+				"kind": "shape",
+				"shape": "mobile",
+				"x": 780,
+				"y": 24,
+				"w": 300,
+				"h": 700,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": null,
+				"z": 41
+			},
+			{
+				"id": "l37",
+				"kind": "icon",
+				"shape": "rectangle",
+				"x": 916.0,
+				"y": 60,
+				"w": 28,
+				"h": 28,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"icon": "layers",
+				"z": 42
+			},
+			{
+				"id": "l38",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 804,
+				"y": 98,
+				"w": 252,
+				"h": 32,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 22,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Create your account",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 43
+			},
+			{
+				"id": "l39",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 804,
+				"y": 134,
+				"w": 252,
+				"h": 22,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Free for 14 days. No card needed."
+								}
+							]
+						}
+					]
+				},
+				"z": 44
+			},
+			{
+				"id": "l40",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 804,
+				"y": 174,
+				"w": 252,
+				"h": 18,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 12,
+					"color": "#334155",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Full name",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 45
+			},
+			{
+				"id": "l41",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 804,
+				"y": 196,
+				"w": 252,
+				"h": 44,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Maya Patel"
+								}
+							]
+						}
+					]
+				},
+				"z": 46
+			},
+			{
+				"id": "l42",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 804,
+				"y": 250,
+				"w": 252,
+				"h": 18,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 12,
+					"color": "#334155",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Work email",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 47
+			},
+			{
+				"id": "l43",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 804,
+				"y": 272,
+				"w": 252,
+				"h": 44,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "maya@northwind.com"
+								}
+							]
+						}
+					]
+				},
+				"z": 48
+			},
+			{
+				"id": "l44",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 804,
+				"y": 326,
+				"w": 252,
+				"h": 18,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 12,
+					"color": "#334155",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Password",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 49
+			},
+			{
+				"id": "l45",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 804,
+				"y": 348,
+				"w": 252,
+				"h": 44,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "••••••••••"
+								}
+							]
+						}
+					]
+				},
+				"z": 50
+			},
+			{
+				"id": "l46",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 990,
+				"y": 360,
+				"w": 54,
+				"h": 20,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "right",
+					"size": 12,
+					"color": "#2563EB",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Hide",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 51
+			},
+			{
+				"id": "l47",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 804.0,
+				"y": 400,
+				"w": 57.0,
+				"h": 5,
+				"rotation": 0,
+				"style": {
+					"fill": "#16A34A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 3
+				},
+				"text": null,
+				"z": 52
+			},
+			{
+				"id": "l48",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 867.0,
+				"y": 400,
+				"w": 57.0,
+				"h": 5,
+				"rotation": 0,
+				"style": {
+					"fill": "#16A34A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 3
+				},
+				"text": null,
+				"z": 53
+			},
+			{
+				"id": "l49",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 930.0,
+				"y": 400,
+				"w": 57.0,
+				"h": 5,
+				"rotation": 0,
+				"style": {
+					"fill": "#16A34A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 3
+				},
+				"text": null,
+				"z": 54
+			},
+			{
+				"id": "l50",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 993.0,
+				"y": 400,
+				"w": 57.0,
+				"h": 5,
+				"rotation": 0,
+				"style": {
+					"fill": "#E2E8F0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 3
+				},
+				"text": null,
+				"z": 55
+			},
+			{
+				"id": "l51",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 804,
+				"y": 410,
+				"w": 252,
+				"h": 18,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 11,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Strong password"
+								}
+							]
+						}
+					]
+				},
+				"z": 56
+			},
+			{
+				"id": "l52",
+				"kind": "shape",
+				"shape": "checkbox",
+				"x": 804,
+				"y": 440,
+				"w": 252,
+				"h": 38,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 11,
+					"color": "#334155",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "I agree to the Terms of Service and Privacy Policy"
+								}
+							]
+						}
+					]
+				},
+				"z": 57
+			},
+			{
+				"id": "l53",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 804,
+				"y": 492,
+				"w": 252,
+				"h": 48,
+				"rotation": 0,
+				"style": {
+					"fill": "#2563EB",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#FFFFFF",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Create account",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 58
+			},
+			{
+				"id": "l54",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 804,
+				"y": 652,
+				"w": 252,
+				"h": 22,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 13,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Already have an account? ",
+									"c": "#64748B"
+								},
+								{
+									"t": "Sign in",
+									"c": "#2563EB",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 59
+			},
+			{
+				"id": "l55",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 780,
+				"y": 744,
+				"w": 300,
+				"h": 140,
+				"rotation": 0,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Keep it short",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Ask only for what you need to start; collect the rest later. Show password rules before people get them wrong. The terms box starts unticked."
+								}
+							]
+						}
+					]
+				},
+				"z": 60
+			},
+			{
+				"id": "l56",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 1140,
+				"y": 0,
+				"w": 340,
+				"h": 904,
+				"rotation": 0,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "4 · Forgot password",
+				"z": 61
+			},
+			{
+				"id": "phone4",
+				"kind": "shape",
+				"shape": "mobile",
+				"x": 1160,
+				"y": 24,
+				"w": 300,
+				"h": 700,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": null,
+				"z": 62
+			},
+			{
+				"id": "l57",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1184,
+				"y": 64,
+				"w": 200,
+				"h": 22,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "‹ Back to sign in",
+									"c": "#2563EB",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 63
+			},
+			{
+				"id": "l58",
+				"kind": "shape",
+				"shape": "ellipse",
+				"x": 1270.0,
+				"y": 124,
+				"w": 80,
+				"h": 80,
+				"rotation": 0,
+				"style": {
+					"fill": "#DBEAFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"z": 64
+			},
+			{
+				"id": "l59",
+				"kind": "icon",
+				"shape": "rectangle",
+				"x": 1290.0,
+				"y": 144,
+				"w": 40,
+				"h": 40,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": "#2563EB",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"icon": "key",
+				"z": 65
+			},
+			{
+				"id": "l60",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1184,
+				"y": 230,
+				"w": 252,
+				"h": 32,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 22,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Forgot password?",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 66
+			},
+			{
+				"id": "l61",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1184,
+				"y": 270,
+				"w": 252,
+				"h": 60,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Enter the email you signed up with. We will send you a link to choose a new password."
+								}
+							]
+						}
+					]
+				},
+				"z": 67
+			},
+			{
+				"id": "l62",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1184,
+				"y": 354,
+				"w": 252,
+				"h": 18,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 12,
+					"color": "#334155",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Email",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 68
+			},
+			{
+				"id": "l63",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1184,
+				"y": 376,
+				"w": 252,
+				"h": 44,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "name@company.com",
+									"c": "#94A3B8"
+								}
+							]
+						}
+					]
+				},
+				"z": 69
+			},
+			{
+				"id": "l64",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1184,
+				"y": 440,
+				"w": 252,
+				"h": 48,
+				"rotation": 0,
+				"style": {
+					"fill": "#2563EB",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#FFFFFF",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Send reset link",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 70
+			},
+			{
+				"id": "l65",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1184,
+				"y": 524,
+				"w": 252,
+				"h": 40,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 12,
+					"color": "#94A3B8",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "The link works for 30 minutes and can be used once."
+								}
+							]
+						}
+					]
+				},
+				"z": 71
+			},
+			{
+				"id": "l66",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1184,
+				"y": 652,
+				"w": 252,
+				"h": 22,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 13,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Remembered it? ",
+									"c": "#64748B"
+								},
+								{
+									"t": "Sign in",
+									"c": "#2563EB",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 72
+			},
+			{
+				"id": "l67",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1160,
+				"y": 744,
+				"w": 300,
+				"h": 140,
+				"rotation": 0,
+				"style": {
+					"fill": "#86EFAC",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Do not leak accounts",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Show the same confirmation whether or not the email exists. Say how long the link lasts, and let people request a new one."
+								}
+							]
+						}
+					]
+				},
+				"z": 73
+			},
+			{
+				"id": "l68",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 1520,
+				"y": 0,
+				"w": 340,
+				"h": 904,
+				"rotation": 0,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "5 · Check your email",
+				"z": 74
+			},
+			{
+				"id": "phone5",
+				"kind": "shape",
+				"shape": "mobile",
+				"x": 1540,
+				"y": 24,
+				"w": 300,
+				"h": 700,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": null,
+				"z": 75
+			},
+			{
+				"id": "l69",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1564,
+				"y": 64,
+				"w": 200,
+				"h": 22,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "‹ Change email",
+									"c": "#2563EB",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 76
+			},
+			{
+				"id": "l70",
+				"kind": "shape",
+				"shape": "ellipse",
+				"x": 1650.0,
+				"y": 124,
+				"w": 80,
+				"h": 80,
+				"rotation": 0,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"z": 77
+			},
+			{
+				"id": "l71",
+				"kind": "icon",
+				"shape": "rectangle",
+				"x": 1670.0,
+				"y": 144,
+				"w": 40,
+				"h": 40,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": "#16A34A",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"icon": "mail",
+				"z": 78
+			},
+			{
+				"id": "l72",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1564,
+				"y": 230,
+				"w": 252,
+				"h": 32,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 22,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Check your email",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 79
+			},
+			{
+				"id": "l73",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1564,
+				"y": 270,
+				"w": 252,
+				"h": 60,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "We sent a 6-digit code to"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "maya@northwind.com",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 80
+			},
+			{
+				"id": "l74",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1564.0,
+				"y": 354,
+				"w": 36,
+				"h": 48,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 20,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "4",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 81
+			},
+			{
+				"id": "l75",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1607.2,
+				"y": 354,
+				"w": 36,
+				"h": 48,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 20,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "8",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 82
+			},
+			{
+				"id": "l76",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1650.4,
+				"y": 354,
+				"w": 36,
+				"h": 48,
+				"rotation": 0,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 20,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "2",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 83
+			},
+			{
+				"id": "l77",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1693.6,
+				"y": 354,
+				"w": 36,
+				"h": 48,
+				"rotation": 0,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#2563EB",
+					"strokeWidth": 2.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 20,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": []
+						}
+					]
+				},
+				"z": 84
+			},
+			{
+				"id": "l78",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1736.8,
+				"y": 354,
+				"w": 36,
+				"h": 48,
+				"rotation": 0,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 20,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": []
+						}
+					]
+				},
+				"z": 85
+			},
+			{
+				"id": "l79",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1780.0,
+				"y": 354,
+				"w": 36,
+				"h": 48,
+				"rotation": 0,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 20,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": []
+						}
+					]
+				},
+				"z": 86
+			},
+			{
+				"id": "l80",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1564,
+				"y": 420,
+				"w": 252,
+				"h": 18,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 11,
+					"color": "#94A3B8",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Enter the code to continue"
+								}
+							]
+						}
+					]
+				},
+				"z": 87
+			},
+			{
+				"id": "l81",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1564,
+				"y": 454,
+				"w": 252,
+				"h": 48,
+				"rotation": 0,
+				"style": {
+					"fill": "#CBD5E1",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#FFFFFF",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Verify",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 88
+			},
+			{
+				"id": "l82",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1564,
+				"y": 524,
+				"w": 252,
+				"h": 22,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 13,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Did not get it? ",
+									"c": "#64748B"
+								},
+								{
+									"t": "Resend in 0:42",
+									"c": "#94A3B8",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 89
+			},
+			{
+				"id": "l83",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1564,
+				"y": 554,
+				"w": 252,
+				"h": 22,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 13,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Open email app",
+									"c": "#2563EB",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 90
+			},
+			{
+				"id": "l84",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1564,
+				"y": 652,
+				"w": 252,
+				"h": 22,
+				"rotation": 0,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 13,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Wrong address? ",
+									"c": "#64748B"
+								},
+								{
+									"t": "Use another email",
+									"c": "#2563EB",
+									"b": 1
+								}
+							]
+						}
+					]
+				},
+				"z": 91
+			},
+			{
+				"id": "l85",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1540,
+				"y": 744,
+				"w": 300,
+				"h": 140,
+				"rotation": 0,
+				"style": {
+					"fill": "#C4B5FD",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#3B0764",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Code entry",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Auto-advance between boxes and allow paste. Enable Verify at 6 digits. Resend after a countdown; the code expires after 10 minutes."
+								}
+							]
+						}
+					]
+				},
+				"z": 92
 			}
 		],
 		"connectors": [],

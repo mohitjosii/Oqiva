@@ -3,10 +3,14 @@
 // move the view there.
 import { computed, ref } from "vue"
 import { objectBounds, unionBounds } from "../geometry/bounds"
+import { boardPoints } from "../model/strokes"
 import { toBoard } from "../geometry/viewport"
 import { centerOn, contentBounds } from "../interaction/view"
 
-const props = defineProps({ store: { type: Object, required: true } })
+const props = defineProps({
+	store: { type: Object, required: true },
+	controller: { type: Object, default: null }, // where mind maps and flowcharts are drawn
+})
 
 const WIDTH = 200
 const HEIGHT = 120
@@ -29,6 +33,8 @@ const view = computed(() => {
 const world = computed(() => {
 	void props.store.objects.value
 	void props.store.connectors.value
+	void props.controller?.maps.value
+	void props.controller?.flows.value
 	const content = contentBounds(props.store)
 	if (!view.value) return null
 	const box = unionBounds([...(content ? [content] : []), view.value])
@@ -53,19 +59,73 @@ const place = (box) => ({
 	height: Math.max(1, box.h * scale.value),
 })
 
-const shapes = computed(() =>
-	props.store.objects.value.map((object) => {
-		const box = objectBounds(object)
-		return {
-			id: object.id,
-			frame: object.kind === "frame",
-			fill:
-				object.kind === "frame"
-					? "none"
-					: object.style.fill || object.style.stroke || "#9CA3AF",
-			...place(box),
+const FLOW_FILL = {
+	terminator: "#86EFAC",
+	process: "#93C5FD",
+	decision: "#FCD34D",
+	io: "#C4B5FD",
+	junction: "#64748B",
+}
+
+// Mind map nodes and flowchart steps, as small boxes like everything else.
+const diagrams = computed(() => {
+	if (!props.controller) return []
+	const out = []
+	for (const layout of props.controller.maps.value.values())
+		for (const node of layout.nodes) {
+			const box = layout.boxes.get(node.id)
+			if (box) out.push({ id: node.id, fill: node.color || "#8B5CF6", ...place(box) })
 		}
-	}),
+	for (const layout of props.controller.flows.value.values())
+		for (const node of layout.nodes) {
+			const size = layout.sizes.get(node.id)
+			if (!size) continue
+			out.push({
+				id: node.id,
+				fill: FLOW_FILL[node.type] || "#93C5FD",
+				...place({ x: node.x - size.w / 2, y: node.y - size.h / 2, w: size.w, h: size.h }),
+			})
+		}
+	return out
+})
+
+// Freehand strokes are drawn as thin lines, not as the box round them.
+const inks = computed(() =>
+	props.store.objects.value
+		.filter((object) => object.kind === "stroke")
+		.map((object) => {
+			const points = boardPoints(object)
+			const step = Math.max(1, Math.floor(points.length / 40))
+			const kept = points.filter((_, i) => i % step === 0 || i === points.length - 1)
+			return {
+				id: object.id,
+				d: kept
+					.map(([x, y], i) => {
+						const p = place({ x, y, w: 0, h: 0 })
+						return `${i ? "L" : "M"}${p.x.toFixed(1)} ${p.y.toFixed(1)}`
+					})
+					.join(" "),
+				color: object.style.stroke || "#475569",
+				opacity: object.style.opacity,
+			}
+		}),
+)
+
+const shapes = computed(() =>
+	props.store.objects.value
+		.filter((object) => object.kind !== "stroke")
+		.map((object) => {
+			const box = objectBounds(object)
+			return {
+				id: object.id,
+				frame: object.kind === "frame",
+				fill:
+					object.kind === "frame"
+						? "none"
+						: object.style.fill || object.style.stroke || "#9CA3AF",
+				...place(box),
+			}
+		}),
 )
 const viewRect = computed(() => (view.value ? place(view.value) : null))
 
@@ -122,6 +182,29 @@ const up = () => (dragging = false)
 				:fill-opacity="s.frame ? 0 : 0.55"
 				stroke="#94A3B8"
 				stroke-width="0.75"
+			/>
+			<rect
+				v-for="d in diagrams"
+				:key="d.id"
+				:x="d.x"
+				:y="d.y"
+				:width="d.width"
+				:height="d.height"
+				:fill="d.fill"
+				fill-opacity="0.7"
+				stroke="#64748B"
+				stroke-width="0.5"
+			/>
+			<path
+				v-for="ink in inks"
+				:key="ink.id"
+				:d="ink.d"
+				fill="none"
+				:stroke="ink.color"
+				:stroke-opacity="ink.opacity"
+				stroke-width="1.2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
 			/>
 			<rect
 				v-if="viewRect"

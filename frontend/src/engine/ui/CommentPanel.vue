@@ -100,7 +100,7 @@ const toggle = () => (state.value.commentsOpen = !state.value.commentsOpen)
 			@click="toggle"
 		>
 			<span class="lucide-message-square h-4 w-4" aria-hidden="true" />
-			Comments
+			<span class="max-sm:hidden">Comments</span>
 			<span
 				v-if="counts.open"
 				class="rounded-full bg-blue-600 px-1.5 text-xs text-white"

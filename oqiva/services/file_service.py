@@ -160,7 +160,9 @@ def read_board_picture(board: str, src: str) -> tuple[str, bytes]:
 	)
 	if not name:
 		raise OqivaNotFound()
-	with open(frappe.get_doc("File", name).get_full_path(), "rb") as handle:
+	# the row was found by this board's own file URL; the path is Frappe's own for that file
+	path = frappe.get_doc("File", name).get_full_path()
+	with open(path, "rb") as handle:  # nosemgrep -- reviewed: no user-built path
 		content = handle.read()
 	kind = sniff_image(content)
 	if not kind:

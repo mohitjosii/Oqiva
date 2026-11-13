@@ -113,8 +113,8 @@ def _check_stroke(object_id: str, item: dict) -> None:
 	if not isinstance(points, list) or not 1 <= len(points) <= STROKE_MAX_POINTS:
 		_bad(object_id, _("a stroke has between 1 and {0} points.").format(STROKE_MAX_POINTS))
 	for point in points:
-		if not (isinstance(point, list) and len(point) == 2 and all(_number(v, 0, 1) for v in point)):
-			_bad(object_id, _("a stroke point must be two numbers from 0 to 1."))
+		if not (isinstance(point, list) and len(point) in (2, 3) and all(_number(v, 0, 1) for v in point)):
+			_bad(object_id, _("a stroke point is two numbers from 0 to 1, and a third for pen pressure."))
 
 
 def _check_text(object_id: str, text) -> None:

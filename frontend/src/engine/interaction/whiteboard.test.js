@@ -116,6 +116,21 @@ describe("the pen and the highlighter", () => {
 		expect(strokes()[1].style.opacity).toBeLessThan(1)
 	})
 
+	it("keeps the pressure of a pen, and none for a mouse", () => {
+		store.state.tool = "pen"
+		const withType = (x, y, over) => ({ ...press(x, y), ...over })
+		controller.pointerDown(withType(100, 100, { pointerType: "pen", pressure: 0.2 }))
+		controller.pointerMove(withType(160, 120, { pointerType: "pen", pressure: 0.8 }))
+		controller.pointerUp(withType(220, 100, { pointerType: "pen", pressure: 0.4 }))
+		expect(strokes()[0].points.every((p) => p.length === 3)).toBe(true)
+		draw([
+			[100, 300],
+			[160, 320],
+			[220, 300],
+		]) // a mouse
+		expect(strokes()[1].points.every((p) => p.length === 2)).toBe(true)
+	})
+
 	it("thins points while drawing: a slow hand does not pile them up", () => {
 		store.state.tool = "pen"
 		const slow = Array.from({ length: 400 }, (_, i) => [100 + i * 0.1, 100])
@@ -392,6 +407,32 @@ describe("the board's settings", () => {
 			{ id: "a", patch: { style: { ...store.getObject("a").style, sketch: true } } },
 		])
 		expect(rects(svgOf())).toBe(hand)
+	})
+
+	it("lines can be hand-drawn too, by the board or on their own", () => {
+		setup([rect("a", 0, 0), rect("b", 300, 0)], { canvas: { sketch: false } })
+		store.addConnectors([
+			createConnector({
+				from: { objectId: "a", anchor: "e" },
+				to: { objectId: "b", anchor: "w" },
+				theme: "ocean",
+				z: 1,
+			}),
+		])
+		const svgOf = () => {
+			const items = collectItems(store, "board")
+			return buildSvg(items, exportArea(store, items, "board", measure), { measure })
+		}
+		const paths = (svg) => (svg.match(/<path/g) || []).length
+		const clean = paths(svgOf())
+		store.setCanvas({ sketch: true })
+		expect(paths(svgOf())).toBeGreaterThan(clean) // a rough line is drawn in more strokes than a plain one
+		const [line] = store.connectors.value
+		store.updateConnectors([
+			{ id: line.id, patch: { style: { ...line.style, sketch: false } } },
+		])
+		const parsed = parseDocument(JSON.parse(JSON.stringify({ ...store.snapshot() })))
+		expect(parsed.issues).toEqual([])
 	})
 
 	it("a hand-drawn shape looks the same every time it is drawn", () => {

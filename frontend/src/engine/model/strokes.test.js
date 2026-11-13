@@ -233,3 +233,52 @@ describe("how a document holds strokes", () => {
 		expect(odd).toMatchObject({ sketch: false, doubleClick: "shape" })
 	})
 })
+
+describe("pen pressure", () => {
+	const pts = [
+		[0, 0, 0.1],
+		[40, 10, 0.9],
+		[80, 0, 0.3],
+	]
+	const stroke = createStroke({ points: pts, color: "#111111", width: 10 })
+
+	it("is kept as a third number when the pen reported it, and absent for a mouse", () => {
+		expect(stroke.points.every((p) => p.length === 3)).toBe(true)
+		expect(stroke.points[1][2]).toBe(0.9)
+		const plain = createStroke({
+			points: [
+				[0, 0],
+				[40, 10],
+				[80, 0],
+			],
+			color: "#111111",
+			width: 10,
+		})
+		expect(plain.points.every((p) => p.length === 2)).toBe(true)
+	})
+
+	it("survives resizing, boardPoints, thinning, densifying and parsing", () => {
+		expect(localPoints(stroke)[1]).toHaveLength(3)
+		expect(boardPoints(stroke)[2][2]).toBe(0.3)
+		expect(thinPoints(pts, 1)[1][2]).toBe(0.9)
+		const dense = densify(pts, 10)
+		expect(dense.every((p) => p.length === 3)).toBe(true)
+		const { document } = parseDocument({ ...createDocument(), objects: [stroke] })
+		expect(document.objects[0].points[1]).toEqual(stroke.points[1])
+	})
+
+	it("is drawn: the same stroke with other pressure gives another outline, and a flat one differs from simulated", () => {
+		const hard = createStroke({
+			points: pts.map(([x, y]) => [x, y, 1]),
+			color: "#111111",
+			width: 10,
+		})
+		expect(strokePath(hard)).not.toBe(strokePath(stroke))
+		const simulated = createStroke({
+			points: pts.map(([x, y]) => [x, y]),
+			color: "#111111",
+			width: 10,
+		})
+		expect(strokePath(simulated)).not.toBe(strokePath(hard))
+	})
+})

@@ -268,6 +268,22 @@ describe("presence", () => {
 		expect(b.store.state.peers.map((p) => p.id)).toEqual(["a"]) // someone who may only look is seen too
 	})
 
+	it("shows someone's laser pointer, from a person who may only look too, and puts it away", async () => {
+		const net = relay({ a: "edit", b: "view" })
+		const a = person(net, "a", base(box("s")))
+		const b = person(net, "b", base(box("s")))
+		await settle()
+		b.presence.setLaser({ x: 40.2, y: 80.7 })
+		await new Promise((resolve) => setTimeout(resolve, 80))
+		await settle()
+		expect(a.store.state.peers[0].laser).toEqual({ x: 40, y: 81 })
+		expect(a.store.state.peers[0].cursor).toBeNull() // it is not the pointer
+		b.presence.setLaser(null)
+		await new Promise((resolve) => setTimeout(resolve, 80))
+		await settle()
+		expect(a.store.state.peers[0].laser).toBeNull()
+	})
+
 	it("drops someone who leaves or who loses the connection", async () => {
 		const net = relay({ a: "edit", b: "edit" })
 		const a = person(net, "a", base(box("s")))

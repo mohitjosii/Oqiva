@@ -35,6 +35,8 @@ import ShapeLibrary from "./ui/ShapeLibrary.vue"
 import VersionPanel from "./ui/VersionPanel.vue"
 import VersionPreview from "./ui/VersionPreview.vue"
 import ExportMenu from "./ui/ExportMenu.vue"
+import HelpMenu from "./ui/HelpMenu.vue"
+import QuickTips from "./ui/QuickTips.vue"
 import ShortcutsDialog from "./ui/ShortcutsDialog.vue"
 import LineLabelEditor from "./ui/LineLabelEditor.vue"
 import RightPalette from "./ui/RightPalette.vue"
@@ -140,6 +142,14 @@ if (collab) {
 		() => store.state.selection,
 		(ids) => collab.presence.setSelection(ids),
 	)
+	// The laser pointer is shown to the others while it is moving, and never saved.
+	watch(
+		() => (store.state.laser ? `${store.state.laser.x},${store.state.laser.y}` : null),
+		(key) =>
+			collab.presence.setLaser(
+				key ? { x: store.state.laser.x, y: store.state.laser.y } : null,
+			),
+	)
 }
 
 // Small preferences kept in this browser: the shapes added lately, and whether the map shows.
@@ -215,6 +225,7 @@ async function restoreVersion(number) {
 
 const fonts = ref(0)
 const showShortcuts = ref(false)
+const showTips = ref(false)
 
 // The home screen's thumbnail, refreshed after edits and at most every 30 seconds.
 const thumbnailer =
@@ -414,7 +425,7 @@ defineExpose({ flush: () => autosave.flush(), store, autosave, unsaved })
 		<template v-if="host.versions">
 			<button
 				type="button"
-				class="absolute right-[8.25rem] top-3 z-10 flex items-center gap-1.5 rounded-lg bg-surface-gray-2 px-2.5 py-1.5 text-sm text-ink-gray-8 hover:bg-surface-gray-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-5"
+				class="absolute right-16 top-3 z-10 flex sm:right-[8.25rem] items-center gap-1.5 rounded-lg bg-surface-gray-2 px-2.5 py-1.5 text-sm text-ink-gray-8 hover:bg-surface-gray-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-5"
 				:aria-expanded="store.state.versionsOpen"
 				title="Version history"
 				data-testid="history-button"
@@ -423,7 +434,7 @@ defineExpose({ flush: () => autosave.flush(), store, autosave, unsaved })
 				@click="store.state.versionsOpen = !store.state.versionsOpen"
 			>
 				<span class="lucide-history h-4 w-4" aria-hidden="true" />
-				History
+				<span class="max-sm:hidden">History</span>
 			</button>
 			<VersionPanel
 				ref="versionPanel"
@@ -444,7 +455,7 @@ defineExpose({ flush: () => autosave.flush(), store, autosave, unsaved })
 				@restore="restoreVersion(preview.number)"
 			/>
 		</template>
-		<Minimap :store="store" />
+		<Minimap :store="store" :controller="controller" />
 		<FloatingPalette :store="store" :controller="controller" @image="addImage" />
 		<ExportMenu v-if="canExport" :store="store" @export="runExport" />
 		<CommentPanel v-if="comments" :store="store" :comments="comments" />
@@ -457,6 +468,8 @@ defineExpose({ flush: () => autosave.flush(), store, autosave, unsaved })
 			Adding picture…
 		</div>
 		<RightPalette :store="store" :measure="measureText" :links="host.links" />
+		<QuickTips v-model="showTips" :store="store" />
+		<HelpMenu @shortcuts="showShortcuts = true" @tips="showTips = true" />
 		<ShortcutsDialog v-model="showShortcuts" />
 	</div>
 </template>

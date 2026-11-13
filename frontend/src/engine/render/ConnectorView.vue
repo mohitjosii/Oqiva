@@ -11,6 +11,7 @@ const props = defineProps({
 	hideLabel: { type: Boolean, default: false }, // while the label is being edited
 	background: { type: String, default: "#ffffff" },
 	fonts: { type: Number, default: 0 },
+	sketch: { type: Boolean, default: false }, // the board's hand-drawn style
 })
 
 const node = computed(() => {
@@ -19,6 +20,7 @@ const node = computed(() => {
 		measure: measureText,
 		detail: props.detail && !props.hideLabel,
 		background: props.background,
+		sketch: props.sketch,
 	})
 })
 </script>
