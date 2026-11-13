@@ -51,10 +51,9 @@ let frame = 0
 function tick() {
 	now.value = performance.now()
 	const laser = state.value.laser
-	if (laser) {
-		laser.trail = laser.trail.filter((p) => now.value - p.t < TRAIL_MS)
-		frame = requestAnimationFrame(tick)
-	} else frame = 0
+	if (laser) laser.trail = laser.trail.filter((p) => now.value - p.t < TRAIL_MS)
+	if (laser || peerTrails.value.size) frame = requestAnimationFrame(tick)
+	else frame = 0
 }
 watch(
 	() => Boolean(state.value.laser),
@@ -64,6 +63,46 @@ watch(
 	{ immediate: true },
 )
 onBeforeUnmount(() => cancelAnimationFrame(frame))
+
+// Other people's lasers: each peer's recent positions are kept here, so a trail can fade.
+const peerTrails = ref(new Map())
+watch(
+	() => state.value.peers,
+	(peers) => {
+		const time = performance.now()
+		const next = new Map()
+		for (const peer of peers) {
+			if (!peer.laser) continue
+			const trail = [...(peerTrails.value.get(peer.clientId)?.trail || [])]
+			const last = trail[trail.length - 1]
+			if (!last || last.x !== peer.laser.x || last.y !== peer.laser.y)
+				trail.push({ x: peer.laser.x, y: peer.laser.y, t: time })
+			next.set(peer.clientId, { color: peer.color, name: peer.name, trail: trail.slice(-60) })
+		}
+		peerTrails.value = next
+		if (next.size && !frame) frame = requestAnimationFrame(tick)
+	},
+	{ deep: true, immediate: true },
+)
+const peerLasers = computed(() => {
+	const out = []
+	for (const [id, { color, name, trail }] of peerTrails.value) {
+		const live = trail.filter((p) => now.value - p.t < TRAIL_MS)
+		const segments = []
+		for (let i = 1; i < live.length; i++)
+			segments.push({
+				key: i,
+				x1: live[i - 1].x,
+				y1: live[i - 1].y,
+				x2: live[i].x,
+				y2: live[i].y,
+				opacity: Math.max(0, 1 - (now.value - live[i].t) / TRAIL_MS),
+			})
+		const head = trail[trail.length - 1]
+		out.push({ id, color, name, segments, head })
+	}
+	return out
+})
 
 const trail = computed(() => {
 	const laser = state.value.laser
@@ -127,6 +166,28 @@ const trail = computed(() => {
 			:stroke-width="1.5 / scale"
 			data-testid="eraser-tip"
 		/>
+		<g v-for="peer in peerLasers" :key="peer.id" data-testid="peer-laser">
+			<line
+				v-for="seg in peer.segments"
+				:key="seg.key"
+				:x1="seg.x1"
+				:y1="seg.y1"
+				:x2="seg.x2"
+				:y2="seg.y2"
+				:stroke="peer.color"
+				stroke-linecap="round"
+				:stroke-width="6 / scale"
+				:opacity="seg.opacity"
+			/>
+			<circle
+				v-if="peer.head"
+				:cx="peer.head.x"
+				:cy="peer.head.y"
+				:r="7 / scale"
+				:fill="peer.color"
+				fill-opacity="0.85"
+			/>
+		</g>
 		<template v-if="state.laser">
 			<line
 				v-for="seg in trail"

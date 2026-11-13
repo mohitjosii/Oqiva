@@ -1,8 +1,9 @@
 // Orthogonal routing of flowchart arrows between logical ports: bottom to top for a chart that
 // flows downward, right to left for one that flows rightward. Pure: nothing here knows about the
-// DOM or the store, and (apart from a decision's side exit, see routeAll) nothing avoids obstacles. Arrows leave and arrive with a straight stub,
-// edges that would run into each other are spread a little, and edges that go back (or whose target
-// lies behind the source) go around the outside of the two nodes.
+// DOM or the store. Arrows leave and arrive with a straight stub, edges that would run into each
+// other are spread a little, and edges that go back (or whose target lies behind the source) go
+// around the outside of the two nodes. A route that would pass through another step is searched
+// again over the lines that run round the steps (see ``searchRoute``).
 
 import { backEdgeIds } from "./layout"
 import { nodeSize } from "./model"
@@ -322,6 +323,435 @@ function spreadCluster(cluster) {
 	}
 }
 
+// ----- obstacle avoidance -----
+
+const CLEAR = 12 // how far a searched route keeps from a step
+const TOLERANCE = 6 // a planned route may come this close to a step before it is searched again
+// What a search looks at, tried in this order: the margin it keeps from the steps, how far beyond
+// the two ends it looks for steps, and how many of them (the closest) it takes lines from.
+const ATTEMPTS = [
+	{ margin: CLEAR, reach: 140, steps: 24 },
+	{ margin: CLEAR, reach: 500, steps: 24 },
+	{ margin: 6, reach: 500, steps: 40 },
+	{ margin: 2, reach: Infinity, steps: 80 },
+]
+const HASTE = 2.5 // weight of the distance still to go: above 1 trades a little length for speed
+const BEND = 30 // cost of a turn, in units of length
+const SHARE = 0.5 // extra cost per unit of length that runs along another route
+const MAX_EXPANSIONS = 3000 // states one search may expand
+const BASE_WORK = 16000 // work (states expanded, lines built) all searches of one routeAll may do
+const SMALL_CHART = 200 // a chart of fewer steps may do more, 250 per missing step
+
+const DX = [1, 0, -1, 0]
+const DY = [0, 1, 0, -1]
+const dirIndex = (d) => (d.x > 0 ? 0 : d.y > 0 ? 1 : d.x < 0 ? 2 : 3)
+
+// True when the open segment a-b passes through the inside of ``box`` grown by ``margin``.
+function segmentHits(a, b, box, margin) {
+	return (
+		Math.max(a.x, b.x) > box.x - margin + EPS &&
+		Math.min(a.x, b.x) < box.x + box.w + margin - EPS &&
+		Math.max(a.y, b.y) > box.y - margin + EPS &&
+		Math.min(a.y, b.y) < box.y + box.h + margin - EPS
+	)
+}
+
+// True when a route runs through (or within ``margin`` of) a step other than its two ends. The
+// first piece is the source's own stub and the last one the target's, so they are not held
+// against those two (a diamond's stub may start inside its box); the pieces in between must keep
+// out of the ends too.
+function blocked(points, from, to, obstacles, margin) {
+	let x0 = Infinity
+	let y0 = Infinity
+	let x1 = -Infinity
+	let y1 = -Infinity
+	for (const p of points) {
+		x0 = Math.min(x0, p.x)
+		y0 = Math.min(y0, p.y)
+		x1 = Math.max(x1, p.x)
+		y1 = Math.max(y1, p.y)
+	}
+	const last = points.length - 2
+	for (const o of obstacles) {
+		const { box } = o
+		if (
+			box.x - margin >= x1 ||
+			box.x + box.w + margin <= x0 ||
+			box.y - margin >= y1 ||
+			box.y + box.h + margin <= y0
+		)
+			continue
+		const isFrom = o.id === from
+		const isTo = o.id === to
+		for (let i = 0; i <= last; i++) {
+			if ((isFrom && i === 0) || (isTo && i === last)) continue
+			if (segmentHits(points[i], points[i + 1], box, isFrom || isTo ? 0 : margin)) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// What the routes found so far occupy, so that a later search prefers to keep off them:
+// horizontal pieces by y, vertical ones by x, as [from, to] spans.
+function newUsage() {
+	return { h: new Map(), v: new Map() }
+}
+
+function addUsage(usage, points) {
+	for (let i = 1; i < points.length; i++) {
+		const a = points[i - 1]
+		const b = points[i]
+		const horizontal = Math.abs(a.y - b.y) < EPS
+		const map = horizontal ? usage.h : usage.v
+		const key = Math.round(horizontal ? a.y : a.x)
+		if (!map.has(key)) map.set(key, [])
+		map.get(key).push(
+			horizontal
+				? [Math.min(a.x, b.x), Math.max(a.x, b.x)]
+				: [Math.min(a.y, b.y), Math.max(a.y, b.y)],
+		)
+	}
+}
+
+// The spans of ``map`` that lie within COINCIDE of the line at ``coord``.
+function spansNear(map, coord) {
+	const spans = []
+	const key = Math.round(coord)
+	for (let k = key - COINCIDE; k <= key + COINCIDE; k++) {
+		const list = map.get(k)
+		if (list) for (const s of list) spans.push(s)
+	}
+	return spans
+}
+
+// Scratch buffers of the search, kept between searches so that none allocates much.
+const scratch = { size: 0, g: null, parent: null, stamp: null, closed: null, round: 0 }
+
+function ensureScratch(size) {
+	if (scratch.size >= size) return
+	scratch.size = size
+	scratch.g = new Float64Array(size)
+	scratch.parent = new Int32Array(size)
+	scratch.stamp = new Uint32Array(size)
+	scratch.closed = new Uint32Array(size)
+	scratch.round = 0
+}
+
+// A binary min-heap of states ordered by f, then by insertion (so that ties come out stably).
+class Heap {
+	constructor() {
+		this.f = []
+		this.n = []
+		this.state = []
+	}
+	get size() {
+		return this.f.length
+	}
+	before(i, j) {
+		return this.f[i] < this.f[j] || (this.f[i] === this.f[j] && this.n[i] < this.n[j])
+	}
+	swap(i, j) {
+		const { f, n, state } = this
+		;[f[i], f[j]] = [f[j], f[i]]
+		;[n[i], n[j]] = [n[j], n[i]]
+		;[state[i], state[j]] = [state[j], state[i]]
+	}
+	push(f, n, state) {
+		this.f.push(f)
+		this.n.push(n)
+		this.state.push(state)
+		let i = this.f.length - 1
+		while (i > 0) {
+			const p = (i - 1) >> 1
+			if (!this.before(i, p)) break
+			this.swap(i, p)
+			i = p
+		}
+	}
+	// Removes the first entry and returns its state.
+	pop() {
+		const top = this.state[0]
+		const last = this.f.length - 1
+		this.swap(0, last)
+		this.f.pop()
+		this.n.pop()
+		this.state.pop()
+		let i = 0
+		for (;;) {
+			const l = 2 * i + 1
+			const r = l + 1
+			let m = i
+			if (l < last && this.before(l, m)) m = l
+			if (r < last && this.before(r, m)) m = r
+			if (m === i) break
+			this.swap(i, m)
+			i = m
+		}
+		return top
+	}
+}
+
+// Shortest orthogonal path from ``s`` (leaving along ``out``) to ``e`` (arriving along ``into``,
+// both direction indexes) over the lines that run round the steps: the four sides of every
+// obstacle grown by ``margin`` (plus a second lane beside a side another route already uses), the
+// lines through the two ends and a frame round everything. Cost is length, plus BEND per turn,
+// plus SHARE per unit that runs along another route. Returns the corner points from s to e, or
+// null. ``budget.left`` counts the states that may still be expanded.
+function searchPath(s, e, out, into, obstacles, blockers, margin, usage, budget) {
+	// the lines, by value rounded to a thousandth; the first value given for a line is kept
+	const xs = new Map()
+	const ys = new Map()
+	const key = (v) => Math.round(v * 1000)
+	const addX = (v) => xs.has(key(v)) || xs.set(key(v), v)
+	const addY = (v) => ys.has(key(v)) || ys.set(key(v), v)
+	let fx0 = Math.min(s.x, e.x)
+	let fy0 = Math.min(s.y, e.y)
+	let fx1 = Math.max(s.x, e.x)
+	let fy1 = Math.max(s.y, e.y)
+	addX(s.x)
+	addX(e.x)
+	addY(s.y)
+	addY(e.y)
+	for (const { box } of obstacles) {
+		const x0 = box.x - margin
+		const x1 = box.x + box.w + margin
+		const y0 = box.y - margin
+		const y1 = box.y + box.h + margin
+		fx0 = Math.min(fx0, x0)
+		fy0 = Math.min(fy0, y0)
+		fx1 = Math.max(fx1, x1)
+		fy1 = Math.max(fy1, y1)
+		addX(x0)
+		addX(x1)
+		addY(y0)
+		addY(y1)
+		// a second lane beside a side that another route already runs along, away from the step
+		if (spansNear(usage.v, x0).length) addX(x0 - LANE_SPACING)
+		if (spansNear(usage.v, x1).length) addX(x1 + LANE_SPACING)
+		if (spansNear(usage.h, y0).length) addY(y0 - LANE_SPACING)
+		if (spansNear(usage.h, y1).length) addY(y1 + LANE_SPACING)
+	}
+	addX(fx0 - AROUND)
+	addX(fx1 + AROUND)
+	addY(fy0 - AROUND)
+	addY(fy1 + AROUND)
+
+	const xl = [...xs.values()].sort((a, b) => a - b)
+	const yl = [...ys.values()].sort((a, b) => a - b)
+	const NX = xl.length
+	const NY = yl.length
+	const xi = new Map(xl.map((v, i) => [key(v), i]))
+	const yi = new Map(yl.map((v, i) => [key(v), i]))
+	const cells = NX * NY
+	ensureScratch(cells * 4)
+	budget.left -= 50 + (cells >> 4) // building the lines costs a little too
+
+	// Which pieces between neighbouring lines run through the inside of a step (any step that
+	// reaches the lines, not only the ones the lines come from).
+	const hBlock = new Uint8Array(cells)
+	const vBlock = new Uint8Array(cells)
+	const below = (list, v) => {
+		// the first index whose line is at or beyond v
+		let lo = 0
+		let hi = list.length
+		while (lo < hi) {
+			const mid = (lo + hi) >> 1
+			if (list[mid] < v) lo = mid + 1
+			else hi = mid
+		}
+		return lo
+	}
+	const frame = { x0: xl[0], x1: xl[NX - 1], y0: yl[0], y1: yl[NY - 1] }
+	for (const { box } of blockers) {
+		const X0 = box.x - margin
+		const X1 = box.x + box.w + margin
+		const Y0 = box.y - margin
+		const Y1 = box.y + box.h + margin
+		if (X1 <= frame.x0 || X0 >= frame.x1 || Y1 <= frame.y0 || Y0 >= frame.y1) continue
+		// the lines strictly inside the step, and the pieces whose span meets its inside
+		const T = 1e-6
+		const xa = Math.max(0, below(xl, X0 + T) - 1)
+		const xb = Math.min(NX - 1, below(xl, X1 - T))
+		const ya = Math.max(0, below(yl, Y0 + T) - 1)
+		const yb = Math.min(NY - 1, below(yl, Y1 - T))
+		const xFrom = below(xl, X0 + 2 * T)
+		const xTo = below(xl, X1 - T)
+		const yFrom = below(yl, Y0 + 2 * T)
+		const yTo = below(yl, Y1 - T)
+		for (let y = yFrom; y < yTo; y++) for (let x = xa; x < xb; x++) hBlock[y * NX + x] = 1
+		for (let x = xFrom; x < xTo; x++) for (let y = ya; y < yb; y++) vBlock[y * NX + x] = 1
+	}
+
+	// Extra cost of the pieces that run along a route that is already there: the spans near each
+	// line are merged once, the first time the line is looked at.
+	const hSpans = new Array(NY)
+	const vSpans = new Array(NX)
+	const merged = (map, coord) => {
+		const list = spansNear(map, coord).sort((a, b) => a[0] - b[0])
+		const result = []
+		for (const [from, to] of list) {
+			const last = result[result.length - 1]
+			if (last && from <= last[1]) last[1] = Math.max(last[1], to)
+			else result.push([from, to])
+		}
+		return result
+	}
+	const shareOf = (vertical, line, a, b) => {
+		const spans = vertical
+			? (vSpans[line] ??= merged(usage.v, xl[line]))
+			: (hSpans[line] ??= merged(usage.h, yl[line]))
+		let sum = 0
+		for (const [from, to] of spans) {
+			if (from >= b) break
+			if (to > a) sum += Math.min(b, to) - Math.max(a, from)
+		}
+		return SHARE * sum
+	}
+	const crowded = usage.h.size > 0 || usage.v.size > 0
+
+	const sx = xi.get(key(s.x))
+	const sy = yi.get(key(s.y))
+	const ex = xi.get(key(e.x))
+	const ey = yi.get(key(e.y))
+	const goal = ey * NX + ex
+	const { g, parent, stamp, closed } = scratch
+	const round = ++scratch.round
+	// at least the distance, and one turn unless the goal lies straight ahead
+	const heuristic = (x, y) => {
+		const dx = Math.abs(xl[x] - e.x)
+		const dy = Math.abs(yl[y] - e.y)
+		return HASTE * (dx + dy + (dx > 0 && dy > 0 ? BEND : 0))
+	}
+	const heap = new Heap()
+	let seq = 0
+	const start = (sy * NX + sx) * 4 + out
+	stamp[start] = round
+	g[start] = 0
+	parent[start] = -1
+	heap.push(heuristic(sx, sy), seq++, start)
+	let found = -1
+	let expanded = 0
+	while (heap.size) {
+		const state = heap.pop()
+		if (closed[state] === round) continue
+		closed[state] = round
+		const d = state & 3
+		const cell = state >> 2
+		const cx = cell % NX
+		const cy = (cell - cx) / NX
+		if (cell === goal && d !== (into + 2) % 4) {
+			found = state
+			break
+		}
+		if (++expanded > MAX_EXPANSIONS || --budget.left < 0) return null
+		for (let nd = 0; nd < 4; nd++) {
+			if (nd === (d + 2) % 4) continue
+			const nx = cx + DX[nd]
+			const ny = cy + DY[nd]
+			if (nx < 0 || ny < 0 || nx >= NX || ny >= NY) continue
+			// the piece between the two cells: stored at its left or upper end
+			const lo = nd === 0 ? cell : nd === 1 ? cell : nd === 2 ? cell - 1 : cell - NX
+			if ((nd & 1 ? vBlock : hBlock)[lo]) continue
+			const length = nd & 1 ? Math.abs(yl[ny] - yl[cy]) : Math.abs(xl[nx] - xl[cx])
+			let cost = length
+			if (crowded) {
+				cost +=
+					nd & 1
+						? shareOf(true, cx, Math.min(yl[ny], yl[cy]), Math.max(yl[ny], yl[cy]))
+						: shareOf(false, cy, Math.min(xl[nx], xl[cx]), Math.max(xl[nx], xl[cx]))
+			}
+			if (nd !== d) cost += BEND
+			const next = (ny * NX + nx) * 4 + nd
+			if (ny * NX + nx === goal && nd !== into) cost += BEND
+			const total = g[state] + cost
+			if (stamp[next] === round && g[next] <= total) continue
+			stamp[next] = round
+			g[next] = total
+			parent[next] = state
+			heap.push(total + heuristic(nx, ny), seq++, next)
+		}
+	}
+	if (found < 0) return null
+	const corners = []
+	for (let state = found; state >= 0; state = parent[state]) {
+		const cell = state >> 2
+		const cx = cell % NX
+		corners.push({ x: xl[cx], y: yl[(cell - cx) / NX] })
+	}
+	return corners.reverse()
+}
+
+// A route from p0 to p1 that keeps ``margin`` away from every obstacle, or null. The stubs start
+// where ``plan`` put them (a diamond's may be longer so that they end outside its box).
+function searchRoute(p0, p1, out, enter, ends, obstacles, usage, budget) {
+	const o = DIR[out]
+	const en = DIR[enter]
+	const into = { x: -en.x, y: -en.y }
+	const reach = (p, d, box, margin) => {
+		// how far to go from the port along d to be ``margin`` beyond the box
+		const past =
+			d.x > 0
+				? box.x + box.w - p.x
+				: d.x < 0
+					? p.x - box.x
+					: d.y > 0
+						? box.y + box.h - p.y
+						: p.y - box.y
+		return Math.max(STUB, Math.max(0, past) + margin + 0.5)
+	}
+	const [boxA, boxB] = ends
+	for (const { margin, reach: R, steps } of ATTEMPTS) {
+		const la = reach(p0, o, boxA.box, margin)
+		const lb = reach(p1, en, boxB.box, margin)
+		const s = { x: p0.x + o.x * la, y: p0.y + o.y * la }
+		const e = { x: p1.x + en.x * lb, y: p1.y + en.y * lb }
+		const xmin = Math.min(s.x, e.x)
+		const xmax = Math.max(s.x, e.x)
+		const ymin = Math.min(s.y, e.y)
+		const ymax = Math.max(s.y, e.y)
+		const near = obstacles.filter(({ box: b }) => {
+			return (
+				b.x - margin < xmax + R &&
+				b.x + b.w + margin > xmin - R &&
+				b.y - margin < ymax + R &&
+				b.y + b.h + margin > ymin - R
+			)
+		})
+		let chosen = near
+		if (near.length > steps) {
+			const cx = (xmin + xmax) / 2
+			const cy = (ymin + ymax) / 2
+			const score = (ob) =>
+				ob === boxA || ob === boxB
+					? -1
+					: Math.abs(ob.box.x + ob.box.w / 2 - cx) +
+						Math.abs(ob.box.y + ob.box.h / 2 - cy)
+			chosen = [...near]
+				.sort((a, b) => score(a) - score(b) || (a.id < b.id ? -1 : 1))
+				.slice(0, steps)
+		}
+		if (budget.left <= 0) return null
+		const corners = searchPath(
+			s,
+			e,
+			dirIndex(o),
+			dirIndex(into),
+			chosen,
+			obstacles,
+			margin,
+			usage,
+			budget,
+		)
+		if (!corners) continue
+		const points = clean([p0, ...corners, p1])
+		if (sound(points, o, into) && !blocked(points, ends[0].id, ends[1].id, obstacles, 1))
+			return points
+	}
+	return null
+}
+
 // Where to put an edge's label: the middle of its longest segment.
 function labelPoint(points) {
 	let best = 0
@@ -453,9 +883,40 @@ export function routeAll(chart, nodes, edges, measure) {
 	}
 	spreadLanes(plans)
 
+	// The planned routes; one that passes through another step is searched again, in edge order,
+	// keeping off the routes that are already there.
+	const finals = plans.map((p) => (p.lane ? p.build(p.lane.coord) : p.build()))
+	const obstacles = solid.map(({ id, box }) => ({ id, box }))
+	const obstacleOf = new Map(obstacles.map((o) => [o.id, o]))
+	const usage = newUsage()
+	const retry = []
+	finals.forEach((points, i) => {
+		const { edge } = plans[i]
+		if (blocked(points, edge.from, edge.to, obstacles, TOLERANCE)) retry.push(i)
+		else addUsage(usage, points)
+	})
+	const budget = { left: BASE_WORK + Math.max(0, SMALL_CHART - nodes.length) * 250 }
+	for (const i of retry) {
+		const p = plans[i]
+		const found =
+			budget.left > 0 &&
+			searchRoute(
+				p.p0,
+				p.p1,
+				p.out,
+				p.into,
+				[obstacleOf.get(p.edge.from), obstacleOf.get(p.edge.to)],
+				obstacles,
+				usage,
+				budget,
+			)
+		if (found) finals[i] = found
+		addUsage(usage, finals[i])
+	}
+
 	const routes = new Map()
-	for (const p of plans) {
-		const points = p.lane ? p.build(p.lane.coord) : p.build()
+	plans.forEach((p, i) => {
+		const points = finals[i]
 		const n = points.length
 		routes.set(p.edge.id, {
 			points,
@@ -465,7 +926,7 @@ export function routeAll(chart, nodes, edges, measure) {
 			startDir: unit(points[0], points[1]),
 			endDir: unit(points[n - 2], points[n - 1]),
 		})
-	}
+	})
 	return routes
 }
 

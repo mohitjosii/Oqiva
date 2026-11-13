@@ -1,12 +1,16 @@
 {
 	"slug": "project-mind-map",
 	"name": "Project mind map",
-	"description": "A central idea with branches to grow: goals, people, risks and a plan.",
+	"description": "A project planning mind map: goals, scope, people, timeline, risks, budget and communication, with example content, notes and markers to replace.",
 	"category": "Mind maps",
 	"tags": [
 		"mind map",
 		"planning",
-		"brainstorm"
+		"project",
+		"goals",
+		"risks",
+		"budget",
+		"timeline"
 	],
 	"sort_order": 30,
 	"document": {
@@ -36,11 +40,12 @@
 						"id": "project-mind-map-map1-n0",
 						"parentId": null,
 						"order": 0,
-						"text": "The project",
+						"text": "Customer portal launch",
 						"collapsed": false,
 						"color": null,
 						"marker": null,
-						"note": ""
+						"note": "Replace the example project with your own. Keep each branch to 3 or 4 children; collapse a branch (the small circle on its node) to give a short overview in a meeting.",
+						"fontSize": 18
 					},
 					{
 						"id": "project-mind-map-map1-n1",
@@ -49,64 +54,17 @@
 						"text": "Goals",
 						"collapsed": false,
 						"color": null,
-						"marker": null,
-						"note": ""
-					},
-					{
-						"id": "project-mind-map-map1-n10",
-						"parentId": "project-mind-map-map1-n9",
-						"order": 0,
-						"text": "Scope creep",
-						"collapsed": false,
-						"color": null,
-						"marker": null,
-						"note": ""
-					},
-					{
-						"id": "project-mind-map-map1-n14",
-						"parentId": "project-mind-map-map1-n13",
-						"order": 0,
-						"text": "Milestones",
-						"collapsed": false,
-						"color": null,
-						"marker": null,
+						"marker": {
+							"icon": "target",
+							"dot": null
+						},
 						"note": ""
 					},
 					{
 						"id": "project-mind-map-map1-n2",
 						"parentId": "project-mind-map-map1-n1",
 						"order": 0,
-						"text": "Ship this quarter",
-						"collapsed": false,
-						"color": null,
-						"marker": null,
-						"note": ""
-					},
-					{
-						"id": "project-mind-map-map1-n6",
-						"parentId": "project-mind-map-map1-n5",
-						"order": 0,
-						"text": "Design",
-						"collapsed": false,
-						"color": null,
-						"marker": null,
-						"note": ""
-					},
-					{
-						"id": "project-mind-map-map1-n11",
-						"parentId": "project-mind-map-map1-n9",
-						"order": 1,
-						"text": "Hiring",
-						"collapsed": false,
-						"color": null,
-						"marker": null,
-						"note": ""
-					},
-					{
-						"id": "project-mind-map-map1-n15",
-						"parentId": "project-mind-map-map1-n13",
-						"order": 1,
-						"text": "Owners",
+						"text": "Cut support calls by 30%",
 						"collapsed": false,
 						"color": null,
 						"marker": null,
@@ -116,47 +74,7 @@
 						"id": "project-mind-map-map1-n3",
 						"parentId": "project-mind-map-map1-n1",
 						"order": 1,
-						"text": "Delight our users",
-						"collapsed": false,
-						"color": null,
-						"marker": null,
-						"note": ""
-					},
-					{
-						"id": "project-mind-map-map1-n5",
-						"parentId": "project-mind-map-map1-n0",
-						"order": 1,
-						"text": "People",
-						"collapsed": false,
-						"color": null,
-						"marker": null,
-						"note": ""
-					},
-					{
-						"id": "project-mind-map-map1-n7",
-						"parentId": "project-mind-map-map1-n5",
-						"order": 1,
-						"text": "Engineering",
-						"collapsed": false,
-						"color": null,
-						"marker": null,
-						"note": ""
-					},
-					{
-						"id": "project-mind-map-map1-n12",
-						"parentId": "project-mind-map-map1-n9",
-						"order": 2,
-						"text": "Dependencies",
-						"collapsed": false,
-						"color": null,
-						"marker": null,
-						"note": ""
-					},
-					{
-						"id": "project-mind-map-map1-n16",
-						"parentId": "project-mind-map-map1-n13",
-						"order": 2,
-						"text": "Review dates",
+						"text": "80% of customers active in 90 days",
 						"collapsed": false,
 						"color": null,
 						"marker": null,
@@ -166,17 +84,47 @@
 						"id": "project-mind-map-map1-n4",
 						"parentId": "project-mind-map-map1-n1",
 						"order": 2,
-						"text": "Stay on budget",
+						"text": "Launch on time and in budget",
 						"collapsed": false,
 						"color": null,
 						"marker": null,
 						"note": ""
 					},
 					{
+						"id": "project-mind-map-map1-n5",
+						"parentId": "project-mind-map-map1-n0",
+						"order": 1,
+						"text": "Scope",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n6",
+						"parentId": "project-mind-map-map1-n5",
+						"order": 0,
+						"text": "In: sign-in, invoices, support requests",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n7",
+						"parentId": "project-mind-map-map1-n5",
+						"order": 1,
+						"text": "Out: mobile app, billing changes (phase 2)",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": "Anything not listed as 'in' needs a change request approved by the sponsor."
+					},
+					{
 						"id": "project-mind-map-map1-n8",
 						"parentId": "project-mind-map-map1-n5",
 						"order": 2,
-						"text": "Support",
+						"text": "Open: data migration of old tickets",
 						"collapsed": false,
 						"color": null,
 						"marker": null,
@@ -186,7 +134,37 @@
 						"id": "project-mind-map-map1-n9",
 						"parentId": "project-mind-map-map1-n0",
 						"order": 2,
-						"text": "Risks",
+						"text": "People",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n10",
+						"parentId": "project-mind-map-map1-n9",
+						"order": 0,
+						"text": "Sponsor: Dana Reyes",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n11",
+						"parentId": "project-mind-map-map1-n9",
+						"order": 1,
+						"text": "Project lead: Sam Ortiz",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n12",
+						"parentId": "project-mind-map-map1-n9",
+						"order": 2,
+						"text": "Team: 3 developers, 1 designer, 1 QA",
 						"collapsed": false,
 						"color": null,
 						"marker": null,
@@ -194,9 +172,178 @@
 					},
 					{
 						"id": "project-mind-map-map1-n13",
+						"parentId": "project-mind-map-map1-n9",
+						"order": 3,
+						"text": "Stakeholders: Support, Finance, Sales",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n14",
 						"parentId": "project-mind-map-map1-n0",
 						"order": 3,
-						"text": "Plan",
+						"text": "Timeline",
+						"collapsed": false,
+						"color": null,
+						"marker": {
+							"icon": "clock",
+							"dot": "#3B82F6"
+						},
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n15",
+						"parentId": "project-mind-map-map1-n14",
+						"order": 0,
+						"text": "Design done: 15 Jan",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n16",
+						"parentId": "project-mind-map-map1-n14",
+						"order": 1,
+						"text": "Beta with 20 customers: 1 Mar",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n17",
+						"parentId": "project-mind-map-map1-n14",
+						"order": 2,
+						"text": "Public launch: 15 Apr",
+						"collapsed": false,
+						"color": null,
+						"marker": {
+							"icon": "flag",
+							"dot": "#22C55E"
+						},
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n18",
+						"parentId": "project-mind-map-map1-n0",
+						"order": 4,
+						"text": "Risks",
+						"collapsed": false,
+						"color": "#EF4444",
+						"marker": {
+							"icon": "triangle-alert",
+							"dot": "#EF4444"
+						},
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n19",
+						"parentId": "project-mind-map-map1-n18",
+						"order": 0,
+						"text": "Key developer leaves mid-project",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n20",
+						"parentId": "project-mind-map-map1-n18",
+						"order": 1,
+						"text": "Scope creep from Sales requests",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n21",
+						"parentId": "project-mind-map-map1-n18",
+						"order": 2,
+						"text": "Old system is hard to integrate",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n22",
+						"parentId": "project-mind-map-map1-n0",
+						"order": 5,
+						"text": "Budget",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n23",
+						"parentId": "project-mind-map-map1-n22",
+						"order": 0,
+						"text": "Total: $180k",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": "$120k people, $35k software and hosting, $25k contingency (about 14%)."
+					},
+					{
+						"id": "project-mind-map-map1-n24",
+						"parentId": "project-mind-map-map1-n22",
+						"order": 1,
+						"text": "Contingency: 14%",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n25",
+						"parentId": "project-mind-map-map1-n22",
+						"order": 2,
+						"text": "Approval needed above $10k",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n26",
+						"parentId": "project-mind-map-map1-n0",
+						"order": 6,
+						"text": "Communication",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n27",
+						"parentId": "project-mind-map-map1-n26",
+						"order": 0,
+						"text": "Weekly status email on Fridays",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n28",
+						"parentId": "project-mind-map-map1-n26",
+						"order": 1,
+						"text": "Fortnightly demo for stakeholders",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "project-mind-map-map1-n29",
+						"parentId": "project-mind-map-map1-n26",
+						"order": 2,
+						"text": "Decision log in the shared drive",
 						"collapsed": false,
 						"color": null,
 						"marker": null,

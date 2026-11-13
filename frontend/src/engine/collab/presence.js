@@ -30,10 +30,9 @@ const finite = (n) => typeof n === "number" && Number.isFinite(n)
 export function cleanPeer(clientId, state) {
 	const user = state?.user
 	if (!user || typeof user !== "object") return null
-	const cursor =
-		state.cursor && finite(state.cursor.x) && finite(state.cursor.y)
-			? { x: state.cursor.x, y: state.cursor.y }
-			: null
+	const point = (value) =>
+		value && finite(value.x) && finite(value.y) ? { x: value.x, y: value.y } : null
+	const cursor = point(state.cursor)
 	return {
 		clientId,
 		id: text(user.id, 140),
@@ -44,6 +43,7 @@ export function cleanPeer(clientId, state) {
 				: null,
 		color: isColor(user.color) ? user.color : PEER_COLORS[0],
 		cursor,
+		laser: point(state.laser), // someone pointing with the laser (shown, never saved)
 		selection: Array.isArray(state.selection)
 			? state.selection.filter((id) => typeof id === "string").slice(0, 200)
 			: [],
@@ -68,6 +68,7 @@ export function createPresence({
 	}
 	awareness.setLocalStateField("user", me)
 	awareness.setLocalStateField("cursor", null)
+	awareness.setLocalStateField("laser", null)
 	awareness.setLocalStateField("selection", [])
 
 	function refresh() {
@@ -82,34 +83,39 @@ export function createPresence({
 	}
 	awareness.on("change", refresh)
 
-	// --- this browser's own entry ---
-	let lastSent = -Infinity
-	let timer = null
-	let pending = null
-	function sendCursor() {
-		timer = null
-		if (!pending) return
-		awareness.setLocalStateField("cursor", pending.value)
-		lastSent = now()
-		pending = null
+	// --- this browser's own entry: the pointer and the laser, each sent at most 20 times a second ---
+	const lanes = {}
+	function lane(field) {
+		if (lanes[field]) return lanes[field]
+		const state = { lastSent: -Infinity, timer: null, pending: null }
+		state.send = () => {
+			state.timer = null
+			if (!state.pending) return
+			awareness.setLocalStateField(field, state.pending.value)
+			state.lastSent = now()
+			state.pending = null
+		}
+		state.queue = (value) => {
+			state.pending = { value }
+			if (state.timer !== null) return
+			const wait = Math.max(0, state.lastSent + CURSOR_INTERVAL_MS - now())
+			state.timer = schedule(state.send, wait)
+		}
+		return (lanes[field] = state)
 	}
-	const queueCursor = (point) => {
-		pending = { value: point }
-		if (timer !== null) return
-		const wait = Math.max(0, lastSent + CURSOR_INTERVAL_MS - now())
-		timer = schedule(sendCursor, wait)
-	}
+	const rounded = (point) => (point ? { x: Math.round(point.x), y: Math.round(point.y) } : null)
 
 	return {
 		peers,
 		me,
 		awareness,
 		// The pointer's place on the board (null when it leaves).
-		setCursor: (point) =>
-			queueCursor(point ? { x: Math.round(point.x), y: Math.round(point.y) } : null),
+		setCursor: (point) => lane("cursor").queue(rounded(point)),
+		// The laser pointer's place (null when it is put away).
+		setLaser: (point) => lane("laser").queue(rounded(point)),
 		setSelection: (ids) => awareness.setLocalStateField("selection", ids.slice(0, 200)),
 		dispose() {
-			if (timer !== null) cancel(timer)
+			for (const { timer } of Object.values(lanes)) if (timer !== null) cancel(timer)
 			awareness.off("change", refresh)
 			awareness.setLocalState(null)
 			store.state.peers = []

@@ -12,11 +12,16 @@ export function runCommand(store, controller, command, ui = {}) {
 			return store.undo()
 		case "redo":
 			return store.redo()
-		case "selectAll":
-			return store.select([
+		case "selectAll": {
+			const shapes = [
 				...store.objects.value.map((object) => object.id),
 				...store.connectors.value.map((connector) => connector.id),
-			])
+			]
+			if (shapes.length) return store.select(shapes)
+			// a board of only flowcharts or mind maps: select their steps and arrows, or their nodes
+			const flow = [...store.flowNodes.value, ...store.flowEdges.value].map((item) => item.id)
+			return store.select(flow.length ? flow : store.mapNodes.value.map((node) => node.id))
+		}
 		case "copy":
 			return copySelection(store)
 		case "cut":

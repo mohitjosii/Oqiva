@@ -1,12 +1,15 @@
 {
 	"slug": "brainstorm",
 	"name": "Brainstorm",
-	"description": "Start from a question and branch out. Press Tab for a branch and Enter for the next idea.",
+	"description": "A facilitated brainstorm: a central question with branches for ideas, who it helps, risks, quick wins, questions and next steps. Replace the example question and start adding ideas.",
 	"category": "Mind maps",
 	"tags": [
 		"mind map",
 		"brainstorm",
-		"ideas"
+		"ideas",
+		"workshop",
+		"facilitation",
+		"problem solving"
 	],
 	"sort_order": 31,
 	"document": {
@@ -36,67 +39,31 @@
 						"id": "brainstorm-map1-n0",
 						"parentId": null,
 						"order": 0,
-						"text": "What should we try next?",
+						"text": "How might we halve the time it takes a new customer to get started?",
 						"collapsed": false,
 						"color": null,
 						"marker": null,
-						"note": ""
+						"note": "Facilitator guide (15 minutes): 1) Two minutes of silent writing, one idea per node. 2) Each person reads theirs out; no judging yet. 3) Group similar ideas. 4) Vote with dots: three each. 5) Move the winners to Next steps with an owner.",
+						"fontSize": 18
 					},
 					{
 						"id": "brainstorm-map1-n1",
 						"parentId": "brainstorm-map1-n0",
 						"order": 0,
-						"text": "Quick wins",
+						"text": "Ideas",
 						"collapsed": false,
 						"color": null,
-						"marker": null,
-						"note": ""
-					},
-					{
-						"id": "brainstorm-map1-n10",
-						"parentId": "brainstorm-map1-n9",
-						"order": 0,
-						"text": "Who is it for?",
-						"collapsed": false,
-						"color": null,
-						"marker": null,
+						"marker": {
+							"icon": "lightbulb",
+							"dot": "#EAB308"
+						},
 						"note": ""
 					},
 					{
 						"id": "brainstorm-map1-n2",
 						"parentId": "brainstorm-map1-n1",
 						"order": 0,
-						"text": "Fix the slow page",
-						"collapsed": false,
-						"color": null,
-						"marker": null,
-						"note": ""
-					},
-					{
-						"id": "brainstorm-map1-n5",
-						"parentId": "brainstorm-map1-n4",
-						"order": 0,
-						"text": "A new product line",
-						"collapsed": false,
-						"color": null,
-						"marker": null,
-						"note": ""
-					},
-					{
-						"id": "brainstorm-map1-n8",
-						"parentId": "brainstorm-map1-n7",
-						"order": 0,
-						"text": "Weekly status meeting",
-						"collapsed": false,
-						"color": null,
-						"marker": null,
-						"note": ""
-					},
-					{
-						"id": "brainstorm-map1-n11",
-						"parentId": "brainstorm-map1-n9",
-						"order": 1,
-						"text": "How will we know it worked?",
+						"text": "Guided setup checklist",
 						"collapsed": false,
 						"color": null,
 						"marker": null,
@@ -106,7 +73,7 @@
 						"id": "brainstorm-map1-n3",
 						"parentId": "brainstorm-map1-n1",
 						"order": 1,
-						"text": "Clearer pricing",
+						"text": "Pre-filled forms from the sign-up email",
 						"collapsed": false,
 						"color": null,
 						"marker": null,
@@ -114,9 +81,19 @@
 					},
 					{
 						"id": "brainstorm-map1-n4",
-						"parentId": "brainstorm-map1-n0",
-						"order": 1,
-						"text": "Big bets",
+						"parentId": "brainstorm-map1-n1",
+						"order": 2,
+						"text": "Short video walkthrough",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": "Keep it under 90 seconds and put it on the first screen."
+					},
+					{
+						"id": "brainstorm-map1-n5",
+						"parentId": "brainstorm-map1-n1",
+						"order": 3,
+						"text": "Starter templates for common cases",
 						"collapsed": false,
 						"color": null,
 						"marker": null,
@@ -124,9 +101,9 @@
 					},
 					{
 						"id": "brainstorm-map1-n6",
-						"parentId": "brainstorm-map1-n4",
+						"parentId": "brainstorm-map1-n0",
 						"order": 1,
-						"text": "A partner programme",
+						"text": "Who it helps",
 						"collapsed": false,
 						"color": null,
 						"marker": null,
@@ -134,9 +111,19 @@
 					},
 					{
 						"id": "brainstorm-map1-n7",
-						"parentId": "brainstorm-map1-n0",
-						"order": 2,
-						"text": "Things to stop",
+						"parentId": "brainstorm-map1-n6",
+						"order": 0,
+						"text": "New customers",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n8",
+						"parentId": "brainstorm-map1-n6",
+						"order": 1,
+						"text": "Support team (fewer tickets)",
 						"collapsed": false,
 						"color": null,
 						"marker": null,
@@ -144,9 +131,194 @@
 					},
 					{
 						"id": "brainstorm-map1-n9",
+						"parentId": "brainstorm-map1-n6",
+						"order": 2,
+						"text": "Sales (faster trials to paid)",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n10",
+						"parentId": "brainstorm-map1-n0",
+						"order": 2,
+						"text": "Risks",
+						"collapsed": false,
+						"color": "#F97316",
+						"marker": {
+							"icon": "triangle-alert",
+							"dot": "#EF4444"
+						},
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n11",
+						"parentId": "brainstorm-map1-n10",
+						"order": 0,
+						"text": "Simplifying hides useful features",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n12",
+						"parentId": "brainstorm-map1-n10",
+						"order": 1,
+						"text": "Existing customers are confused by a new flow",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n13",
+						"parentId": "brainstorm-map1-n10",
+						"order": 2,
+						"text": "Hard to measure the improvement",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n14",
 						"parentId": "brainstorm-map1-n0",
 						"order": 3,
+						"text": "Quick wins",
+						"collapsed": false,
+						"color": null,
+						"marker": {
+							"icon": "rocket",
+							"dot": "#22C55E"
+						},
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n15",
+						"parentId": "brainstorm-map1-n14",
+						"order": 0,
+						"text": "Remove two optional fields",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n16",
+						"parentId": "brainstorm-map1-n14",
+						"order": 1,
+						"text": "Add a progress bar",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n17",
+						"parentId": "brainstorm-map1-n14",
+						"order": 2,
+						"text": "Welcome email with one clear next step",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n18",
+						"parentId": "brainstorm-map1-n0",
+						"order": 4,
 						"text": "Questions",
+						"collapsed": false,
+						"color": null,
+						"marker": {
+							"icon": "circle-help",
+							"dot": "#3B82F6"
+						},
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n19",
+						"parentId": "brainstorm-map1-n18",
+						"order": 0,
+						"text": "Where do people drop off today?",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n20",
+						"parentId": "brainstorm-map1-n18",
+						"order": 1,
+						"text": "What does 'started' mean for us?",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n21",
+						"parentId": "brainstorm-map1-n18",
+						"order": 2,
+						"text": "What do competitors do well?",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n22",
+						"parentId": "brainstorm-map1-n0",
+						"order": 5,
+						"text": "Next steps",
+						"collapsed": false,
+						"color": null,
+						"marker": {
+							"icon": "flag",
+							"dot": "#8B5CF6"
+						},
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n23",
+						"parentId": "brainstorm-map1-n22",
+						"order": 0,
+						"text": "Dot-vote the top three ideas",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n24",
+						"parentId": "brainstorm-map1-n22",
+						"order": 1,
+						"text": "Prototype the winner by Friday",
+						"collapsed": false,
+						"color": null,
+						"marker": {
+							"icon": "clock",
+							"dot": null
+						},
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n25",
+						"parentId": "brainstorm-map1-n22",
+						"order": 2,
+						"text": "Test with five new customers",
+						"collapsed": false,
+						"color": null,
+						"marker": null,
+						"note": ""
+					},
+					{
+						"id": "brainstorm-map1-n26",
+						"parentId": "brainstorm-map1-n22",
+						"order": 3,
+						"text": "Share results at the next review",
 						"collapsed": false,
 						"color": null,
 						"marker": null,

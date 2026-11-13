@@ -769,8 +769,25 @@ describe("routeAll: LR is the mirror of TB", () => {
 		const a = routeAll(chartOf("TB"), tbNodes, g.edges, measure)
 		const b = routeAll(chartOf("LR"), lrNodes, g.edges, measure)
 		const flip = { top: "left", left: "top", right: "bottom", bottom: "right" }
+		// A decision's side exit may drop to the forward side when a step stands in its way. The
+		// two layouts are not mirror images (steps are wider than tall), so that can differ: the
+		// sides must mirror each other except for such a drop.
+		const sideOf = (nodes, direction, e) =>
+			outSides(
+				chartOf(direction),
+				nodes,
+				g.edges,
+				nodes.find((n) => n.id === e.from),
+			).get(e.id)
 		for (const e of g.edges) {
-			expect(b.get(e.id).fromSide).toBe(flip[a.get(e.id).fromSide])
+			const wantA = sideOf(tbNodes, "TB", e)
+			const wantB = sideOf(lrNodes, "LR", e)
+			expect(wantB).toBe(flip[wantA])
+			const fromA = a.get(e.id).fromSide
+			const fromB = b.get(e.id).fromSide
+			expect([wantA, "bottom"]).toContain(fromA)
+			expect([wantB, "right"]).toContain(fromB)
+			if (fromA === wantA && fromB === wantB) expect(fromB).toBe(flip[fromA])
 			expect(b.get(e.id).toSide).toBe(flip[a.get(e.id).toSide])
 		}
 	})

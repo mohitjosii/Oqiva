@@ -23,7 +23,7 @@ const OBJECT_ONLY = new Set(["fill", "text", "radius"])
 
 // What one thing supports.
 export function capabilitiesOf(item) {
-	if (item.geometry) return new Set(["border", "opacity", "line"]) // a connector
+	if (item.geometry) return new Set(["border", "opacity", "line", "sketch"]) // a connector
 	switch (item.kind) {
 		case "shape":
 			return new Set([

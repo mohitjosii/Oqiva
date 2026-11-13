@@ -44,6 +44,7 @@ import { newId } from "../model/ids"
 import { GRID_SIZES, normalizeRotation, pageSize } from "../model/schema"
 import { toolById } from "../model/shapes"
 import { createStroke, thinPoints } from "../model/strokes"
+import { createPinch } from "./touch"
 import { ERASER_RADIUS, newSweep, sweepInk, sweepObjects, sweepOps } from "./eraser"
 import { libraryPlacement, OPPOSITE, quickAddRect, quickTarget } from "./placement"
 import { createConnectorPaths } from "../render/connectorPaths"
@@ -78,6 +79,8 @@ export class CanvasController {
 		this.measure = measure
 		this.ask = ask // (message) -> Promise<boolean>, for questions such as deleting a whole branch
 		this.drag = null
+		this.pinch = createPinch() // two fingers on a touch screen pan and zoom
+		this.pinchLock = false // after a pinch, the finger left down does nothing until it lifts
 		this.paths = createConnectorPaths(store)
 		// Where every mind map's nodes are, worked out from the trees and kept up to date.
 		this.maps = createMapLayouts(store, sized(measure), () => store.state.fontsTick)
@@ -234,17 +237,24 @@ export class CanvasController {
 		return Math.max(0.4, 1.2 / this.state.viewport.scale)
 	}
 
-	startInk(ink, point) {
+	// A pen (a stylus on a tablet or a phone) tells how hard it presses; a mouse or a finger does not.
+	pressureOf(event) {
+		return event?.pointerType === "pen" && event.pressure > 0 ? event.pressure : undefined
+	}
+
+	startInk(ink, point, event) {
 		const options = this.state.ink[ink]
-		const points = markRaw([[point.x, point.y]])
+		const p = this.pressureOf(event)
+		const points = markRaw([p === undefined ? [point.x, point.y] : [point.x, point.y, p]])
 		this.drag = { type: "ink", ink, points, color: options.color, width: options.width }
 		this.state.inkPreview = { points, color: options.color, width: options.width, ink }
 	}
 
-	extendInk(drag, point) {
+	extendInk(drag, point, event) {
 		const last = drag.points[drag.points.length - 1]
 		if (Math.hypot(point.x - last[0], point.y - last[1]) < this.inkGap()) return
-		drag.points.push([point.x, point.y])
+		const p = this.pressureOf(event)
+		drag.points.push(p === undefined ? [point.x, point.y] : [point.x, point.y, p])
 		this.state.inkPreview = {
 			points: drag.points,
 			color: drag.color,
@@ -254,10 +264,15 @@ export class CanvasController {
 	}
 
 	// Lifting the pen makes the stroke: one undo step, and the pen stays ready for the next one.
-	finishInk(drag, point) {
+	finishInk(drag, point, event) {
 		this.state.inkPreview = null
 		const last = drag.points[drag.points.length - 1]
-		if (last[0] !== point.x || last[1] !== point.y) drag.points.push([point.x, point.y])
+		if (last[0] !== point.x || last[1] !== point.y)
+			drag.points.push(
+				last.length === 3
+					? [point.x, point.y, this.pressureOf(event) ?? last[2]]
+					: [point.x, point.y],
+			)
 		const points = thinPoints(drag.points, this.inkGap())
 		const stroke = createStroke({
 			points,
@@ -503,7 +518,39 @@ export class CanvasController {
 
 	// --- pointer ---
 
+	// Touch screens: a second finger turns the gesture into a pan and zoom. Returns true when the
+	// event belongs to that and the normal handling must be skipped.
+	touchDown(event) {
+		if (event.pointerType !== "touch") return false
+		const count = this.pinch.down(event.pointerId, this.screenPoint(event))
+		if (count < 2) return this.pinchLock
+		this.cancel() // whatever one finger had started is abandoned
+		this.pinchLock = true
+		return true
+	}
+
+	touchMove(event) {
+		if (event.pointerType !== "touch" || !this.pinch.count) return false
+		const change = this.pinch.move(event.pointerId, this.screenPoint(event))
+		if (change) {
+			const view = this.state.viewport
+			setViewport(
+				this.store,
+				zoomAt(panBy(view, change.dx, change.dy), change.center, view.scale * change.ratio),
+			)
+		}
+		return this.pinchLock
+	}
+
+	touchUp(event) {
+		if (event.pointerType !== "touch") return false
+		const was = this.pinchLock
+		if (this.pinch.up(event.pointerId) === 0) this.pinchLock = false
+		return was
+	}
+
 	pointerDown(event) {
+		if (this.touchDown(event)) return
 		if (this.drag) return
 		const screen = this.screenPoint(event)
 		if (event.button === 1 || this.state.tool === "hand" || this.state.spaceHeld) {
@@ -523,7 +570,7 @@ export class CanvasController {
 			return
 		}
 		if (this.state.tool === "pen" || this.state.tool === "highlighter") {
-			if (!this.state.readonly) this.startInk(this.state.tool, point)
+			if (!this.state.readonly) this.startInk(this.state.tool, point, event)
 			return
 		}
 		if (this.state.tool === "eraser") {
@@ -686,6 +733,36 @@ export class CanvasController {
 		}
 	}
 
+	// The flowchart steps and arrows, or else the mind map nodes, that a rectangle touches.
+	diagramItemsIn(rect) {
+		const flow = []
+		for (const layout of this.flows.value.values()) {
+			for (const node of layout.nodes) {
+				const size = layout.sizes.get(node.id)
+				if (!size) continue
+				if (
+					rectsIntersect(
+						{ x: node.x - size.w / 2, y: node.y - size.h / 2, w: size.w, h: size.h },
+						rect,
+					)
+				)
+					flow.push(node.id)
+			}
+			for (const edge of layout.edges) {
+				const route = layout.routes.get(edge.id)
+				if (route && pathIntersectsRect({ points: route.points }, rect)) flow.push(edge.id)
+			}
+		}
+		if (flow.length) return flow
+		const nodes = []
+		for (const layout of this.maps.value.values())
+			for (const node of layout.nodes) {
+				const box = layout.boxes.get(node.id)
+				if (box && rectsIntersect(box, rect)) nodes.push(node.id)
+			}
+		return nodes
+	}
+
 	// A press on a flowchart step: select it (Shift adds or removes), and get ready to drag it.
 	pressFlowNode(event, point, screen, { layout, node }) {
 		const selected = this.state.selection
@@ -761,6 +838,7 @@ export class CanvasController {
 	}
 
 	pointerMove(event) {
+		if (this.touchMove(event)) return
 		const drag = this.drag
 		if (!drag) return this.hover(event)
 		this.lastMove = event
@@ -771,7 +849,7 @@ export class CanvasController {
 		if (this.state.tool === "laser") this.moveLaser(point)
 		switch (drag.type) {
 			case "ink":
-				this.extendInk(drag, point)
+				this.extendInk(drag, point, event)
 				break
 			case "erase":
 				this.extendErase(drag, point)
@@ -881,7 +959,10 @@ export class CanvasController {
 					})
 					.map((connector) => connector.id)
 				const picked = expandToGroups(this.store.objects.value, inside)
-				this.store.select([...new Set([...drag.base, ...picked, ...lines])])
+				// A marquee that catches no shapes or lines picks flowchart steps and arrows, or else mind
+				// map nodes, so a group of them can be selected, restyled, moved or deleted together.
+				const diagram = picked.length || lines.length ? [] : this.diagramItemsIn(rect)
+				this.store.select([...new Set([...drag.base, ...picked, ...lines, ...diagram])])
 				break
 			}
 			case "connect":
@@ -1192,7 +1273,17 @@ export class CanvasController {
 		return rectFromPoints(drag.start, point)
 	}
 
+	// The browser took the touch away (a call, a swipe from the edge): nothing is half done.
+	pointerCancel(event) {
+		if (event?.pointerType === "touch") {
+			this.pinch.reset()
+			this.pinchLock = false
+		}
+		this.cancel()
+	}
+
 	pointerUp(event) {
+		if (this.touchUp(event)) return
 		const drag = this.drag
 		if (!drag) return
 		this.drag = null
@@ -1202,7 +1293,7 @@ export class CanvasController {
 		this.state.guides = []
 		switch (drag.type) {
 			case "ink":
-				this.finishInk(drag, this.boardPoint(event))
+				this.finishInk(drag, this.boardPoint(event), event)
 				break
 			case "erase":
 				this.finishErase(drag)

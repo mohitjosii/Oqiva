@@ -17,6 +17,8 @@ const PASSES = 6 // coordinate passes (each is one up and one down)
 const DECISION_WEIGHT = 4 // how hard a decision pulls its outputs into their slots
 const SLOT_EPSILON = 1e-4 // breaks ties between the outputs of one decision when ordering
 const CLEARANCE = 16 // closest a placed node may come to another one
+const LANE_PULL = 0.05 // weight of a lane against a step, in pulling and in being pushed
+const LANE_GAP = 26 // between the lane of a long edge and its neighbours (steps or other lanes)
 
 // Edges that point backwards, found with an iterative depth-first search that starts at the
 // sources (nodes with no incoming edge) and then at any node left over, by id. An edge into a node
@@ -94,8 +96,11 @@ const slotIndex = (i) => (i === 0 ? 0 : i % 2 === 1 ? (i + 1) / 2 : -i / 2)
 
 // Places ordered items as close as possible to their desired centres without overlapping: clusters
 // of items that collide are merged and put at their weighted mean (the classic compaction used by
-// layered layouts). ``items`` are {d: desired centre, q: weight, w: width}; returns the centres.
+// layered layouts). ``items`` are {d: desired centre, q: weight, w: width, lane?}; returns the
+// centres. ``gap`` separates neighbours, a lane (see ``withLanes``) keeps LANE_GAP from its
+// neighbours instead.
 function pack(items, gap) {
+	const between = (a, b) => (a.lane || b.lane ? LANE_GAP : gap)
 	const clusters = []
 	items.forEach((item, i) => {
 		clusters.push({
@@ -108,10 +113,11 @@ function pack(items, gap) {
 		while (clusters.length > 1) {
 			const cur = clusters[clusters.length - 1]
 			const prev = clusters[clusters.length - 2]
-			if (prev.sum / prev.q + prev.len + gap <= cur.sum / cur.q + 1e-9) break
-			prev.sum += cur.sum - cur.q * (prev.len + gap)
+			const sep = between(items[prev.to], items[cur.from])
+			if (prev.sum / prev.q + prev.len + sep <= cur.sum / cur.q + 1e-9) break
+			prev.sum += cur.sum - cur.q * (prev.len + sep)
 			prev.q += cur.q
-			prev.len += gap + cur.len
+			prev.len += sep + cur.len
 			prev.to = cur.to
 			clusters.pop()
 		}
@@ -121,22 +127,63 @@ function pack(items, gap) {
 		let left = c.sum / c.q
 		for (let i = c.from; i <= c.to; i++) {
 			centres[i] = left + items[i].w / 2
-			left += items[i].w + gap
+			if (i < c.to) left += items[i].w + between(items[i], items[i + 1])
 		}
 	}
 	return centres
 }
 
+// An edge that spans more than one rank gets a stand-in in every rank it passes (a "lane", the
+// classic dummy node of layered layouts), so that the ordering and placement leave it a free
+// corridor between the steps instead of letting it run behind them. Returns the lists of edges
+// with the long ones replaced by chains of short ones, and the ids of the lane nodes (given a rank,
+// a size and the type "lane").
+function withLanes(members, graph, rank, size, types) {
+	const out = new Map()
+	const into = new Map()
+	for (const id of members) {
+		out.set(id, [])
+		into.set(id, [])
+	}
+	const lanes = []
+	const add = (edge) => {
+		out.get(edge.from).push(edge)
+		into.get(edge.to).push(edge)
+	}
+	for (const id of members) {
+		for (const edge of graph.out.get(id)) {
+			const span = rank.get(edge.to) - rank.get(id)
+			if (span <= 1) {
+				add(edge)
+				continue
+			}
+			let from = id
+			for (let k = 1; k < span; k++) {
+				const lane = `${edge.id}\u0000${k}`
+				rank.set(lane, rank.get(id) + k)
+				size.set(lane, { w: 0, h: 0, along: 0, cross: 0 })
+				types.set(lane, "lane")
+				out.set(lane, [])
+				into.set(lane, [])
+				lanes.push(lane)
+				add({ id: `${edge.id}\u0000>${k}`, from, to: lane, order: edge.order })
+				from = lane
+			}
+			add({ id: `${edge.id}\u0000>${span}`, from, to: edge.to, order: edge.order })
+		}
+	}
+	return { out, into, lanes }
+}
+
 // Lays out one connected component: ranks, order inside the ranks, then coordinates. Returns
 // Map<id, {along, cross}> with the flow starting at 0 and the cross coordinates centred on 0.
 function layoutComponent(members, graph, size, types) {
-	const { out, into } = graph
 	// Ranks: the longest path from the sources over forward edges.
 	const rank = new Map()
 	const indegree = new Map()
 	const queue = []
 	for (const id of members) {
-		indegree.set(id, into.get(id).length)
+		indegree.set(id, graph.into.get(id).length)
 		if (!indegree.get(id)) {
 			rank.set(id, 0)
 			queue.push(id)
@@ -144,7 +191,7 @@ function layoutComponent(members, graph, size, types) {
 	}
 	for (let head = 0; head < queue.length; head++) {
 		const u = queue[head]
-		for (const edge of out.get(u)) {
+		for (const edge of graph.out.get(u)) {
 			rank.set(edge.to, Math.max(rank.get(edge.to) ?? 0, rank.get(u) + 1))
 			indegree.set(edge.to, indegree.get(edge.to) - 1)
 			if (!indegree.get(edge.to)) queue.push(edge.to)
@@ -152,6 +199,8 @@ function layoutComponent(members, graph, size, types) {
 	}
 	for (const id of members) if (!rank.has(id)) rank.set(id, 0) // cannot happen: back-edges are cut
 	const rankCount = Math.max(...rank.values()) + 1
+	const { out, into, lanes } = withLanes(members, graph, rank, size, types)
+	const all = [...members, ...lanes]
 
 	// Slots of the outputs of every decision.
 	const slots = new Map() // decisionId -> Map<targetId, slot index>
@@ -201,7 +250,7 @@ function layoutComponent(members, graph, size, types) {
 			}
 		}
 	}
-	for (const id of members) if (!placed.has(id)) lists[rank.get(id)].push(id)
+	for (const id of all) if (!placed.has(id)) lists[rank.get(id)].push(id)
 
 	// Fewer crossings: barycenter sweeps.
 	const pos = new Map()
@@ -267,19 +316,24 @@ function layoutComponent(members, graph, size, types) {
 		const list = lists[r]
 		const items = list.map((id) => {
 			const w = size.get(id).cross
+			const lane = types.get(id) === "lane"
 			const edges = downward ? into.get(id) : out.get(id)
-			if (!edges.length) return { d: cross.get(id), q: 1, w }
+			if (!edges.length) return { d: cross.get(id), q: lane ? LANE_PULL : 1, w, lane }
 			let sum = 0
 			let q = 0
 			for (const edge of edges) {
-				const weight = weightOf(edge)
+				// a lane follows its two ends, but a step is hardly pulled aside by one
+				const other = downward ? edge.from : edge.to
+				const weight =
+					weightOf(edge) * (!lane && types.get(other) === "lane" ? LANE_PULL : 1)
 				const offset = offsetOf(edge)
 				sum +=
 					weight *
 					(downward ? cross.get(edge.from) + offset : cross.get(edge.to) - offset)
 				q += weight
 			}
-			return { d: sum / q, q, w }
+			// a lane gives way to the steps it passes: they hold their place, it is moved aside
+			return { d: sum / q, q: lane ? LANE_PULL : q, w, lane }
 		})
 		const centres = pack(items, GAPS.across)
 		list.forEach((id, i) => cross.set(id, centres[i]))

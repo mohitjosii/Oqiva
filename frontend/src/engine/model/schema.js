@@ -202,6 +202,7 @@ export function sanitizeConnector(raw, index, objectIds) {
 			strokeWidth: Math.max(1, style.strokeWidth),
 			dash: style.dash,
 			opacity: style.opacity,
+			...(typeof raw.style?.sketch === "boolean" ? { sketch: raw.style.sketch } : {}),
 		},
 		label,
 		z: number(raw.z, index, -1e9, 1e9),
@@ -261,10 +262,13 @@ function sanitizePoints(raw) {
 	const points = []
 	for (const pair of raw) {
 		if (!Array.isArray(pair) || !finite(pair[0]) || !finite(pair[1])) continue
-		points.push([
+		const point = [
 			Math.round(Math.min(1, Math.max(0, pair[0])) * 10000) / 10000,
 			Math.round(Math.min(1, Math.max(0, pair[1])) * 10000) / 10000,
-		])
+		]
+		if (finite(pair[2]))
+			point.push(Math.round(Math.min(1, Math.max(0, pair[2])) * 10000) / 10000)
+		points.push(point)
 		if (points.length >= STROKE_MAX_POINTS) break
 	}
 	return points.length ? points : null

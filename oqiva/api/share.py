@@ -63,6 +63,7 @@ def revoke_link(link: str) -> dict:
 	return link_service.revoke_link(current_user(), link)
 
 
+# nosemgrep -- reviewed: anonymous links are the feature; token-checked and IP rate limited
 @frappe.whitelist(methods=["POST"], allow_guest=True)
 @rate_limit(limit=20, seconds=60, ip_based=True)
 def redeem_link(token: str) -> dict:
@@ -70,6 +71,7 @@ def redeem_link(token: str) -> dict:
 	return link_service.redeem(frappe.session.user, token)
 
 
+# nosemgrep -- reviewed: anonymous links are the feature; token-checked and IP rate limited
 @frappe.whitelist(allow_guest=True)
 @rate_limit(limit=60, seconds=60, ip_based=True)
 def view_shared(token: str) -> dict:
@@ -77,6 +79,7 @@ def view_shared(token: str) -> dict:
 	return link_service.view_shared(token)
 
 
+# nosemgrep -- reviewed: anonymous links are the feature; token-checked and IP rate limited
 @frappe.whitelist(allow_guest=True)
 @rate_limit(limit=300, seconds=60, ip_based=True)
 def link_file(token: str, src: str) -> None:

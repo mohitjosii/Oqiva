@@ -1,9 +1,11 @@
 <script setup>
+import { useSmallScreen } from "./useSmallScreen"
 // The Export button at the top right of the board: the whole board or just the selection, as
 // a picture, SVG or PDF, or sent to the printer.
 import { Button, Dropdown } from "frappe-ui"
 import { computed } from "vue"
 
+const small = useSmallScreen()
 const props = defineProps({ store: { type: Object, required: true } })
 const emit = defineEmits(["export"])
 
@@ -58,12 +60,13 @@ const options = computed(() => [
 	>
 		<Dropdown :options="options" placement="right">
 			<Button
-				label="Export"
+				:label="small ? undefined : 'Export'"
 				icon-left="download"
 				variant="subtle"
 				:loading="state.exporting"
 				:disabled="state.exporting"
 				title="Export or print this board"
+				aria-label="Export or print this board"
 				data-testid="export-button"
 			/>
 		</Dropdown>

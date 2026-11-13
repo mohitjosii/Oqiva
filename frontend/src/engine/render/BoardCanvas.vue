@@ -194,7 +194,7 @@ function pointerUp(event) {
 		@pointermove="controller.pointerMove($event)"
 		@pointerup="pointerUp"
 		@pointerleave="controller.leave()"
-		@pointercancel="controller.cancel()"
+		@pointercancel="controller.pointerCancel($event)"
 		@dblclick="controller.doubleClick($event)"
 		@wheel.prevent="controller.wheel($event)"
 		@contextmenu.prevent
@@ -272,6 +272,7 @@ function pointerUp(event) {
 					:background="pageFill"
 					:hide-label="connector.id === state.editingId"
 					:fonts="fonts"
+					:sketch="sketch"
 				/>
 				<ConnectorView
 					v-if="previewConnector"

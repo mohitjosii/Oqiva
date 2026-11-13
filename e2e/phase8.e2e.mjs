@@ -307,7 +307,7 @@ await step("the Project mind map template opens as a real map", async () => {
 	await page.getByRole("button", { name: "Use template" }).click()
 	await page.waitForURL(/\/oqiva\/board\//)
 	await canvas.waitFor()
-	await poll(async () => (await nodes(page).count()) === 17, "17 nodes")
+	await poll(async () => (await nodes(page).count()) === 30, "30 nodes")
 	await shot(page, "p8-6-template")
 })
 

@@ -30,16 +30,16 @@ const clamp = (value, low, high) => Math.min(high, Math.max(low, value))
 // Drops a point that is closer than ``minGap`` to the last one kept, so a slow hand does not pile
 // up points. The first point and the last one always stay.
 export function thinPoints(points, minGap) {
-	if (points.length < 3) return points.map((p) => [p[0], p[1]])
-	const kept = [[points[0][0], points[0][1]]]
+	if (points.length < 3) return points.map((p) => [...p])
+	const kept = [[...points[0]]]
 	for (let i = 1; i < points.length - 1; i++) {
 		const last = kept[kept.length - 1]
 		if (Math.hypot(points[i][0] - last[0], points[i][1] - last[1]) >= minGap)
-			kept.push([points[i][0], points[i][1]])
+			kept.push([...points[i]])
 	}
 	const end = points[points.length - 1]
 	const last = kept[kept.length - 1]
-	if (end[0] !== last[0] || end[1] !== last[1]) kept.push([end[0], end[1]])
+	if (end[0] !== last[0] || end[1] !== last[1]) kept.push([...end])
 	return kept
 }
 
@@ -94,17 +94,26 @@ export function createStroke({ points, color, width, ink = "pen", z = 0, id = nu
 		},
 		text: null,
 		ink: ink in INKS ? ink : "pen",
-		points: pts.map(([x, y]) => [round4((x - box.x) / w), round4((y - box.y) / h)]),
+		// a pen that reports pressure keeps it as a third number; a mouse or finger has none
+		points: pts.map(([x, y, p]) => {
+			const point = [round4((x - box.x) / w), round4((y - box.y) / h)]
+			if (Number.isFinite(p)) point.push(round4(clamp(p, 0, 1)))
+			return point
+		}),
 	}
 }
 
 // The points of a stroke in its own coordinates (0 to w, 0 to h).
 export const localPoints = (object) =>
-	(object.points || []).map(([x, y]) => [x * object.w, y * object.h])
+	(object.points || []).map(([x, y, p]) =>
+		Number.isFinite(p) ? [x * object.w, y * object.h, p] : [x * object.w, y * object.h],
+	)
 
 // The points of a stroke in board coordinates, ignoring rotation.
 export const boardPoints = (object) =>
-	localPoints(object).map(([x, y]) => [object.x + x, object.y + y])
+	localPoints(object).map(([x, y, p]) =>
+		Number.isFinite(p) ? [object.x + x, object.y + y, p] : [object.x + x, object.y + y],
+	)
 
 const average = (a, b) => (a + b) / 2
 
@@ -122,7 +131,8 @@ export function outlinePath(points, width, ink = "pen") {
 		thinning: kind.thinning,
 		smoothing: kind.smoothing,
 		streamline: kind.streamline,
-		simulatePressure: true,
+		// real pressure when the pen reported it, else a simulated one from the speed
+		simulatePressure: !points.some((p) => Number.isFinite(p[2])),
 		last: true,
 	})
 	if (outline.length < 4) return ""
@@ -176,15 +186,21 @@ export function distanceToStroke(object, x, y) {
 
 // Puts extra points on long segments, so an eraser can cut in the middle of one.
 export function densify(points, step) {
-	if (points.length < 2) return points.map((p) => [p[0], p[1]])
-	const out = [[points[0][0], points[0][1]]]
+	if (points.length < 2) return points.map((p) => [...p])
+	const out = [[...points[0]]]
 	for (let i = 1; i < points.length; i++) {
 		const [ax, ay] = points[i - 1]
 		const [bx, by] = points[i]
 		const length = Math.hypot(bx - ax, by - ay)
 		const pieces = Math.max(1, Math.ceil(length / step))
-		for (let k = 1; k <= pieces; k++)
-			out.push([ax + ((bx - ax) * k) / pieces, ay + ((by - ay) * k) / pieces])
+		const pa = points[i - 1][2]
+		const pb = points[i][2]
+		for (let k = 1; k <= pieces; k++) {
+			const point = [ax + ((bx - ax) * k) / pieces, ay + ((by - ay) * k) / pieces]
+			if (Number.isFinite(pa) && Number.isFinite(pb))
+				point.push(pa + ((pb - pa) * k) / pieces)
+			out.push(point)
+		}
 	}
 	return out
 }

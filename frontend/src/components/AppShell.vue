@@ -22,7 +22,16 @@ const router = useRouter()
 
 const workspace = computed(() => findWorkspace(route.params.workspace))
 const powers = computed(() => workspacePowers(workspace.value))
-const collapsed = computed(() => preferences.sidebarCollapsed)
+// On a phone or a narrow tablet the sidebar is a drawer that a button opens, not a column that takes
+// a third of the screen.
+const small = ref(false)
+const drawerOpen = ref(false)
+let query = null
+const syncSmall = () => {
+	small.value = Boolean(query?.matches)
+	if (!small.value) drawerOpen.value = false
+}
+const collapsed = computed(() => !small.value && preferences.sidebarCollapsed)
 
 const dialogs = ref({
 	create: false,
@@ -61,8 +70,21 @@ function onKeydown(event) {
 		dialogs.value.search = true
 	}
 }
-onMounted(() => window.addEventListener("keydown", onKeydown))
-onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown))
+onMounted(() => {
+	window.addEventListener("keydown", onKeydown)
+	query = window.matchMedia?.("(max-width: 767px)") || null
+	query?.addEventListener?.("change", syncSmall)
+	syncSmall()
+})
+onBeforeUnmount(() => {
+	window.removeEventListener("keydown", onKeydown)
+	query?.removeEventListener?.("change", syncSmall)
+})
+// leaving a page by the drawer closes it
+watch(
+	() => route.fullPath,
+	() => (drawerOpen.value = false),
+)
 
 async function newBoard() {
 	if (creating.value) return
@@ -149,6 +171,17 @@ async function logout() {
 	}
 }
 
+// What the header's buttons become on a small screen.
+const moreMenu = computed(() => [
+	{
+		label: "From template",
+		icon: "layout",
+		onClick: () =>
+			router.push({ name: "templates", params: { workspace: route.params.workspace } }),
+	},
+	{ label: "Import a board file", icon: "upload", onClick: () => importInput.value?.click() },
+])
+
 const userMenu = computed(() => [
 	{
 		label: preferences.theme === "dark" ? "Light mode" : "Dark mode",
@@ -167,10 +200,25 @@ const userMenu = computed(() => [
 
 <template>
 	<div v-if="workspace" class="flex h-screen bg-surface-gray-1 text-ink-gray-9">
+		<div
+			v-if="small && drawerOpen"
+			class="fixed inset-0 z-30 bg-black/30"
+			aria-hidden="true"
+			data-testid="drawer-backdrop"
+			@click="drawerOpen = false"
+		/>
 		<aside
-			class="flex shrink-0 flex-col border-r border-outline-gray-2 bg-surface-white transition-[width] duration-150 motion-reduce:transition-none"
-			:class="collapsed ? 'w-14' : 'w-64'"
+			class="flex shrink-0 flex-col border-r border-outline-gray-2 bg-surface-white transition-[width,transform] duration-150 motion-reduce:transition-none"
+			:class="[
+				small
+					? `fixed inset-y-0 left-0 z-40 w-64 shadow-xl ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}`
+					: collapsed
+						? 'w-14'
+						: 'w-64',
+			]"
+			:inert="small && !drawerOpen ? true : undefined"
 			aria-label="Sidebar"
+			data-testid="sidebar"
 		>
 			<div class="p-2">
 				<WorkspaceSwitcher
@@ -281,6 +329,7 @@ const userMenu = computed(() => [
 					</template>
 				</Dropdown>
 				<Button
+					v-if="!small"
 					:icon="collapsed ? 'chevrons-right' : 'chevrons-left'"
 					size="sm"
 					variant="ghost"
@@ -292,19 +341,45 @@ const userMenu = computed(() => [
 
 		<div class="flex min-w-0 flex-1 flex-col">
 			<header
-				class="flex items-center justify-end gap-2 border-b border-outline-gray-2 bg-surface-white px-6 py-2.5"
+				class="flex items-center justify-end gap-2 border-b border-outline-gray-2 bg-surface-white px-3 py-2.5 md:px-6"
 			>
+				<Button
+					v-if="small"
+					icon="menu"
+					variant="ghost"
+					title="Open the menu"
+					class="mr-auto"
+					data-testid="open-menu"
+					@click="drawerOpen = true"
+				/>
 				<button
 					type="button"
-					class="flex w-64 items-center gap-2 rounded-md border border-outline-gray-2 bg-surface-gray-1 px-2.5 py-1.5 text-sm text-ink-gray-5 hover:border-outline-gray-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4"
+					class="flex items-center gap-2 rounded-md border border-outline-gray-2 bg-surface-gray-1 px-2.5 py-1.5 text-sm text-ink-gray-5 hover:border-outline-gray-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-outline-gray-4"
+					:class="small ? 'px-2.5' : 'w-64'"
+					:title="small ? 'Search' : undefined"
+					:aria-label="small ? 'Search' : undefined"
 					@click="dialogs.search = true"
 				>
 					<FeatherIcon name="search" class="h-4 w-4" aria-hidden="true" />
-					<span class="flex-1 text-left">Search</span>
-					<kbd class="rounded border border-outline-gray-2 px-1 text-xs">Ctrl K</kbd>
+					<span v-if="!small" class="flex-1 text-left">Search</span>
+					<kbd v-if="!small" class="rounded border border-outline-gray-2 px-1 text-xs"
+						>Ctrl K</kbd
+					>
 				</button>
+				<Dropdown
+					v-if="small && powers.canCreate"
+					:options="moreMenu"
+					placement="bottom-end"
+				>
+					<Button
+						icon="more-horizontal"
+						variant="subtle"
+						title="More"
+						data-testid="more-menu"
+					/>
+				</Dropdown>
 				<Button
-					v-if="powers.canCreate"
+					v-if="powers.canCreate && !small"
 					variant="subtle"
 					iconLeft="layout"
 					label="From template"
@@ -316,7 +391,7 @@ const userMenu = computed(() => [
 					"
 				/>
 				<Button
-					v-if="powers.canCreate"
+					v-if="powers.canCreate && !small"
 					variant="subtle"
 					iconLeft="upload"
 					label="Import"
@@ -343,7 +418,7 @@ const userMenu = computed(() => [
 					@click="newBoard"
 				/>
 			</header>
-			<main class="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+			<main class="min-h-0 flex-1 overflow-y-auto px-4 py-5 md:px-6 md:py-6">
 				<router-view :key="route.fullPath" />
 			</main>
 		</div>

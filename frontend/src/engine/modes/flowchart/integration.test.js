@@ -8,6 +8,7 @@ import { CanvasController } from "../../interaction/controller"
 import { runCommand } from "../../interaction/commands"
 import { commandFor } from "../../interaction/keymap"
 import { contentBounds, fitView } from "../../interaction/view"
+import { createObject } from "../../model/factories"
 import { createDocument, parseDocument } from "../../model/schema"
 import { createStore } from "../../store/createStore"
 import { flowOwnsKeys } from "./commands"
@@ -662,5 +663,46 @@ describe("two people on one chart", () => {
 				expect(ids.has(e.to)).toBe(true)
 			}
 		}
+	})
+})
+
+describe("selecting several at once", () => {
+	beforeEach(() => setup())
+
+	it("a marquee over steps selects them and the arrows between them", () => {
+		controller.pointerDown(press(1, 1)) // empty canvas: starts a marquee
+		controller.pointerMove(press(900, 900))
+		controller.pointerUp(press(900, 900))
+		const ids = new Set(store.state.selection)
+		for (const id of ["s", "d", "p", "e"]) expect(ids.has(id)).toBe(true)
+		expect(ids.has("sd")).toBe(true)
+		expect(store.selectedFlowNodes()).toHaveLength(4)
+		expect(flowOwnsKeys(store)).toBe(true)
+	})
+
+	it("a small marquee takes only the steps it touches", () => {
+		controller.pointerDown(press(300, 60))
+		controller.pointerMove(press(500, 115))
+		controller.pointerUp(press(500, 115))
+		expect(store.state.selection).toEqual(["s"])
+	})
+
+	it("Select all takes the whole flowchart when it is all there is", async () => {
+		await runCommand(store, controller, { name: "selectAll" }, {})
+		expect(store.selectedFlowNodes()).toHaveLength(4)
+		expect(store.selectedFlowEdges()).toHaveLength(4)
+	})
+
+	it("shapes win over diagram parts when a marquee catches both", () => {
+		store.addObjects(
+			[createObject("rectangle", { x: 700, y: 60, w: 80, h: 50 }, { theme: "ocean", z: 9 })],
+			{ select: false },
+		)
+		controller.pointerDown(press(1, 1))
+		controller.pointerMove(press(900, 900))
+		controller.pointerUp(press(900, 900))
+		expect(store.selectedFlowNodes()).toHaveLength(0)
+		expect(store.objects.value).toHaveLength(1)
+		expect(store.state.selection).toContain(store.objects.value[0].id)
 	})
 })
