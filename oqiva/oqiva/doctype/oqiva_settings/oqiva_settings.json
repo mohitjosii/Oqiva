@@ -16,7 +16,11 @@
   "version_retention",
   "sec_access",
   "auto_grant_role",
-  "realtime_reauth_seconds"
+  "realtime_reauth_seconds",
+  "sec_ai",
+  "ai_provider",
+  "ai_model",
+  "ai_api_key"
  ],
  "fields": [
   {
@@ -98,6 +102,34 @@
    "label": "Realtime Reauth Seconds",
    "default": "15",
    "description": "How often a live editing session is re-checked."
+  },
+  {
+   "fieldname": "sec_ai",
+   "fieldtype": "Section Break",
+   "label": "AI diagram generation",
+   "description": "Off by default. When on, people can describe a diagram and have it drawn for them. Only the description they type is sent to the provider; board content is never sent."
+  },
+  {
+   "fieldname": "ai_provider",
+   "fieldtype": "Select",
+   "label": "AI provider",
+   "options": "none\nanthropic\ngemini",
+   "default": "none",
+   "description": "Anthropic (Claude) or Google Gemini."
+  },
+  {
+   "fieldname": "ai_model",
+   "fieldtype": "Data",
+   "label": "AI model",
+   "depends_on": "eval:doc.ai_provider && doc.ai_provider!='none'",
+   "description": "Leave blank for the provider's default (claude-sonnet-5-5 for Anthropic, gemini-2.5-flash for Gemini). A Claude model name only works with Anthropic and a Gemini one only with Gemini."
+  },
+  {
+   "fieldname": "ai_api_key",
+   "fieldtype": "Password",
+   "label": "AI API key",
+   "depends_on": "eval:doc.ai_provider && doc.ai_provider!='none'",
+   "description": "Stored encrypted. Never shown to users."
   }
  ],
  "index_web_pages_for_search": 0,

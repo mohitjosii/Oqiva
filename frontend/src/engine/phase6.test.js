@@ -534,7 +534,7 @@ describe("section names and quick-add inside a frame", () => {
 		expect(pointInObject(long, { x: 40 + 500, y: 40 - 15 })).toBe(false)
 		const before = store.objects.value.length
 		controller.doubleClick(press(500, 250)) // inside the frame, away from its cards
-		expect(store.objects.value).toHaveLength(before + 1) // a double-click there still makes a shape
+		expect(store.objects.value).toHaveLength(before) // nothing is made: shapes are added from the bar
 	})
 
 	it("the arrow beside a card inside a frame puts the new card in line, not pushed up out of the frame", () => {

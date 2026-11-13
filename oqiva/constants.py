@@ -24,6 +24,40 @@ AUDIT_RETENTION_DAYS = 365
 EXPORT_FORMATS = ("png", "jpeg", "svg", "pdf", "print")
 EXPORT_SCOPES = ("board", "selection")
 
+# AI diagram generation (ARCHITECTURE: AI). The model only ever returns a small description of a
+# diagram; the browser draws it. These are the limits of that description.
+AI_PROVIDERS = ("none", "anthropic", "gemini")
+# The model used when Oqiva Settings leaves the model blank. A model name belongs to one provider.
+AI_DEFAULT_MODELS = {"anthropic": "claude-sonnet-5-5", "gemini": "gemini-2.5-flash"}
+AI_MODEL_PREFIX = {"anthropic": "claude-", "gemini": "gemini-"}
+AI_KINDS = ("flowchart", "architecture", "mindmap")
+AI_SHAPES = (
+	"process",
+	"decision",
+	"terminator",
+	"database",
+	"document",
+	"server",
+	"cloud",
+	"queue",
+	"storage",
+	"user",
+	"service",
+	"note",
+)
+AI_LIMITS = {
+	"max_nodes": 60,
+	"max_edges": 120,
+	"max_label": 120,
+	"max_id": 64,
+	"min_prompt": 3,
+	"max_prompt": 2000,
+}
+AI_TIMEOUT_SECONDS = 45
+AI_MAX_TOKENS = 8192
+AI_RESULT_TTL_SECONDS = 600
+AI_RATE_LIMIT_PER_MINUTE = 10
+
 # Defaults for Oqiva Settings. Read through utils.settings.get_setting so a missing
 # row (fresh install, or a value an admin blanked) still gives a safe limit.
 SETTINGS_DEFAULTS = {

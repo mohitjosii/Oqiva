@@ -380,16 +380,6 @@ describe("the keys", () => {
 })
 
 describe("the board's settings", () => {
-	it("double-click adds a shape, or on a whiteboard a text box", () => {
-		setup()
-		controller.doubleClick(press(300, 300))
-		expect(store.objects.value[0].kind).toBe("shape")
-		setup([], { canvas: { doubleClick: "text" } })
-		controller.doubleClick(press(300, 300))
-		expect(store.objects.value[0].kind).toBe("text")
-		expect(store.state.editingId).toBe(store.objects.value[0].id)
-	})
-
 	it("sketch style: the object's own choice beats the board's", () => {
 		setup([rect("a", 0, 0)], { canvas: { sketch: true } })
 		const svgOf = () => {

@@ -164,13 +164,12 @@ await step("adds a text box with text", async () => {
 	await poll(async () => (await page.locator('[data-testid="objects"] text').allTextContents()).join(" ").includes("A note"), "the note text")
 })
 
-await step("double-clicking empty canvas makes a shape ready for typing", async () => {
+await step("double-clicking empty canvas adds nothing", async () => {
 	const before = await count()
 	await page.mouse.dblclick(origin.x + 300, origin.y - 250)
-	await page.locator('[data-testid="text-editor"]').waitFor()
-	await page.keyboard.type("Quick")
-	await page.keyboard.press("Escape")
-	await expectCount(before + 1)
+	await page.waitForTimeout(400)
+	assert.equal(await page.locator('[data-testid="text-editor"]').count(), 0, "no editor opened")
+	await expectCount(before)
 })
 
 await step("duplicates and deletes, and brings a deleted shape back with undo", async () => {

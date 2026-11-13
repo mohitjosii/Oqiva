@@ -75,3 +75,14 @@ class OqivaDocumentTooNew(OqivaError):
 	"""The stored document was written by a newer version of the app."""
 
 	code = "OQIVA_DOCUMENT_TOO_NEW"
+
+
+class OqivaAiUnavailable(OqivaError):
+	"""Diagram generation is switched off, or the provider could not answer."""
+
+	code = "AI_UNAVAILABLE"
+	http_status_code = 503
+
+	@classmethod
+	def default_message(cls) -> str:
+		return _("Diagram generation is not enabled on this Oqiva instance.")

@@ -271,13 +271,12 @@ describe("drawing", () => {
 		expect(store.state.editingNew).toBe(true)
 	})
 
-	it("remembers the last shape for double-click on empty canvas", () => {
+	it("a double-click on empty canvas adds nothing, even after drawing a shape", () => {
 		store.state.tool = "diamond"
 		drag([100, 100], [250, 200])
 		controller.doubleClick(press(600, 400))
-		const created = store.objects.value[1]
-		expect(created.shape).toBe("diamond")
-		expect(store.state.editingId).toBe(created.id)
+		expect(store.objects.value).toHaveLength(1)
+		expect(store.state.editingId).toBeNull()
 	})
 
 	it("abandons a half-drawn shape on cancel", () => {

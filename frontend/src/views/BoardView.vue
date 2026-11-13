@@ -85,6 +85,19 @@ const prepared = computed(() => {
 					},
 					fetchState: () => api("board.get_crdt_state", { board: boardName.value }),
 				},
+				// AI diagrams: the server queues the job and the answer comes back as a live event (and can
+				// be fetched, in case the live link is down).
+				ai: {
+					status: () => api("ai.status"),
+					generate: (prompt, kind) =>
+						api("ai.generate_diagram", { prompt, kind, board: boardName.value }),
+					result: (requestId) => api("ai.result", { request_id: requestId }),
+					onResult: (handler) => {
+						const socket = getSocket()
+						socket?.on("oqiva:ai_result", handler)
+						return () => socket?.off("oqiva:ai_result", handler)
+					},
+				},
 				links: {
 					searchBoards: async (text) => {
 						if (text.trim().length < 2) return []
