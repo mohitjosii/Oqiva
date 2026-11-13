@@ -804,3 +804,73 @@ class TestFlowcharts(IntegrationTestCase):
 		with self.assertRaises(OqivaLimitExceeded):
 			self.parse(*[flow_chart(flow_node(f"x{i}"), chart_id=f"c{i}") for i in range(51)])
 		self.bad(flow_chart(*[flow_node(f"n{i}") for i in range(501)]))
+
+
+def stroke(object_id="k1", points=None, **over):
+	item = shape(
+		object_id,
+		kind="stroke",
+		ink="pen",
+		points=[[0, 0], [0.5, 0.5], [1, 1]] if points is None else points,
+	)
+	item["style"] = {"fill": None, "stroke": "#112233", "strokeWidth": 6, "opacity": 1}
+	item.update(over)
+	return item
+
+
+class TestStrokesAndWhiteboardSettings(IntegrationTestCase):
+	"""Freehand strokes, the hand-drawn style and the board's double-click setting."""
+
+	def parse(self, *objects, **over):
+		return document_service.parse_document(doc(*objects, **over))
+
+	def bad(self, *objects, **over):
+		with self.assertRaises(OqivaError):
+			self.parse(*objects, **over)
+
+	def test_accepts_strokes_of_both_inks_up_to_80_wide(self):
+		"""Success: a pen and a highlighter stroke, a wide pen, a single-point dot."""
+		for item in (
+			stroke(),
+			stroke("k2", ink="highlighter"),
+			stroke("k3", style={"stroke": "#000000", "strokeWidth": 80, "opacity": 0.4}),
+			stroke("k4", points=[[0.5, 0.5]]),
+		):
+			self.parse(item)
+
+	def test_refuses_bad_strokes(self):
+		"""Failure: no points, a point outside the box, a malformed point, an unknown ink, too wide, too many."""
+		self.bad(stroke(points=[]))
+		self.bad(stroke(points=[[0, 1.5]]))
+		self.bad(stroke(points=[[0.1]]))
+		self.bad(stroke(points=[["a", "b"]]))
+		self.bad(stroke(points=[[True, 0]]))
+		self.bad(stroke(ink="marker"))
+		self.bad(stroke(style={"stroke": "#000000", "strokeWidth": 81}))
+		self.bad(stroke(points=[[0.5, 0.5]] * 4001))
+		self.bad(stroke(points="not a list"))
+
+	def test_a_border_is_still_limited_to_20_on_other_kinds(self):
+		"""Boundary: only a pen may be wider than 20."""
+		self.bad(shape("a", style={"fill": None, "stroke": "#000000", "strokeWidth": 30}))
+
+	def test_sketch_flag_and_canvas_settings(self):
+		"""Success and failure: the hand-drawn flag is a boolean; the canvas takes only known values."""
+		self.parse(shape("a", style={"fill": None, "stroke": "#000000", "sketch": True}))
+		self.bad(shape("a", style={"fill": None, "stroke": "#000000", "sketch": "yes"}))
+		for canvas in (
+			{"mode": "infinite", "grid": "off", "sketch": True, "doubleClick": "text"},
+			{"mode": "infinite", "grid": "off", "doubleClick": "shape"},
+		):
+			self.parse(canvas=canvas)
+		for canvas in (
+			{"mode": "infinite", "grid": "off", "sketch": "yes"},
+			{"mode": "infinite", "grid": "off", "doubleClick": "banana"},
+		):
+			self.bad(canvas=canvas)
+
+	def test_strokes_count_against_the_object_limit(self):
+		"""Boundary: every stroke is an object, so a drawing cannot grow without limit."""
+		many = [stroke(f"k{i}") for i in range(3001)]
+		with self.assertRaises(OqivaLimitExceeded):
+			self.parse(*many)

@@ -38,6 +38,8 @@ import ExportMenu from "./ui/ExportMenu.vue"
 import ShortcutsDialog from "./ui/ShortcutsDialog.vue"
 import LineLabelEditor from "./ui/LineLabelEditor.vue"
 import RightPalette from "./ui/RightPalette.vue"
+import DrawOptionsBar from "./ui/DrawOptionsBar.vue"
+import EmptyHint from "./ui/EmptyHint.vue"
 import FlowchartBar from "./ui/FlowchartBar.vue"
 import FlowEditor from "./ui/FlowEditor.vue"
 import FlowTypePicker from "./ui/FlowTypePicker.vue"
@@ -394,6 +396,7 @@ defineExpose({ flush: () => autosave.flush(), store, autosave, unsaved })
 <template>
 	<div class="relative h-full w-full overflow-hidden" data-testid="board-editor">
 		<BoardCanvas :store="store" :controller="controller" :fonts="fonts" @files="addFiles">
+			<EmptyHint :store="store" />
 			<TextEditorOverlay :store="store" :measure="measureText" />
 			<MapNodeEditor :store="store" :controller="controller" />
 			<FlowEditor :store="store" :controller="controller" />
@@ -406,6 +409,7 @@ defineExpose({ flush: () => autosave.flush(), store, autosave, unsaved })
 		<ShapeLibrary :store="store" :controller="controller" />
 		<MindMapBar :store="store" :controller="controller" />
 		<FlowchartBar :store="store" :controller="controller" />
+		<DrawOptionsBar :store="store" />
 		<OutlinePanel :store="store" :controller="controller" />
 		<template v-if="host.versions">
 			<button

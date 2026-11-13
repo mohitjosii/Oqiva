@@ -139,6 +139,8 @@ const stroke = computed(() => shared((item) => item.style?.stroke))
 const strokeWidth = computed(() => shared((item) => item.style?.strokeWidth))
 const dash = computed(() => shared((item) => item.style?.dash))
 const opacity = computed(() => shared((item) => item.style?.opacity))
+// null follows the board, true is hand-drawn, false is clean; undefined when the selection differs
+const sketchValue = computed(() => shared((item) => item.style?.sketch ?? null))
 const radius = computed(() => shared((item) => item.style?.radius))
 const textColor = computed(() => sharedText((item) => item.text.color))
 const textSize = computed(() => sharedText((item) => item.text.size))
@@ -860,6 +862,27 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 				:recent="state.recentColors"
 				@pick="(c) => style('textColor', c, { recent: true })"
 			/>
+		</BarMenu>
+
+		<BarMenu v-if="has('sketch')" label="Hand-drawn style" icon="lucide-pencil-ruler">
+			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Outline style</h3>
+			<div class="flex flex-col gap-1" data-testid="sketch-options">
+				<button
+					v-for="[label, value] in [
+						['Same as the board', null],
+						['Hand-drawn', true],
+						['Clean', false],
+					]"
+					:key="label"
+					type="button"
+					class="rounded-md border border-outline-gray-2 px-2 py-1 text-left text-xs text-ink-gray-8 hover:bg-surface-gray-2"
+					:class="sketchValue === value ? 'bg-surface-gray-3 font-semibold' : ''"
+					:data-testid="`sketch-${value === null ? 'board' : value ? 'on' : 'off'}`"
+					@click="style('sketch', value)"
+				>
+					{{ label }}
+				</button>
+			</div>
 		</BarMenu>
 
 		<BarMenu v-if="has('opacity')" label="Transparency" icon="lucide-blend">

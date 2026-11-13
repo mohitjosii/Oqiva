@@ -32,7 +32,10 @@ SUPPORTED_SCHEMA = 1
 ID = re.compile(r"^[A-Za-z0-9_-]{1,64}$")
 COLOR = re.compile(r"^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$")
 LIST_KEYS = ("objects", "connectors", "mindmaps", "flowcharts")
-KNOWN_KINDS = ("shape", "text", "image", "table", "note", "icon", "frame")
+KNOWN_KINDS = ("shape", "text", "image", "table", "note", "icon", "frame", "stroke")
+STROKE_INKS = ("pen", "highlighter")
+STROKE_MAX_POINTS = 4000
+DOUBLE_CLICK = ("shape", "text")
 LINK_URL = re.compile(r"^(https?://|mailto:)[^\s<>\"']+$", re.IGNORECASE)
 LINK_BOARD = re.compile(r"^[A-Za-z0-9_.-]{1,140}$")
 ICON_NAME = re.compile(r"^[a-z0-9-]{1,40}$")
@@ -87,7 +90,7 @@ def _check_color(object_id: str, field: str, value, allow_none: bool = True) -> 
 		_bad(object_id, _("{0} must be a hex colour.").format(field))
 
 
-def _check_style(object_id: str, style) -> None:
+def _check_style(object_id: str, style, max_width: float = 20) -> None:
 	if style is None:
 		return
 	if not isinstance(style, dict):
@@ -95,9 +98,23 @@ def _check_style(object_id: str, style) -> None:
 	for field in ("fill", "stroke"):
 		if field in style:
 			_check_color(object_id, field, style[field])
-	for field, low, high in (("strokeWidth", 0, 20), ("opacity", 0, 1), ("radius", 0, 200)):
+	for field, low, high in (("strokeWidth", 0, max_width), ("opacity", 0, 1), ("radius", 0, 200)):
 		if field in style and not _number(style[field], low, high):
 			_bad(object_id, _("{0} is out of range.").format(field))
+	if "sketch" in style and not isinstance(style["sketch"], bool):
+		_bad(object_id, _("sketch must be true or false."))
+
+
+def _check_stroke(object_id: str, item: dict) -> None:
+	"""A freehand stroke: its ink and its points, which are fractions of the object's box."""
+	if item.get("ink", "pen") not in STROKE_INKS:
+		_bad(object_id, _("the ink is not recognised."))
+	points = item.get("points")
+	if not isinstance(points, list) or not 1 <= len(points) <= STROKE_MAX_POINTS:
+		_bad(object_id, _("a stroke has between 1 and {0} points.").format(STROKE_MAX_POINTS))
+	for point in points:
+		if not (isinstance(point, list) and len(point) == 2 and all(_number(v, 0, 1) for v in point)):
+			_bad(object_id, _("a stroke point must be two numbers from 0 to 1."))
 
 
 def _check_text(object_id: str, text) -> None:
@@ -173,7 +190,7 @@ def _check_object(item, seen: set) -> None:
 	):
 		if not _number(item.get(field), low, high):
 			_bad(object_id, _("{0} is missing or out of range.").format(field))
-	_check_style(object_id, item.get("style"))
+	_check_style(object_id, item.get("style"), 80 if item["kind"] == "stroke" else 20)
 	_check_text(object_id, item.get("text"))
 	for flip in ("flipX", "flipY"):
 		if flip in item and not isinstance(item[flip], bool):
@@ -189,6 +206,8 @@ def _check_object(item, seen: set) -> None:
 			or (isinstance(emoji, str) and 0 < len(emoji) <= 16 and not EMOJI_BAD.search(emoji))
 		):
 			_bad(object_id, _("an icon needs a name or an emoji."))
+	if item["kind"] == "stroke":
+		_check_stroke(object_id, item)
 	if item["kind"] == "frame" and not (
 		isinstance(item.get("name", ""), str) and len(item.get("name", "")) <= 200
 	):
@@ -263,6 +282,11 @@ def _check_canvas(canvas) -> None:
 	if canvas.get("background") is not None:
 		_check_color("canvas", "background", canvas["background"])
 	if canvas.get("grid", "off") not in GRIDS or canvas.get("mode", "infinite") not in MODES:
+		raise OqivaError(_("The canvas settings are not valid."))
+	if (
+		canvas.get("sketch", False) not in (True, False)
+		or canvas.get("doubleClick", "shape") not in DOUBLE_CLICK
+	):
 		raise OqivaError(_("The canvas settings are not valid."))
 
 

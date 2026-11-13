@@ -41,6 +41,7 @@ export function collectItems(store, scope = "board") {
 	})
 	if (scope !== "selection")
 		return {
+			sketch: store.canvas.value.sketch === true,
 			objects: [...objects],
 			connectors: [...connectors],
 			byId,
@@ -61,6 +62,7 @@ export function collectItems(store, scope = "board") {
 	const picked = objects.filter((object) => chosen.has(object.id))
 	const ids = new Set(picked.map((object) => object.id))
 	return {
+		sketch: store.canvas.value.sketch === true,
 		objects: picked,
 		byId,
 		maps: pickedMaps,

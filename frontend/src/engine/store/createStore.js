@@ -120,6 +120,17 @@ export function createStore(document, { readonly = false } = {}) {
 		editingNodeNew: false, // that node was just made, so leaving it empty throws it away
 		nodeDraft: null, // {id, text}: what is being typed in that node, so the map follows it
 		fontsTick: 0, // changes when web fonts finish loading, so measured widths are redone
+		lastDrawTool: "pen",
+		inkPreview: null, // the stroke being drawn: {points, color, width, ink}
+		erasePending: null, // an eraser sweep in progress: {hide: Set, pieces: [stroke objects], marks: Set}
+		eraser: null, // where the eraser tip is: {x, y, r}
+		laser: null, // the laser pointer: {x, y, trail: [{x, y, t}]}; never saved
+		ink: {
+			pen: { color: "#1E293B", width: 4 },
+			highlighter: { color: "#FACC15", width: 18 },
+			eraserMode: "ink", // "ink" cuts strokes, "object" removes whole objects
+			eraserSize: "m", // s, m or l
+		},
 		editingFlowId: null, // the flowchart node or edge whose text is being typed
 		editingFlowNew: false, // ...and whether it was made a moment ago
 		flowDrag: null, // {nodeId, dx, dy} while a flowchart node is dragged, {from, point} while a connector is

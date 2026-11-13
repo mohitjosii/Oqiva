@@ -26,6 +26,22 @@ export const SHORTCUTS = [
 	{ group: "Tools", keys: ["N"], label: "Sticky note" },
 	{ group: "Tools", keys: ["F"], label: "Frame (a named section)" },
 	{ group: "Tools", keys: ["Shift", "S"], label: "Shape library" },
+	{ group: "Draw", keys: ["P"], label: "Pen" },
+	{ group: "Draw", keys: ["Shift", "H"], label: "Highlighter" },
+	{ group: "Draw", keys: ["E"], label: "Eraser (cuts strokes, or removes whole objects)" },
+	{ group: "Draw", keys: ["Shift", "L"], label: "Laser pointer (never saved)" },
+	{ group: "Flowchart", keys: ["Shift", "F"], label: "New flowchart" },
+	{
+		group: "Flowchart",
+		keys: ["Enter"],
+		label: "Add a step after the selected one (on an arrow: insert one)",
+	},
+	{
+		group: "Flowchart",
+		keys: ["D", "T", "I", "J"],
+		label: "Add a decision, start or end, input or output, junction",
+	},
+	{ group: "Flowchart", keys: ["F2"], label: "Edit the text of a step or the label of an arrow" },
 	{ group: "Mind map", keys: ["M"], label: "New mind map in the middle of the screen" },
 	{ group: "Mind map", keys: ["Tab"], label: "Add a child to the selected node" },
 	{ group: "Mind map", keys: ["Enter"], label: "Add a sibling after it" },
@@ -59,6 +75,8 @@ const TOOL_KEYS = {
 	c: "comment",
 	n: "note",
 	f: "frame",
+	p: "pen",
+	e: "eraser",
 }
 const ARROWS = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }
 
@@ -170,6 +188,9 @@ function lookup(event, mindmap = false, flowchart = false) {
 		const step = event.shiftKey ? 10 : 1
 		return { name: "nudge", dx: ARROWS[key][0] * step, dy: ARROWS[key][1] * step }
 	}
+	if (event.shiftKey && !mod && key.toLowerCase() === "h")
+		return { name: "tool", tool: "highlighter" }
+	if (event.shiftKey && !mod && key.toLowerCase() === "l") return { name: "tool", tool: "laser" }
 	if (!event.shiftKey && key.toLowerCase() === "m") return { name: "mm.new" }
 	if (event.shiftKey && key.toLowerCase() === "f" && !mod) return { name: "fl.new" }
 	if (!event.shiftKey && key.length === 1 && key.toLowerCase() in TOOL_KEYS) {
@@ -196,6 +217,7 @@ export function commandFor(
 		const allowed =
 			command.tool === "select" ||
 			command.tool === "hand" ||
+			command.tool === "laser" ||
 			(command.tool === "comment" && canComment)
 		if (command.name === "tool" && !allowed) return null
 	}

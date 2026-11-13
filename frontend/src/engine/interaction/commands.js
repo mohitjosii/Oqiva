@@ -31,7 +31,10 @@ export function runCommand(store, controller, command, ui = {}) {
 			// One press steps back one level: half-done drag, then tool, then selection.
 			if (controller.drag) return controller.cancel()
 			if (state.painter) return (state.painter = null)
-			if (state.tool !== "select") return (state.tool = "select")
+			if (state.tool !== "select") {
+				controller.cancel() // the laser, the eraser's tip and a half-drawn stroke go with the tool
+				return (state.tool = "select")
+			}
 			return store.clearSelection()
 		case "tool":
 			controller.cancel()

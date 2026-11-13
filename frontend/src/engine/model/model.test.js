@@ -37,6 +37,8 @@ describe("parseDocument", () => {
 			preset: "16:9",
 			background: null,
 			grid: "off",
+			sketch: false,
+			doubleClick: "shape",
 		})
 		expect(parseDocument(raw()).document.objects).toEqual([])
 	})

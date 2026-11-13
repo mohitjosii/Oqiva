@@ -8,7 +8,9 @@ import { layoutFor } from "../text/fit"
 import { layoutText } from "../text/layout"
 import { iconData } from "../model/icons"
 import { shapeArt, shapePath, textArea } from "../model/shapes"
+import { strokePath } from "../model/strokes"
 import { CELL_PADDING } from "../store/tableOps"
+import { sketchNodes } from "./sketch"
 
 export const FONT = "Inter, ui-sans-serif, system-ui, sans-serif"
 const DASHES = { solid: null, dashed: "8 6", dotted: "2 5" }
@@ -63,6 +65,22 @@ export function textNodes(layout, text, { x, width, top }) {
 
 function shapeBody(object, ctx) {
 	const paint = paintOf(object.style, ctx.detail)
+	// hand-drawn style: the object's own choice, else the board's (never at a far zoom, where it cannot be seen)
+	if (ctx.detail && (object.style.sketch ?? ctx.sketch)) {
+		const flat = {
+			fill: object.style.fill,
+			stroke: object.style.stroke,
+			width: object.style.strokeWidth,
+			dash: DASHES[object.style.dash],
+		}
+		if (object.shape === "ellipse")
+			return sketchNodes(object.id, { kind: "ellipse", w: object.w, h: object.h }, flat)
+		const art = shapeArt(object)
+		const path = art ? art.d : shapePath(object)
+		if (path)
+			return sketchNodes(object.id, { kind: "path", w: object.w, h: object.h, d: path }, flat)
+		return sketchNodes(object.id, { kind: "rect", w: object.w, h: object.h }, flat)
+	}
 	if (object.shape === "ellipse") {
 		return [
 			el("ellipse", {
@@ -100,6 +118,12 @@ function artNodes(object, art, paint) {
 	if (!object.flipX && !object.flipY) return nodes
 	const flip = `translate(${object.flipX ? object.w : 0} ${object.flipY ? object.h : 0}) scale(${object.flipX ? -1 : 1} ${object.flipY ? -1 : 1})`
 	return [el("g", { transform: flip }, nodes)]
+}
+
+// A freehand stroke: its outline filled with the pen colour.
+function strokeBody(object) {
+	const d = strokePath(object)
+	return d ? [el("path", { d, fill: object.style.stroke || "#1E293B", stroke: "none" })] : []
 }
 
 // A sticky note: the paper, a slight shadow under it, and its writing from the top.
@@ -307,6 +331,7 @@ export function objectNode(object, ctx) {
 	else if (object.kind === "note") body = noteBody(object, ctx)
 	else if (object.kind === "icon") body = iconBody(object)
 	else if (object.kind === "frame") body = frameBody(object, ctx)
+	else if (object.kind === "stroke") body = strokeBody(object)
 	else body = [...shapeBody(object, ctx), ...shapeText(object, ctx)]
 	return el(
 		"g",

@@ -3,6 +3,7 @@
 // objects ({clientX, clientY, button, shiftKey, ctrlKey, metaKey, target}), so it can be
 // driven in tests without a browser.
 
+import { markRaw } from "vue"
 import {
 	boundsOfObjects,
 	centerOf,
@@ -42,6 +43,8 @@ import { presetObject, pushRecentPreset } from "../model/library"
 import { newId } from "../model/ids"
 import { GRID_SIZES, normalizeRotation, pageSize } from "../model/schema"
 import { toolById } from "../model/shapes"
+import { createStroke, thinPoints } from "../model/strokes"
+import { ERASER_RADIUS, newSweep, sweepInk, sweepObjects, sweepOps } from "./eraser"
 import { libraryPlacement, OPPOSITE, quickAddRect, quickTarget } from "./placement"
 import { createConnectorPaths } from "../render/connectorPaths"
 import { expandToGroups } from "../store/arrange"
@@ -224,6 +227,119 @@ export class CanvasController {
 		}
 	}
 
+	// ----- freehand: pen, highlighter, eraser, laser -----
+
+	// Points closer than this (in board units, about a pixel and a bit on screen) are thinned out while drawing.
+	inkGap() {
+		return Math.max(0.4, 1.2 / this.state.viewport.scale)
+	}
+
+	startInk(ink, point) {
+		const options = this.state.ink[ink]
+		const points = markRaw([[point.x, point.y]])
+		this.drag = { type: "ink", ink, points, color: options.color, width: options.width }
+		this.state.inkPreview = { points, color: options.color, width: options.width, ink }
+	}
+
+	extendInk(drag, point) {
+		const last = drag.points[drag.points.length - 1]
+		if (Math.hypot(point.x - last[0], point.y - last[1]) < this.inkGap()) return
+		drag.points.push([point.x, point.y])
+		this.state.inkPreview = {
+			points: drag.points,
+			color: drag.color,
+			width: drag.width,
+			ink: drag.ink,
+		}
+	}
+
+	// Lifting the pen makes the stroke: one undo step, and the pen stays ready for the next one.
+	finishInk(drag, point) {
+		this.state.inkPreview = null
+		const last = drag.points[drag.points.length - 1]
+		if (last[0] !== point.x || last[1] !== point.y) drag.points.push([point.x, point.y])
+		const points = thinPoints(drag.points, this.inkGap())
+		const stroke = createStroke({
+			points,
+			color: drag.color,
+			width: drag.width,
+			ink: drag.ink,
+			z: this.store.nextZ(),
+		})
+		this.store.addObjects([stroke], {
+			label: drag.ink === "pen" ? "Draw" : "Highlight",
+			select: false,
+		})
+	}
+
+	eraserRadius() {
+		return ERASER_RADIUS[this.state.ink.eraserSize] || ERASER_RADIUS.m
+	}
+
+	startErase(point) {
+		const sweep = newSweep()
+		this.drag = { type: "erase", sweep, last: [point.x, point.y] }
+		this.extendErase(this.drag, point, true)
+	}
+
+	extendErase(drag, point, first = false) {
+		const radius = this.eraserRadius()
+		const from = drag.last
+		const to = [point.x, point.y]
+		drag.last = to
+		this.state.eraser = { x: point.x, y: point.y, r: radius }
+		const { sweep } = drag
+		const objects = this.store.objects.value
+		let changed
+		if (this.state.ink.eraserMode === "object") {
+			changed = sweepObjects(sweep, objects, from, to, radius)
+			// lines under the tip go too
+			const steps = Math.max(
+				1,
+				Math.ceil(Math.hypot(to[0] - from[0], to[1] - from[1]) / Math.max(2, radius / 2)),
+			)
+			for (const connector of this.store.connectors.value) {
+				if (sweep.connectors.has(connector.id)) continue
+				const path = this.paths.value.get(connector.id)
+				if (!path) continue
+				for (let i = 0; i <= steps; i++) {
+					const at = {
+						x: from[0] + ((to[0] - from[0]) * i) / steps,
+						y: from[1] + ((to[1] - from[1]) * i) / steps,
+					}
+					if (connectorHit(path, at, radius)) {
+						sweep.connectors.add(connector.id)
+						changed = true
+						break
+					}
+				}
+			}
+		} else changed = sweepInk(sweep, objects, from, to, radius)
+		if (changed || first)
+			this.state.erasePending = {
+				hide: new Set(sweep.hide),
+				pieces: sweep.pieces,
+				marks: new Set([...sweep.marks]),
+			}
+	}
+
+	finishErase(drag) {
+		this.state.erasePending = null
+		const ops = sweepOps(drag.sweep, this.store.connectors.value)
+		if (ops.length) this.store.applyOps(ops, { label: "Erase", select: [], selectUndo: [] })
+	}
+
+	// The laser: a dot where the pointer is and a trail that fades. It is only drawn on this screen.
+	moveLaser(point) {
+		const now = performance.now()
+		const laser = this.state.laser || { x: point.x, y: point.y, trail: [] }
+		laser.x = point.x
+		laser.y = point.y
+		laser.trail.push({ x: point.x, y: point.y, t: now })
+		if (laser.trail.length > 120) laser.trail.splice(0, laser.trail.length - 120)
+		this.state.laser = laser
+	}
+
 	// A flowchart step let go: spliced into the arrow under it, or simply left where it was dropped
 	// (which marks it as placed by hand, so Tidy up is what brings it back into the layout).
 	dropFlowNode(drag, feedback) {
@@ -330,6 +446,11 @@ export class CanvasController {
 	// Pointer moving with no button down: which shape is hovered, and which anchors to show.
 	hover(event) {
 		this.state.cursor = this.boardPoint(event)
+		if (this.state.tool === "laser") return this.moveLaser(this.state.cursor)
+		if (this.state.tool === "eraser") {
+			this.state.eraser = { ...this.state.cursor, r: this.eraserRadius() }
+			return
+		}
 		if (event.target?.dataset?.quick) return // moving onto a quick-add arrow keeps its shape
 		const point = this.boardPoint(event)
 		if (connectorToolById(this.state.tool)) {
@@ -401,6 +522,15 @@ export class CanvasController {
 				this.drag = { type: "comment", start: point, startScreen: screen }
 			return
 		}
+		if (this.state.tool === "pen" || this.state.tool === "highlighter") {
+			if (!this.state.readonly) this.startInk(this.state.tool, point)
+			return
+		}
+		if (this.state.tool === "eraser") {
+			if (!this.state.readonly) this.startErase(point)
+			return
+		}
+		if (this.state.tool === "laser") return this.moveLaser(point)
 		const connectorTool = connectorToolById(this.state.tool)
 		if (connectorTool) {
 			if (!this.state.readonly) this.startConnector(connectorTool, point, screen)
@@ -638,7 +768,14 @@ export class CanvasController {
 		const screen = this.screenPoint(event)
 		const point = this.boardPoint(event)
 		this.state.cursor = point
+		if (this.state.tool === "laser") this.moveLaser(point)
 		switch (drag.type) {
+			case "ink":
+				this.extendInk(drag, point)
+				break
+			case "erase":
+				this.extendErase(drag, point)
+				break
 			case "pan":
 				setViewport(
 					this.store,
@@ -1064,6 +1201,12 @@ export class CanvasController {
 		this.state.panning = false
 		this.state.guides = []
 		switch (drag.type) {
+			case "ink":
+				this.finishInk(drag, this.boardPoint(event))
+				break
+			case "erase":
+				this.finishErase(drag)
+				break
 			case "move":
 				if (drag.moved) drag.gesture?.commit("Move")
 				else if (drag.collapseTo) this.store.select(drag.collapseTo)
@@ -1334,6 +1477,10 @@ export class CanvasController {
 		this.state.dragging = false
 		this.state.mapDrag = null
 		this.state.flowDrag = null
+		this.state.inkPreview = null
+		this.state.erasePending = null
+		this.state.eraser = null
+		this.state.laser = null
 		this.lastMove = null
 		this.clearConnectHints()
 		if (drag?.gesture) drag.gesture.cancel()
@@ -1384,6 +1531,11 @@ export class CanvasController {
 			this.state.editingCell = null
 			// On a frame (its name or border) this edits the name; it never makes a card.
 			this.state.editingId = hit.id
+			return
+		}
+		// A whiteboard makes a text box instead of a shape.
+		if (this.store.canvas.value.doubleClick === "text") {
+			this.createAndSelect("text", defaultRect("text", point), { edit: true })
 			return
 		}
 		// Double-clicking empty canvas makes a shape, ready for typing.

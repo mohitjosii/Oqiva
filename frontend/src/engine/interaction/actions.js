@@ -193,6 +193,14 @@ export function stylePatch(item, action) {
 		if (!caps.has(need[action.target])) return null
 		return { style: { ...item.style, [action.target]: action.value } }
 	}
+	if (action.target === "sketch") {
+		// true: hand-drawn, false: clean, null: follow the board's setting
+		if (!caps.has("sketch")) return null
+		const next = { ...item.style }
+		if (action.value === null) delete next.sketch
+		else next.sketch = action.value === true
+		return { style: next }
+	}
 	if (action.target === "heads" || action.target === "geometry") {
 		if (!item.geometry) return null
 		return action.target === "geometry"

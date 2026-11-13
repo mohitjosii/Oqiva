@@ -12,6 +12,7 @@ const props = defineProps({
 	hideText: { type: Boolean, default: false }, // while the text is being edited
 	editingCell: { type: Object, default: null },
 	fonts: { type: Number, default: 0 }, // changes when web fonts finish loading
+	sketch: { type: Boolean, default: false }, // the board's hand-drawn style
 })
 
 const node = computed(() => {
@@ -21,6 +22,7 @@ const node = computed(() => {
 		detail: props.detail,
 		hideText: props.hideText,
 		editingCell: props.editingCell,
+		sketch: props.sketch,
 	})
 })
 </script>

@@ -21,7 +21,18 @@ export const CANVAS_PRESETS = {
 }
 
 export const GRID_SIZES = { dense: 16, sparse: 48 }
-export const KNOWN_KINDS = new Set(["shape", "text", "image", "table", "note", "icon", "frame"])
+export const KNOWN_KINDS = new Set([
+	"shape",
+	"text",
+	"image",
+	"table",
+	"note",
+	"icon",
+	"frame",
+	"stroke",
+])
+export const STROKE_INKS = new Set(["pen", "highlighter"])
+export const DOUBLE_CLICK = new Set(["shape", "text"])
 export const GEOMETRIES = new Set(["straight", "elbow", "curved"])
 export const HEADS = new Set(["none", "arrow", "open", "dot"])
 export const ANCHOR_NAMES = new Set(["n", "ne", "e", "se", "s", "sw", "w", "nw"])
@@ -80,7 +91,14 @@ export class DocumentError extends Error {
 export function createDocument({ theme = DEFAULT_THEME } = {}) {
 	return {
 		schemaVersion: SCHEMA_VERSION,
-		canvas: { mode: "infinite", preset: "16:9", background: null, grid: "off" },
+		canvas: {
+			mode: "infinite",
+			preset: "16:9",
+			background: null,
+			grid: "off",
+			sketch: false,
+			doubleClick: "shape",
+		},
 		theme: { preset: theme },
 		objects: [],
 		connectors: [],
@@ -141,6 +159,7 @@ export function sanitizeText(text, themeName = DEFAULT_THEME) {
 }
 
 const finite = (value) => typeof value === "number" && Number.isFinite(value)
+const STROKE_MAX_POINTS = 4000
 
 function sanitizeEnd(end, objectIds) {
 	if (end && typeof end.objectId === "string") {
@@ -232,7 +251,23 @@ function sanitizeStyle(style = {}) {
 		dash: DASHES.has(source.dash) ? source.dash : "solid",
 		opacity: number(source.opacity, 1, 0, 1),
 		radius: number(source.radius, 0, 0, 200),
+		...(typeof source.sketch === "boolean" ? { sketch: source.sketch } : {}),
 	}
+}
+
+// The points of a freehand stroke: pairs of fractions of its box. At least one, at most 4,000.
+function sanitizePoints(raw) {
+	if (!Array.isArray(raw)) return null
+	const points = []
+	for (const pair of raw) {
+		if (!Array.isArray(pair) || !finite(pair[0]) || !finite(pair[1])) continue
+		points.push([
+			Math.round(Math.min(1, Math.max(0, pair[0])) * 10000) / 10000,
+			Math.round(Math.min(1, Math.max(0, pair[1])) * 10000) / 10000,
+		])
+		if (points.length >= STROKE_MAX_POINTS) break
+	}
+	return points.length ? points : null
 }
 
 export function sanitizeObject(raw, index, themeName) {
@@ -262,6 +297,13 @@ export function sanitizeObject(raw, index, themeName) {
 		if (!icon && !emoji) return null // nothing to draw
 		if (icon) object.icon = icon
 		else object.emoji = emoji
+	}
+	if (raw.kind === "stroke") {
+		object.style.strokeWidth = number(raw.style?.strokeWidth, 4, 1, 80) // a pen can be wider than a border
+		const points = sanitizePoints(raw.points)
+		if (!points) return null // a stroke with no points cannot be drawn
+		object.points = points
+		object.ink = STROKE_INKS.has(raw.ink) ? raw.ink : "pen"
 	}
 	if (raw.kind === "frame")
 		object.name = typeof raw.name === "string" ? raw.name.slice(0, 200) : ""
@@ -294,6 +336,8 @@ export function sanitizeCanvas(canvas) {
 		preset: CANVAS_PRESETS[source.preset] ? source.preset : base.preset,
 		background: isColor(source.background) ? source.background : null,
 		grid: source.grid in GRID_SIZES ? source.grid : "off",
+		sketch: source.sketch === true,
+		doubleClick: DOUBLE_CLICK.has(source.doubleClick) ? source.doubleClick : "shape",
 	}
 }
 

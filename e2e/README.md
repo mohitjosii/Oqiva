@@ -21,10 +21,10 @@ their credentials in a JSON file:
 
 ## Run
 
-Eleven runs: `home.e2e.mjs` (the home area), `editor.e2e.mjs` (the canvas editor),
+Twelve runs: `home.e2e.mjs` (the home area), `editor.e2e.mjs` (the canvas editor),
 `phase4.e2e.mjs` (lines, palette, clipboard, pictures, tables, export), `phase5.e2e.mjs` (sharing and
 links), `collab.e2e.mjs` (three people live; needs the bench's socket server) and
-`comments.e2e.mjs` (comments, mentions, notifications), `fixes.e2e.mjs` (hover arrows, shape kinds, toolbar, line types, table borders) `phase6.e2e.mjs` (shape library, notes, frames, icons, links, minimap, templates), `phase7.e2e.mjs` (history, restore, board files) `phase8.e2e.mjs` (mind maps) and `phase9.e2e.mjs` (flowcharts). `collab` and `comments` need three test users in the
+`comments.e2e.mjs` (comments, mentions, notifications), `fixes.e2e.mjs` (hover arrows, shape kinds, toolbar, line types, table borders) `phase6.e2e.mjs` (shape library, notes, frames, icons, links, minimap, templates), `phase7.e2e.mjs` (history, restore, board files) `phase8.e2e.mjs` (mind maps) `phase9.e2e.mjs` (flowcharts) and `phase10.e2e.mjs` (whiteboard: pen, eraser, laser, sketch style). `collab` and `comments` need three test users in the
 credentials file (`a`, `b`, `c`). Use a fresh pair of
 throwaway users when you can: each run creates a workspace, and the workspace menu grows with
 every one. `png.mjs` makes the small pictures the runs upload.

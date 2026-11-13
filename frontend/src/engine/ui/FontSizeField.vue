@@ -33,6 +33,12 @@ function apply(value) {
 	if (size !== props.modelValue) emit("update:modelValue", size)
 }
 
+// Enter applies the number and hands the keyboard back to the board, so its shortcuts work again.
+function applyAndLeave(event, value) {
+	apply(value)
+	event.target.blur()
+}
+
 const options = computed(() =>
 	props.presets.map((size) => ({
 		label: `${size}`,
@@ -56,7 +62,7 @@ const options = computed(() =>
 			:data-testid="testid"
 			@mousedown.stop
 			@keydown.stop
-			@keydown.enter.prevent="apply(draft)"
+			@keydown.enter.prevent="applyAndLeave($event, draft)"
 			@keydown.esc.prevent="draft = typeof modelValue === 'number' ? String(modelValue) : ''"
 			@change="apply(draft)"
 		/>

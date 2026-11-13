@@ -26,7 +26,7 @@ function withPictures(object, images) {
 }
 
 export function buildSvg(items, area, { background = null, measure, images = null } = {}) {
-	const ctx = { measure, detail: true, hideText: false }
+	const ctx = { measure, detail: true, hideText: false, sketch: Boolean(items.sketch) }
 	const resolved = items.connectors.length
 		? resolveConnectors(items.connectors, items.byId)
 		: new Map()

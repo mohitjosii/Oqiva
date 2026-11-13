@@ -12,6 +12,7 @@ import ConnectorView from "./ConnectorView.vue"
 import ShapeView from "./ShapeView.vue"
 import SelectionOverlay from "./SelectionOverlay.vue"
 import FlowchartLayer from "./FlowchartLayer.vue"
+import InkLayer from "./InkLayer.vue"
 import MindMapLayer from "./MindMapLayer.vue"
 
 const props = defineProps({
@@ -68,11 +69,16 @@ const cullArea = computed(() => {
 		h: view.h + margin * 2,
 	}
 })
-const visible = computed(() =>
-	props.store.objects.value.filter((object) =>
-		rectsIntersect(objectBounds(object), cullArea.value),
-	),
-)
+const sketch = computed(() => canvas.value.sketch === true)
+// An eraser sweep in progress hides the strokes it is cutting (InkLayer draws what is left of them).
+const visible = computed(() => {
+	const hidden = state.value.erasePending?.hide
+	return props.store.objects.value.filter(
+		(object) =>
+			!(hidden && hidden.has(object.id)) &&
+			rectsIntersect(objectBounds(object), cullArea.value),
+	)
+})
 
 // Lines on screen, each with its worked-out path.
 const paths = computed(() => props.controller.paths.value)
@@ -234,8 +240,9 @@ function pointerUp(event) {
 					:hide-text="object.id === state.editingId"
 					:editing-cell="object.id === state.editingId ? state.editingCell : null"
 					:fonts="fonts"
+					:sketch="sketch"
 				/>
-				<ShapeView v-if="previewObject" :object="previewObject" />
+				<ShapeView v-if="previewObject" :object="previewObject" :sketch="sketch" />
 			</g>
 			<MindMapLayer
 				:store="store"
@@ -273,6 +280,7 @@ function pointerUp(event) {
 					:detail="false"
 				/>
 			</g>
+			<InkLayer :store="store" :transform="worldTransform" />
 			<SelectionOverlay :store="store" :paths="controller.paths" />
 		</svg>
 		<slot />
