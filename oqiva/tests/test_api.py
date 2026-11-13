@@ -2,6 +2,7 @@
 
 import importlib
 import inspect
+from unittest.mock import patch
 
 import frappe
 from frappe.tests import IntegrationTestCase
@@ -10,6 +11,7 @@ from oqiva.access.guard import service_write
 from oqiva.api import board, boot, project, realtime, search, workspace
 from oqiva.constants import ROLE_USER
 from oqiva.exceptions import OqivaNotFound
+from oqiva.services import board_service
 from oqiva.tests.utils import make_user, make_world, share_board
 
 API_MODULES = (
@@ -110,6 +112,20 @@ class TestBoot(IntegrationTestCase):
 		self.assertEqual(first["limits"]["max_objects_per_board"], 3000)
 		self.assertFalse(first["is_admin"])
 
+	def test_the_welcome_page_is_shown_once_per_person_not_once_per_device(self):
+		"""Boundary: the welcome flag lives on the server, and an existing board owner counts as welcomed."""
+		email = make_user("boot_welcome@oqiva.test", roles=())
+		self.addCleanup(frappe.set_user, "Administrator")
+		frappe.set_user(email)
+		self.assertFalse(boot.get_boot()["welcomed"])
+		self.assertEqual(boot.mark_welcomed(), {"welcomed": True})
+		self.assertTrue(boot.get_boot()["welcomed"])
+		other = make_user("boot_owner@oqiva.test", roles=())
+		frappe.set_user(other)
+		workspace_id = boot.get_boot()["personal_workspace"]
+		board_service.create_board(other, workspace_id, None, "Mine")
+		self.assertTrue(boot.get_boot()["welcomed"], "someone with a board needs no welcome")
+
 	def test_boot_joins_pending_invites(self):
 		"""Success: an invite recorded for an existing user's email is applied on boot."""
 		w = make_world("bt")
@@ -200,10 +216,34 @@ class TestUninstall(IntegrationTestCase):
 		w = make_world("un")
 		share_board(w.board, w.sharee, "view")
 		self.assertTrue(frappe.db.exists("DocShare", {"share_doctype": "Oqiva Board", "share_name": w.board}))
-		setup.before_uninstall()
+		# Deleting a picture also deletes its file on disk, which no rollback brings back, and this runs on a
+		# site that holds real boards: the picture step is replaced here and tested on its own below.
+		with patch("oqiva.setup.remove_pictures") as pictures:
+			frappe.defaults.set_user_default("oqiva_welcomed", "1", w.member)
+			frappe.db.sql(
+				"insert into `__Auth` (doctype, name, fieldname, password, encrypted) "
+				"values ('Oqiva Settings', 'Oqiva Settings', 'ai_api_key', 'x', 0)"
+			)
+			setup.before_uninstall()
+		pictures.assert_called_once()
+		self.assertFalse(frappe.db.sql("select 1 from `__Auth` where doctype = 'Oqiva Settings'"))
+		self.assertFalse(frappe.db.exists("DefaultValue", {"defkey": "oqiva_welcomed"}))
 		self.assertFalse(frappe.db.exists("DocShare", {"share_doctype": "Oqiva Board"}))
 		self.assertFalse(frappe.db.exists("Role", ROLE_USER))
 		self.assertFalse(frappe.db.exists("Has Role", {"role": ROLE_USER}))
+
+	def test_the_pictures_of_oqiva_boards_are_deleted_through_frappe_so_their_files_go_too(self):
+		"""Success: every File attached to an Oqiva record is deleted with delete_doc (nothing real is touched)."""
+		from oqiva import setup
+
+		with (
+			patch("oqiva.setup.frappe.get_all", return_value=["FILE-1", "FILE-2"]) as found,
+			patch("oqiva.setup.frappe.delete_doc") as delete,
+		):
+			setup.remove_pictures()
+		self.assertEqual(found.call_args.kwargs["filters"], {"attached_to_doctype": ["like", "Oqiva %"]})
+		self.assertEqual([c.args for c in delete.call_args_list], [("File", "FILE-1"), ("File", "FILE-2")])
+		self.assertTrue(all(c.kwargs["force"] for c in delete.call_args_list))
 
 
 class TestSettings(IntegrationTestCase):

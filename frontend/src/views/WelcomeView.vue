@@ -22,6 +22,7 @@ const next = computed(() => {
 
 function finish() {
 	preferences.welcomed = true
+	api("boot.mark_welcomed").catch(() => {}) // the next device will not ask again; this one already will not
 	if (next.value) router.replace(next.value)
 	else router.replace({ name: "dashboard", params: { workspace: homeWorkspace() } })
 }

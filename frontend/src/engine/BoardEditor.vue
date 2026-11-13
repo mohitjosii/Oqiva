@@ -228,6 +228,13 @@ async function restoreVersion(number) {
 const fonts = ref(0)
 const showShortcuts = ref(false)
 const showTips = ref(false)
+// These dialogs open from the Help menu, whose item disappears with it, so focus is given back to the
+// button that opened the menu when one closes (otherwise a keyboard user starts again from the top).
+for (const flag of [showShortcuts, showTips])
+	watch(flag, (open, wasOpen) => {
+		if (wasOpen && !open)
+			setTimeout(() => document.querySelector('[data-testid="help-button"]')?.focus(), 50)
+	})
 const showAi = ref(false)
 
 // A diagram the AI described, drawn at the middle of what the person is looking at as ONE edit.

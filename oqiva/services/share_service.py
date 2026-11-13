@@ -271,9 +271,18 @@ def convert_board_invites(user: str, email: str) -> int:
 		fields=["name", "board", "access", "invited_by_user"],
 		limit_page_length=0,
 	)
+	trashed = dict(
+		frappe.get_all(
+			BOARD_DOCTYPE,
+			filters={"name": ["in", [i.board for i in invites]]},
+			fields=["name", "is_trashed"],
+			as_list=True,
+			limit_page_length=0,
+		)
+	)
 	count = 0
 	for invite in invites:
-		live = frappe.db.get_value(BOARD_DOCTYPE, invite.board, "is_trashed") == 0
+		live = trashed.get(invite.board) == 0
 		if live and not _share_row(invite.board, user) and invite.access in LEVELS:
 			_write_share(invite.board, user, invite.access, invite.invited_by_user or "Administrator")
 			realtime.access_changed(user, board=invite.board)

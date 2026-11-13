@@ -32,8 +32,12 @@ export function itemToYMap(item) {
 	return map
 }
 
+// An item filed in the shared document is meant to be a Y.Map. Another person's copy of the app (or
+// a damaged document) can put anything there, and reading it must never throw: it reads as empty,
+// which every sanitiser then drops.
 export function yMapToObject(map) {
 	const out = {}
+	if (!map || typeof map.forEach !== "function") return out
 	map.forEach((value, key) => {
 		out[key] = clone(value)
 	})

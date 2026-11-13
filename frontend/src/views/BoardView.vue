@@ -276,11 +276,13 @@ const failed = computed(() => board.error.value || content.error.value)
 				data-testid="share-button"
 				@click="showShare = true"
 			/>
-			<Badge
-				v-if="board.data.value"
-				:label="access"
-				:theme="caps.can_edit ? 'green' : 'gray'"
-			/>
+			<span class="max-[430px]:hidden">
+				<Badge
+					v-if="board.data.value"
+					:label="access"
+					:theme="caps.can_edit ? 'green' : 'gray'"
+				/>
+			</span>
 		</header>
 
 		<ShareDialog

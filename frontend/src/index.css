@@ -4,6 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Two of frappe-ui's text colours are a little too pale to read comfortably: its secondary grey is 4.2:1
+   on white and its green badge text 3.7:1, where 4.5:1 is the floor. These keep the same look, darker. */
+:root:not([data-theme="dark"]) {
+	--ink-gray-5: #636363;
+	--text-ink-gray-5: #636363;
+	--ink-green-3: #166534;
+	--text-ink-green-3: #166534;
+}
+
 /* Board tiles lift their action buttons on hover and keyboard focus. */
 .board-tile .tile-actions {
 	opacity: 0;

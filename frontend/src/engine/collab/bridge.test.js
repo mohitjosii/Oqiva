@@ -108,6 +108,30 @@ describe("the same content in every browser", () => {
 	})
 })
 
+describe("a damaged shared document", () => {
+	it("never crashes the editor: an item that is not a map is ignored and the rest still arrives", async () => {
+		const { a, b } = pair([box("one")])
+		const objects = a.doc.getMap("objects")
+		a.doc.transact(() => {
+			objects.set("junk-text", "just a string")
+			objects.set("junk-list", new Y.Array())
+			objects.set("junk-number", 7)
+		}, "someone-else")
+		a.store.addObjects([box("two", 300, 0, { z: 2 })], { label: "Add" })
+		await settle()
+		expect(() => snapshotFromDoc(b.doc, createDocument())).not.toThrow()
+		expect(b.store.objects.value.map((o) => o.id).sort()).toEqual(["one", "two"])
+	})
+
+	it("reads a document with such items back without them", () => {
+		const doc = new Y.Doc()
+		Y.applyUpdate(doc, seedUpdate({ ...createDocument(), objects: [box("keep")] }))
+		doc.getMap("objects").set("bad", 12)
+		const snapshot = snapshotFromDoc(doc, createDocument())
+		expect(snapshot.objects.map((o) => o.id)).toEqual(["keep"])
+	})
+})
+
 describe("changes flow both ways", () => {
 	it("a shape one person adds, moves, restyles and deletes appears, changes and goes for the other", async () => {
 		const { a, b } = pair([box("s", 0, 0)])

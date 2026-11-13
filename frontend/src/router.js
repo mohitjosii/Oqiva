@@ -71,6 +71,9 @@ router.beforeEach(async (to) => {
 		}
 	}
 	if (session.error) return true
+	// The welcome page is kept per person on the server, so a new device or a cleared browser does not
+	// greet someone who has been here before.
+	if (session.welcomed && !preferences.welcomed) preferences.welcomed = true
 	if (!preferences.welcomed && to.name !== "welcome") {
 		return { name: "welcome", query: to.name === "root" ? {} : { next: to.fullPath } }
 	}

@@ -2,13 +2,24 @@
 
 A shared visual workspace for diagrams, flows and ideas, built as a Frappe app. Teams
 organise boards into projects inside workspaces, share them with the right level of
-access, and (from Phase 3) draw on an infinite canvas together.
+access, and draw on an infinite canvas together.
 
-**Status:** Phases 1 to 3 are built: workspaces, members and invites, projects, the
-board list and lifecycle, favorites, recents, search, the permission model, and the
-canvas editor core (shapes, selection, move, resize, rotate, text, undo and redo, zoom
-and pan, grid and page sizes, autosave). Connectors, the right-hand palette, export,
-sharing, comments and realtime arrive in later phases. See `docs/DEVELOPMENT_PLAN.md`.
+**Status:** version 1.1 is feature-complete (Phases 1 to 10, 12 and 13; Phase 11, in-app feedback and an
+admin console, was built and set aside). It has workspaces, projects and boards; a canvas editor with shapes,
+connectors, mind maps, flowcharts and a whiteboard; live editing; sharing and links; comments; version
+history; export and import; about forty templates; and AI diagram generation (off by default). See
+`docs/RELEASE_NOTES.md` for what it does and what is known not to work yet.
+
+## Documentation
+| | |
+|---|---|
+| `docs/USER_GUIDE.md` | Using Oqiva |
+| `docs/ADMIN_GUIDE.md` | Roles, settings, AI setup, monitoring |
+| `docs/DEPLOYMENT.md` | Install, processes, backup and restore, upgrade, uninstall |
+| `docs/RELEASE_NOTES.md` | What is in 1.1 and its known limits |
+| `docs/ARCHITECTURE.md`, `docs/DECISIONS.md` | How it is built and why |
+| `docs/SECURITY_TEST_PLAN.md`, `docs/PERFORMANCE.md` | What was tested, and the measurements |
+| `docs/DEVELOPMENT_PLAN.md` | The phased plan and each phase's status |
 
 ## Install
 
@@ -16,6 +27,8 @@ sharing, comments and realtime arrive in later phases. See `docs/DEVELOPMENT_PLA
 bench get-app oqiva /path/to/oqiva          # or the git URL
 bench --site your-site install-app oqiva
 bench build --app oqiva                      # builds the SPA in frontend/
+bench --site your-site migrate
+# live editing needs the bench's socket server and AI diagrams need a worker: bench start, or supervisor
 ```
 
 Open `/oqiva`. The first visit creates your personal workspace.
@@ -38,9 +51,9 @@ ruff check oqiva && ruff format --check oqiva
 python3 scripts/check_licenses.py
 ```
 
-Browser checks live in `e2e/` (see its README): `home.e2e.mjs` walks the home area and
-`editor.e2e.mjs` drives the canvas. Spikes that settled early risks live
-in `spikes/`.
+Browser checks live in `e2e/` (see its README): seventeen runs from `home.e2e.mjs` to `journeys.e2e.mjs`, plus
+`a11y.e2e.mjs` (accessibility rules) and `perf.e2e.mjs` (3,000 shapes, a 600-node map, ten editors). Spikes
+that settled early risks live in `spikes/`.
 
 ## Layout
 
