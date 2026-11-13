@@ -1,0 +1,1263 @@
+{
+	"slug": "launch-checklist",
+	"name": "Product launch plan",
+	"description": "A countdown from four weeks out to after launch, with owners, a communications table and go / no-go criteria.",
+	"category": "Product",
+	"tags": [
+		"launch",
+		"go to market",
+		"checklist",
+		"release"
+	],
+	"sort_order": 84,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -130,
+				"w": 1600,
+				"h": 44,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Product launch plan",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1600,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Work backwards from launch day. Every task has one owner. Colour a card red when it is blocked, so help arrives the same day."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f3",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 300,
+				"h": 560,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#64748B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "4 weeks before"
+			},
+			{
+				"id": "s4",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 20,
+				"y": 55,
+				"w": 260,
+				"h": 135,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ "
+								},
+								{
+									"t": "Agree the launch goal and date",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Ravi"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s5",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 20,
+				"y": 215,
+				"w": 260,
+				"h": 135,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ "
+								},
+								{
+									"t": "Finish the positioning",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Mei"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s6",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 20,
+				"y": 375,
+				"w": 260,
+				"h": 135,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ "
+								},
+								{
+									"t": "Beta feedback triage",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Priya"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f7",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 320,
+				"y": 0,
+				"w": 300,
+				"h": 560,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "2 weeks before"
+			},
+			{
+				"id": "s8",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 340,
+				"y": 55,
+				"w": 260,
+				"h": 135,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ "
+								},
+								{
+									"t": "Pricing page ready",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Mei"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s9",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 340,
+				"y": 215,
+				"w": 260,
+				"h": 135,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ "
+								},
+								{
+									"t": "Help articles drafted",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Support"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s10",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 340,
+				"y": 375,
+				"w": 260,
+				"h": 135,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ "
+								},
+								{
+									"t": "Load test passed",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Sam"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f11",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 640,
+				"y": 0,
+				"w": 300,
+				"h": 560,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#F59E0B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "1 week before"
+			},
+			{
+				"id": "s12",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 660,
+				"y": 55,
+				"w": 260,
+				"h": 135,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ "
+								},
+								{
+									"t": "Press and partner briefing",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Dana"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s13",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 660,
+				"y": 215,
+				"w": 260,
+				"h": 135,
+				"rotation": 0,
+				"z": 13,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ "
+								},
+								{
+									"t": "Support training",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Support"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s14",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 660,
+				"y": 375,
+				"w": 260,
+				"h": 135,
+				"rotation": 0,
+				"z": 14,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ "
+								},
+								{
+									"t": "Go / no-go meeting",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Ravi"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f15",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 960,
+				"y": 0,
+				"w": 300,
+				"h": 560,
+				"rotation": 0,
+				"z": 15,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#22C55E",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Launch day"
+			},
+			{
+				"id": "s16",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 980,
+				"y": 55,
+				"w": 260,
+				"h": 135,
+				"rotation": 0,
+				"z": 16,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ "
+								},
+								{
+									"t": "Release to everyone",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Sam"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s17",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 980,
+				"y": 215,
+				"w": 260,
+				"h": 135,
+				"rotation": 0,
+				"z": 17,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ "
+								},
+								{
+									"t": "Announce: blog, email, social",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Mei"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s18",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 980,
+				"y": 375,
+				"w": 260,
+				"h": 135,
+				"rotation": 0,
+				"z": 18,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ "
+								},
+								{
+									"t": "Watch metrics and support queue",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: All"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f19",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 1280,
+				"y": 0,
+				"w": 300,
+				"h": 560,
+				"rotation": 0,
+				"z": 19,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "After launch"
+			},
+			{
+				"id": "s20",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1300,
+				"y": 55,
+				"w": 260,
+				"h": 135,
+				"rotation": 0,
+				"z": 20,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ "
+								},
+								{
+									"t": "Daily check-in for a week",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Ravi"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s21",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1300,
+				"y": 215,
+				"w": 260,
+				"h": 135,
+				"rotation": 0,
+				"z": 21,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ "
+								},
+								{
+									"t": "Collect feedback",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Priya"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s22",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1300,
+				"y": 375,
+				"w": 260,
+				"h": 135,
+				"rotation": 0,
+				"z": 22,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ "
+								},
+								{
+									"t": "Write the launch review",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Dana"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f23",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 600,
+				"w": 1000,
+				"h": 330,
+				"rotation": 0,
+				"z": 23,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Launch-day communication"
+			},
+			{
+				"id": "t24",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 650,
+				"w": 950,
+				"h": 208,
+				"rotation": 0,
+				"z": 24,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						260,
+						330,
+						180,
+						180
+					],
+					"rowH": [
+						52,
+						52,
+						52,
+						52
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Audience",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Message",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Channel",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Owner",
+												"b": 1
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Customers"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "What is new and how to try it"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Email, in-app"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Mei"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Prospects"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Why it matters to them"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Blog, social"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Mei"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Internal teams"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "What to say and where to send questions"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Chat, wiki"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Dana"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "f25",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 1040,
+				"y": 600,
+				"w": 560,
+				"h": 330,
+				"rotation": 0,
+				"z": 25,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#F59E0B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Go / no-go criteria"
+			},
+			{
+				"id": "t26",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1065,
+				"y": 650,
+				"w": 510,
+				"h": 105,
+				"rotation": 0,
+				"z": 26,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ No open severity-1 or -2 bugs"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "☐ Load test passed at 2× expected traffic"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "☐ Support trained and docs live"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "☐ Rollback plan tested"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "☐ Everyone owns their launch-day task"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

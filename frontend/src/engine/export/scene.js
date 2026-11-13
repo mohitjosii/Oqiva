@@ -5,6 +5,7 @@ import { boundsOfObjects, growRect, unionBounds } from "../geometry/bounds"
 import { connectorPath, pathBounds, resolveConnectors, isAttached } from "../geometry/connectors"
 import { pageSize } from "../model/schema"
 import { layoutMap } from "../modes/mindmap/layout"
+import { layoutBounds, layoutChart } from "../modes/flowchart/layouts"
 import { sized } from "../modes/mindmap/layouts"
 import { measureText } from "../text/measure"
 
@@ -33,23 +34,39 @@ export function collectItems(store, scope = "board") {
 		nodes: store.nodesOfMap(map.id),
 		crosslinks: store.crosslinksOfMap(map.id),
 	})
+	const wholeChart = (chart) => ({
+		chart,
+		nodes: store.nodesOfChart(chart.id),
+		edges: store.edgesOfChart(chart.id),
+	})
 	if (scope !== "selection")
 		return {
+			sketch: store.canvas.value.sketch === true,
 			objects: [...objects],
 			connectors: [...connectors],
 			byId,
 			maps: store.maps.value.map(wholeMap),
+			charts: store.charts.value.map(wholeChart),
 		}
 	const chosen = new Set(store.state.selection)
 	const pickedMaps = store.maps.value
 		.filter((map) => store.nodesOfMap(map.id).some((n) => chosen.has(n.id)))
 		.map(wholeMap)
+	const pickedCharts = store.charts.value
+		.filter(
+			(chart) =>
+				store.nodesOfChart(chart.id).some((n) => chosen.has(n.id)) ||
+				store.edgesOfChart(chart.id).some((e) => chosen.has(e.id)),
+		)
+		.map(wholeChart)
 	const picked = objects.filter((object) => chosen.has(object.id))
 	const ids = new Set(picked.map((object) => object.id))
 	return {
+		sketch: store.canvas.value.sketch === true,
 		objects: picked,
 		byId,
 		maps: pickedMaps,
+		charts: pickedCharts,
 		connectors: connectors.filter(
 			(connector) =>
 				chosen.has(connector.id) ||
@@ -76,6 +93,10 @@ export function exportArea(store, items, scope = "board", measure = measureText)
 		.map((connector) => pathBounds(connectorPath(connector, resolved.get(connector.id))))
 	if (items.objects.length) boxes.push(boundsOfObjects(items.objects))
 	for (const m of items.maps || []) boxes.push(layoutMap(m.map, m.nodes, sized(measure)).bounds)
+	for (const c of items.charts || []) {
+		const box = layoutBounds(layoutChart(c.chart, c.nodes, c.edges, measure))
+		if (box) boxes.push(box)
+	}
 	if (!boxes.length) return null
 	const area = growRect(unionBounds(boxes), PADDING)
 	return {
@@ -87,7 +108,10 @@ export function exportArea(store, items, scope = "board", measure = measureText)
 }
 
 export const isEmpty = (items) =>
-	!items.objects.length && !items.connectors.length && !(items.maps || []).length
+	!items.objects.length &&
+	!items.connectors.length &&
+	!(items.maps || []).length &&
+	!(items.charts || []).length
 
 // The largest picture a browser canvas can be trusted to make.
 export const MAX_SIDE = 8192

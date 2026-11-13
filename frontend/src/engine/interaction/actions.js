@@ -193,6 +193,14 @@ export function stylePatch(item, action) {
 		if (!caps.has(need[action.target])) return null
 		return { style: { ...item.style, [action.target]: action.value } }
 	}
+	if (action.target === "sketch") {
+		// true: hand-drawn, false: clean, null: follow the board's setting
+		if (!caps.has("sketch")) return null
+		const next = { ...item.style }
+		if (action.value === null) delete next.sketch
+		else next.sketch = action.value === true
+		return { style: next }
+	}
 	if (action.target === "heads" || action.target === "geometry") {
 		if (!item.geometry) return null
 		return action.target === "geometry"
@@ -210,7 +218,10 @@ export function textStylePatch(text, action) {
 		case "textColor":
 			return withRuns({ ...text, color: action.value }, (run) => without(run, "c"))
 		case "textSize":
-			return { ...text, size: action.value }
+			return {
+				...text,
+				size: Math.min(200, Math.max(8, Math.round(Number(action.value) || 16))),
+			}
 		case "textAlign":
 			return { ...text, align: action.value }
 		case "bold":

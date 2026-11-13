@@ -9,6 +9,12 @@
 
 import { sanitizeCanvas, sanitizeConnector, sanitizeObject, sanitizeTheme } from "../model/schema"
 import {
+	repairChart,
+	sanitizeChart,
+	sanitizeFlowEdge,
+	sanitizeFlowNode,
+} from "../modes/flowchart/document"
+import {
 	repairMap,
 	sanitizeCrosslink,
 	sanitizeMap,
@@ -25,6 +31,9 @@ export function createBridge(store, doc) {
 		maps: doc.getMap("maps"),
 		mapnodes: doc.getMap("mapnodes"),
 		crosslinks: doc.getMap("crosslinks"),
+		charts: doc.getMap("charts"),
+		flownodes: doc.getMap("flownodes"),
+		flowedges: doc.getMap("flowedges"),
 		canvas: doc.getMap("canvas"),
 		theme: doc.getMap("theme"),
 	}
@@ -67,6 +76,9 @@ export function createBridge(store, doc) {
 		maps: () => store.maps.value,
 		mapnodes: () => store.mapNodes.value,
 		crosslinks: () => store.crosslinks.value,
+		charts: () => store.charts.value,
+		flownodes: () => store.flowNodes.value,
+		flowedges: () => store.flowEdges.value,
 	}
 	const currentItems = (list) => REFS[list]()
 
@@ -80,6 +92,9 @@ export function createBridge(store, doc) {
 		if (list === "maps") return sanitizeMap(raw)
 		if (list === "mapnodes") return sanitizeMapNode(raw)
 		if (list === "crosslinks") return sanitizeCrosslink(raw)
+		if (list === "charts") return sanitizeChart(raw)
+		if (list === "flownodes") return sanitizeFlowNode(raw)
+		if (list === "flowedges") return sanitizeFlowEdge(raw)
 		return sanitizeConnector(raw, 0, new Set(store.objects.value.map((o) => o.id)))
 	}
 
@@ -182,6 +197,43 @@ export function createBridge(store, doc) {
 		}, LOCAL)
 	}
 
+	// The same repair for flowcharts: an edge whose node was deleted by someone else goes, and a chart
+	// left with nothing goes too.
+	function dropBrokenCharts() {
+		const charts = store.charts.value
+		const nodes = store.flowNodes.value
+		const edges = store.flowEdges.value
+		const alive = new Set(charts.map((c) => c.id))
+		const goneNodes = new Set(nodes.filter((n) => !alive.has(n.chartId)).map((n) => n.id))
+		const goneEdges = new Set(edges.filter((e) => !alive.has(e.chartId)).map((e) => e.id))
+		const goneCharts = new Set()
+		for (const chart of charts) {
+			const mine = nodes.filter((n) => n.chartId === chart.id)
+			const lines = edges.filter((e) => e.chartId === chart.id)
+			const repaired = repairChart(chart, mine, lines)
+			if (!repaired) {
+				goneCharts.add(chart.id)
+				mine.forEach((n) => goneNodes.add(n.id))
+				lines.forEach((e) => goneEdges.add(e.id))
+				continue
+			}
+			const keptNodes = new Set(repaired.nodes.map((n) => n.id))
+			const keptEdges = new Set(repaired.edges.map((e) => e.id))
+			mine.filter((n) => !keptNodes.has(n.id)).forEach((n) => goneNodes.add(n.id))
+			lines.filter((e) => !keptEdges.has(e.id)).forEach((e) => goneEdges.add(e.id))
+		}
+		const removal = [
+			["flowedges", goneEdges],
+			["flownodes", goneNodes],
+			["charts", goneCharts],
+		].filter(([, ids]) => ids.size)
+		if (!removal.length) return
+		store.applyRemote(removal.map(([list, ids]) => ({ t: "remove", list, ids: [...ids] })))
+		doc.transact(() => {
+			for (const [list, ids] of removal) ids.forEach((id) => roots[list].delete(id))
+		}, LOCAL)
+	}
+
 	// Changes from outside are gathered over one Yjs transaction, then applied once: objects
 	// first, so a line that arrives with its shapes finds them.
 	let batch = null
@@ -194,12 +246,16 @@ export function createBridge(store, doc) {
 			work.maps.size && (() => reconcileList("maps", work.maps)),
 			work.mapnodes.size && (() => reconcileList("mapnodes", work.mapnodes)),
 			work.crosslinks.size && (() => reconcileList("crosslinks", work.crosslinks)),
+			work.charts.size && (() => reconcileList("charts", work.charts)),
+			work.flownodes.size && (() => reconcileList("flownodes", work.flownodes)),
+			work.flowedges.size && (() => reconcileList("flowedges", work.flowedges)),
 			work.canvas && (() => settingsOps("canvas")),
 			work.theme && (() => settingsOps("theme")),
 		]
 		for (const step of steps) if (step) store.applyRemote(step())
 		dropDanglingLines()
 		dropBrokenMaps()
+		dropBrokenCharts()
 	}
 	function note(kind, value) {
 		if (!batch) {
@@ -209,6 +265,9 @@ export function createBridge(store, doc) {
 				maps: new Set(),
 				mapnodes: new Set(),
 				crosslinks: new Set(),
+				charts: new Set(),
+				flownodes: new Set(),
+				flowedges: new Set(),
 				canvas: false,
 				theme: false,
 			}
@@ -237,7 +296,7 @@ export function createBridge(store, doc) {
 	}
 	observe(roots.objects, (events) => note("objects", changedIds(events, roots.objects)))
 	observe(roots.connectors, (events) => note("connectors", changedIds(events, roots.connectors)))
-	for (const list of ["maps", "mapnodes", "crosslinks"])
+	for (const list of ["maps", "mapnodes", "crosslinks", "charts", "flownodes", "flowedges"])
 		observe(roots[list], (events) => note(list, changedIds(events, roots[list])))
 	observe(roots.canvas, () => note("canvas", true))
 	observe(roots.theme, () => note("theme", true))
@@ -261,7 +320,14 @@ export function createBridge(store, doc) {
 					]),
 				),
 			)
-			for (const list of ["maps", "mapnodes", "crosslinks"])
+			for (const list of [
+				"maps",
+				"mapnodes",
+				"crosslinks",
+				"charts",
+				"flownodes",
+				"flowedges",
+			])
 				store.applyRemote(
 					reconcileList(
 						list,
@@ -272,6 +338,7 @@ export function createBridge(store, doc) {
 			store.applyRemote(settingsOps("theme"))
 			dropDanglingLines()
 			dropBrokenMaps()
+			dropBrokenCharts()
 		},
 		dispose() {
 			unsubscribe()

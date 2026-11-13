@@ -1,0 +1,356 @@
+{
+	"slug": "support-escalation-flow",
+	"name": "Support escalation",
+	"description": "How a support ticket moves from first reply to resolution, through a second line and engineering when needed.",
+	"category": "Flowcharts",
+	"tags": [
+		"support",
+		"escalation",
+		"customer",
+		"process",
+		"helpdesk"
+	],
+	"sort_order": 13,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -120,
+				"w": 1200,
+				"h": 40,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Support ticket escalation",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -70,
+				"w": 1400,
+				"h": 24,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "When to resolve a ticket yourself, when to hand it on, and who to tell. Use it as the team's shared rule of thumb."
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": [
+			{
+				"id": "chart1",
+				"direction": "TB",
+				"numbered": false,
+				"nodes": [
+					{
+						"id": "start",
+						"type": "terminator",
+						"text": "Ticket received",
+						"x": 100,
+						"y": 100,
+						"manual": false
+					},
+					{
+						"id": "ack",
+						"type": "process",
+						"text": "Reply within 1 hour (first response)",
+						"x": 100,
+						"y": 231,
+						"manual": false
+					},
+					{
+						"id": "d1",
+						"type": "decision",
+						"text": "Can tier 1 solve it?",
+						"x": 100,
+						"y": 393,
+						"manual": false
+					},
+					{
+						"id": "fix1",
+						"type": "process",
+						"text": "Solve it and explain what was done",
+						"x": 100,
+						"y": 556,
+						"manual": false
+					},
+					{
+						"id": "conf1",
+						"type": "process",
+						"text": "Ask the customer to confirm it is solved",
+						"x": 100,
+						"y": 718,
+						"manual": false
+					},
+					{
+						"id": "end1",
+						"type": "terminator",
+						"text": "Ticket closed",
+						"x": 100,
+						"y": 881,
+						"manual": false
+					},
+					{
+						"id": "esc",
+						"type": "process",
+						"text": "Escalate to tier 2 with a clear summary",
+						"x": 403,
+						"y": 556,
+						"manual": false
+					},
+					{
+						"id": "d2",
+						"type": "decision",
+						"text": "Is it a bug?",
+						"x": 403,
+						"y": 718,
+						"manual": false
+					},
+					{
+						"id": "fix2",
+						"type": "process",
+						"text": "Tier 2 finds a fix or a workaround",
+						"x": 403,
+						"y": 881,
+						"manual": false
+					},
+					{
+						"id": "conf2",
+						"type": "process",
+						"text": "Ask the customer to confirm it is solved",
+						"x": 374,
+						"y": 1045,
+						"manual": false
+					},
+					{
+						"id": "end2",
+						"type": "terminator",
+						"text": "Ticket closed",
+						"x": 374,
+						"y": 1209,
+						"manual": false
+					},
+					{
+						"id": "eng",
+						"type": "io",
+						"text": "Create an engineering ticket with steps to reproduce",
+						"x": 726,
+						"y": 881,
+						"manual": false
+					},
+					{
+						"id": "d3",
+						"type": "decision",
+						"text": "Is the customer completely blocked?",
+						"x": 755,
+						"y": 1045,
+						"manual": false
+					},
+					{
+						"id": "follow",
+						"type": "process",
+						"text": "Follow up every 3 days until it is fixed",
+						"x": 755,
+						"y": 1209,
+						"manual": false
+					},
+					{
+						"id": "end3",
+						"type": "terminator",
+						"text": "Closed when fixed",
+						"x": 755,
+						"y": 1339,
+						"manual": false
+					},
+					{
+						"id": "urgent",
+						"type": "process",
+						"text": "Mark urgent and page the on-call engineer",
+						"x": 1050,
+						"y": 1209,
+						"manual": false
+					},
+					{
+						"id": "end4",
+						"type": "terminator",
+						"text": "Closed when fixed",
+						"x": 1050,
+						"y": 1339,
+						"manual": false
+					}
+				],
+				"edges": [
+					{
+						"id": "start-ack",
+						"from": "start",
+						"to": "ack",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "ack-d1",
+						"from": "ack",
+						"to": "d1",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "d1-fix1",
+						"from": "d1",
+						"to": "fix1",
+						"label": "Yes",
+						"order": 0
+					},
+					{
+						"id": "d1-esc",
+						"from": "d1",
+						"to": "esc",
+						"label": "No",
+						"order": 1
+					},
+					{
+						"id": "fix1-conf1",
+						"from": "fix1",
+						"to": "conf1",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "conf1-end1",
+						"from": "conf1",
+						"to": "end1",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "esc-d2",
+						"from": "esc",
+						"to": "d2",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "d2-fix2",
+						"from": "d2",
+						"to": "fix2",
+						"label": "No",
+						"order": 0
+					},
+					{
+						"id": "d2-eng",
+						"from": "d2",
+						"to": "eng",
+						"label": "Yes",
+						"order": 1
+					},
+					{
+						"id": "fix2-conf2",
+						"from": "fix2",
+						"to": "conf2",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "conf2-end2",
+						"from": "conf2",
+						"to": "end2",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "eng-d3",
+						"from": "eng",
+						"to": "d3",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "d3-follow",
+						"from": "d3",
+						"to": "follow",
+						"label": "No",
+						"order": 0
+					},
+					{
+						"id": "d3-urgent",
+						"from": "d3",
+						"to": "urgent",
+						"label": "Yes",
+						"order": 1
+					},
+					{
+						"id": "follow-end3",
+						"from": "follow",
+						"to": "end3",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "urgent-end4",
+						"from": "urgent",
+						"to": "end4",
+						"label": "",
+						"order": 0
+					}
+				]
+			}
+		]
+	}
+}

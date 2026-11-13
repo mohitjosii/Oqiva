@@ -3,6 +3,7 @@
 // objects ({clientX, clientY, button, shiftKey, ctrlKey, metaKey, target}), so it can be
 // driven in tests without a browser.
 
+import { markRaw } from "vue"
 import {
 	boundsOfObjects,
 	centerOf,
@@ -17,6 +18,7 @@ import {
 	connectorHit,
 	connectorPath,
 	CONNECTABLE_KINDS,
+	distanceToSegment,
 	isAttached,
 	nearestAnchor,
 	pathIntersectsRect,
@@ -41,12 +43,18 @@ import { presetObject, pushRecentPreset } from "../model/library"
 import { newId } from "../model/ids"
 import { GRID_SIZES, normalizeRotation, pageSize } from "../model/schema"
 import { toolById } from "../model/shapes"
+import { createStroke, thinPoints } from "../model/strokes"
+import { ERASER_RADIUS, newSweep, sweepInk, sweepObjects, sweepOps } from "./eraser"
 import { libraryPlacement, OPPOSITE, quickAddRect, quickTarget } from "./placement"
 import { createConnectorPaths } from "../render/connectorPaths"
 import { expandToGroups } from "../store/arrange"
 import { cellAt, scaleTable, setTrackSize, withTable } from "../store/tableOps"
 import { createMapLayouts, sized } from "../modes/mindmap/layouts"
 import { runMindmapCommand } from "../modes/mindmap/commands"
+import { runFlowCommand } from "../modes/flowchart/commands"
+import { createFlowLayouts, layoutBounds } from "../modes/flowchart/layouts"
+import { applyFlowChange } from "../modes/flowchart/storeOps"
+import * as flowOps from "../modes/flowchart/ops"
 import { applyChange as applyMapChange } from "../modes/mindmap/storeOps"
 import * as mapTree from "../modes/mindmap/tree"
 import { paintOnto } from "./actions"
@@ -73,6 +81,72 @@ export class CanvasController {
 		this.paths = createConnectorPaths(store)
 		// Where every mind map's nodes are, worked out from the trees and kept up to date.
 		this.maps = createMapLayouts(store, sized(measure), () => store.state.fontsTick)
+		// The same for flowcharts: node sizes and where every arrow runs.
+		this.flows = createFlowLayouts(store, measure, () => store.state.fontsTick)
+		// Where the maps and charts are, for fitting the view to the board and for the minimap.
+		store.extraBounds = () => [
+			...[...this.maps.value.values()].map((layout) => layout.bounds),
+			...[...this.flows.value.values()].map((layout) => layoutBounds(layout)).filter(Boolean),
+		]
+	}
+
+	// The flowchart step under a board point: {layout, node, box}, or null. The topmost (last drawn) wins.
+	flowAt(point, slop = 0) {
+		let found = null
+		for (const layout of this.flows.value.values()) {
+			for (const node of layout.nodes) {
+				const size = layout.sizes.get(node.id)
+				if (!size) continue
+				if (
+					point.x >= node.x - size.w / 2 - slop &&
+					point.x <= node.x + size.w / 2 + slop &&
+					point.y >= node.y - size.h / 2 - slop &&
+					point.y <= node.y + size.h / 2 + slop
+				)
+					found = {
+						layout,
+						node,
+						box: {
+							x: node.x - size.w / 2,
+							y: node.y - size.h / 2,
+							w: size.w,
+							h: size.h,
+						},
+					}
+			}
+		}
+		return found
+	}
+
+	// The arrow of a flowchart nearest a board point (within ``slop``), or null.
+	flowEdgeAt(point, slop) {
+		let best = null
+		for (const layout of this.flows.value.values()) {
+			for (const edge of layout.edges) {
+				const route = layout.routes.get(edge.id)
+				if (!route) continue
+				for (let i = 1; i < route.points.length; i++) {
+					const d = distanceToSegment(point, route.points[i - 1], route.points[i])
+					if (d <= slop && (!best || d < best.d)) best = { layout, edge, d }
+				}
+			}
+		}
+		return best
+	}
+
+	// Flowchart commands from a button, the type picker or the pointer. They share the keyboard's code.
+	flowHost() {
+		return {
+			measure: (text, size) => this.measure(text, { size }),
+			ask: this.ask,
+			// bring a step that landed off screen (or under the tool bars) into view
+			reveal: (point) =>
+				this.revealRect({ x: point.x - 110, y: point.y - 90, w: 220, h: 230 }),
+		}
+	}
+
+	flowCommand(command) {
+		return runFlowCommand(this.store, command, this.flowHost())
 	}
 
 	// The mind map node under a board point: {layout, node, box}, or null.
@@ -153,6 +227,158 @@ export class CanvasController {
 		}
 	}
 
+	// ----- freehand: pen, highlighter, eraser, laser -----
+
+	// Points closer than this (in board units, about a pixel and a bit on screen) are thinned out while drawing.
+	inkGap() {
+		return Math.max(0.4, 1.2 / this.state.viewport.scale)
+	}
+
+	startInk(ink, point) {
+		const options = this.state.ink[ink]
+		const points = markRaw([[point.x, point.y]])
+		this.drag = { type: "ink", ink, points, color: options.color, width: options.width }
+		this.state.inkPreview = { points, color: options.color, width: options.width, ink }
+	}
+
+	extendInk(drag, point) {
+		const last = drag.points[drag.points.length - 1]
+		if (Math.hypot(point.x - last[0], point.y - last[1]) < this.inkGap()) return
+		drag.points.push([point.x, point.y])
+		this.state.inkPreview = {
+			points: drag.points,
+			color: drag.color,
+			width: drag.width,
+			ink: drag.ink,
+		}
+	}
+
+	// Lifting the pen makes the stroke: one undo step, and the pen stays ready for the next one.
+	finishInk(drag, point) {
+		this.state.inkPreview = null
+		const last = drag.points[drag.points.length - 1]
+		if (last[0] !== point.x || last[1] !== point.y) drag.points.push([point.x, point.y])
+		const points = thinPoints(drag.points, this.inkGap())
+		const stroke = createStroke({
+			points,
+			color: drag.color,
+			width: drag.width,
+			ink: drag.ink,
+			z: this.store.nextZ(),
+		})
+		this.store.addObjects([stroke], {
+			label: drag.ink === "pen" ? "Draw" : "Highlight",
+			select: false,
+		})
+	}
+
+	eraserRadius() {
+		return ERASER_RADIUS[this.state.ink.eraserSize] || ERASER_RADIUS.m
+	}
+
+	startErase(point) {
+		const sweep = newSweep()
+		this.drag = { type: "erase", sweep, last: [point.x, point.y] }
+		this.extendErase(this.drag, point, true)
+	}
+
+	extendErase(drag, point, first = false) {
+		const radius = this.eraserRadius()
+		const from = drag.last
+		const to = [point.x, point.y]
+		drag.last = to
+		this.state.eraser = { x: point.x, y: point.y, r: radius }
+		const { sweep } = drag
+		const objects = this.store.objects.value
+		let changed
+		if (this.state.ink.eraserMode === "object") {
+			changed = sweepObjects(sweep, objects, from, to, radius)
+			// lines under the tip go too
+			const steps = Math.max(
+				1,
+				Math.ceil(Math.hypot(to[0] - from[0], to[1] - from[1]) / Math.max(2, radius / 2)),
+			)
+			for (const connector of this.store.connectors.value) {
+				if (sweep.connectors.has(connector.id)) continue
+				const path = this.paths.value.get(connector.id)
+				if (!path) continue
+				for (let i = 0; i <= steps; i++) {
+					const at = {
+						x: from[0] + ((to[0] - from[0]) * i) / steps,
+						y: from[1] + ((to[1] - from[1]) * i) / steps,
+					}
+					if (connectorHit(path, at, radius)) {
+						sweep.connectors.add(connector.id)
+						changed = true
+						break
+					}
+				}
+			}
+		} else changed = sweepInk(sweep, objects, from, to, radius)
+		if (changed || first)
+			this.state.erasePending = {
+				hide: new Set(sweep.hide),
+				pieces: sweep.pieces,
+				marks: new Set([...sweep.marks]),
+			}
+	}
+
+	finishErase(drag) {
+		this.state.erasePending = null
+		const ops = sweepOps(drag.sweep, this.store.connectors.value)
+		if (ops.length) this.store.applyOps(ops, { label: "Erase", select: [], selectUndo: [] })
+	}
+
+	// The laser: a dot where the pointer is and a trail that fades. It is only drawn on this screen.
+	moveLaser(point) {
+		const now = performance.now()
+		const laser = this.state.laser || { x: point.x, y: point.y, trail: [] }
+		laser.x = point.x
+		laser.y = point.y
+		laser.trail.push({ x: point.x, y: point.y, t: now })
+		if (laser.trail.length > 120) laser.trail.splice(0, laser.trail.length - 120)
+		this.state.laser = laser
+	}
+
+	// A flowchart step let go: spliced into the arrow under it, or simply left where it was dropped
+	// (which marks it as placed by hand, so Tidy up is what brings it back into the layout).
+	dropFlowNode(drag, feedback) {
+		const chartId = drag.chartId
+		const chart = this.store.getChart(chartId)
+		const nodes = this.store.nodesOfChart(chartId)
+		const edges = this.store.edgesOfChart(chartId)
+		const measure = this.flowHost().measure
+		const change = feedback.spliceEdge
+			? flowOps.spliceNodeOnEdge(chart, nodes, edges, drag.id, feedback.spliceEdge, {
+					measure,
+				})
+			: flowOps.moveNodes(nodes, [drag.id], Math.round(feedback.dx), Math.round(feedback.dy))
+		return applyFlowChange(this.store, chartId, change, {
+			label: feedback.spliceEdge ? "Insert step" : "Move",
+			select: [drag.id],
+			selectUndo: [drag.id],
+		})
+	}
+
+	// The end of an arrow pulled out of a "+" handle: onto another step it connects them, onto empty
+	// canvas it asks what to make there, and a plain click asks what to add next.
+	finishFlowLink(drag, event) {
+		const feedback = this.state.flowDrag
+		this.state.flowDrag = null
+		const screen = this.screenPoint(event)
+		const pointer = this.boardPoint(event)
+		if (drag.moved && feedback?.target) {
+			this.flowCommand({ name: "fl.connect", from: drag.from, to: feedback.target })
+			return
+		}
+		this.state.flowPicker = {
+			from: drag.from,
+			side: drag.side,
+			point: { x: screen.x, y: screen.y },
+			at: drag.moved ? { x: Math.round(pointer.x), y: Math.round(pointer.y) } : null,
+		}
+	}
+
 	mapCommand(command) {
 		return runMindmapCommand(this.store, command, this.mapHost())
 	}
@@ -220,6 +446,11 @@ export class CanvasController {
 	// Pointer moving with no button down: which shape is hovered, and which anchors to show.
 	hover(event) {
 		this.state.cursor = this.boardPoint(event)
+		if (this.state.tool === "laser") return this.moveLaser(this.state.cursor)
+		if (this.state.tool === "eraser") {
+			this.state.eraser = { ...this.state.cursor, r: this.eraserRadius() }
+			return
+		}
 		if (event.target?.dataset?.quick) return // moving onto a quick-add arrow keeps its shape
 		const point = this.boardPoint(event)
 		if (connectorToolById(this.state.tool)) {
@@ -291,6 +522,15 @@ export class CanvasController {
 				this.drag = { type: "comment", start: point, startScreen: screen }
 			return
 		}
+		if (this.state.tool === "pen" || this.state.tool === "highlighter") {
+			if (!this.state.readonly) this.startInk(this.state.tool, point)
+			return
+		}
+		if (this.state.tool === "eraser") {
+			if (!this.state.readonly) this.startErase(point)
+			return
+		}
+		if (this.state.tool === "laser") return this.moveLaser(point)
 		const connectorTool = connectorToolById(this.state.tool)
 		if (connectorTool) {
 			if (!this.state.readonly) this.startConnector(connectorTool, point, screen)
@@ -328,6 +568,40 @@ export class CanvasController {
 		if (add && !this.state.readonly) {
 			this.store.select([add])
 			this.mapCommand({ name: "mm.child" })
+			return
+		}
+		const flowAdd = event.target?.closest?.("[data-flowadd]")
+		if (flowAdd && !this.state.readonly) {
+			this.store.select([flowAdd.dataset.flowadd])
+			this.state.flowPicker = null
+			this.drag = {
+				type: "flowlink",
+				chartId: this.store.getFlowNode(flowAdd.dataset.flowadd)?.chartId,
+				from: flowAdd.dataset.flowadd,
+				side: flowAdd.dataset.side,
+				start: point,
+				startScreen: screen,
+				moved: false,
+			}
+			return
+		}
+		const flowSlop = HIT_TOLERANCE_PX / this.state.viewport.scale
+		const hitFlow = this.flowAt(point, flowSlop)
+		if (hitFlow && !this.state.painter) return this.pressFlowNode(event, point, screen, hitFlow)
+		const flowEdgeId = event.target?.closest?.("[data-flowedge]")?.dataset.flowedge
+		const flowEdge = flowEdgeId
+			? { edge: this.store.getFlowEdge(flowEdgeId) }
+			: this.flowEdgeAt(point, flowSlop * 3)
+		if (flowEdge?.edge && !this.state.painter) {
+			const id = flowEdge.edge.id
+			if (event.shiftKey && this.state.selection.every((x) => this.store.getFlowEdge(x)))
+				this.store.select(
+					this.state.selection.includes(id)
+						? this.state.selection.filter((x) => x !== id)
+						: [...this.state.selection, id],
+				)
+			else this.store.select([id])
+			this.state.flowPicker = null
 			return
 		}
 		const hitNode = this.nodeAt(point, HIT_TOLERANCE_PX / this.state.viewport.scale)
@@ -412,6 +686,33 @@ export class CanvasController {
 		}
 	}
 
+	// A press on a flowchart step: select it (Shift adds or removes), and get ready to drag it.
+	pressFlowNode(event, point, screen, { layout, node }) {
+		const selected = this.state.selection
+		this.state.flowPicker = null
+		if (event.shiftKey) {
+			const onlySteps = selected.every((id) => this.store.getFlowNode(id))
+			this.store.select(
+				selected.includes(node.id)
+					? selected.filter((id) => id !== node.id)
+					: onlySteps
+						? [...selected, node.id]
+						: [node.id],
+			)
+			return
+		}
+		if (!selected.includes(node.id) || selected.length > 1) this.store.select([node.id])
+		if (this.state.readonly) return
+		this.drag = {
+			type: "flownode",
+			chartId: layout.chart.id,
+			id: node.id,
+			start: point,
+			startScreen: screen,
+			moved: false,
+		}
+	}
+
 	// A press on a mind map node: select it (Shift adds or removes), and get ready to drag it.
 	pressNode(event, point, screen, { layout, node }) {
 		const selected = this.state.selection
@@ -467,7 +768,14 @@ export class CanvasController {
 		const screen = this.screenPoint(event)
 		const point = this.boardPoint(event)
 		this.state.cursor = point
+		if (this.state.tool === "laser") this.moveLaser(point)
 		switch (drag.type) {
+			case "ink":
+				this.extendInk(drag, point)
+				break
+			case "erase":
+				this.extendErase(drag, point)
+				break
 			case "pan":
 				setViewport(
 					this.store,
@@ -504,6 +812,46 @@ export class CanvasController {
 						point,
 						target: this.mapDropTarget(drag.layout, drag.id, point),
 					}
+				}
+				break
+			}
+			case "flownode": {
+				if (
+					!drag.moved &&
+					Math.hypot(screen.x - drag.startScreen.x, screen.y - drag.startScreen.y) <
+						CLICK_SLOP_PX
+				)
+					break
+				drag.moved = true
+				const layout = this.flows.value.get(drag.chartId)
+				const dx = point.x - drag.start.x
+				const dy = point.y - drag.start.y
+				// A step with no arrows of its own, dragged over an arrow, would split it.
+				let spliceEdge = null
+				if (layout && !layout.edges.some((e) => e.from === drag.id || e.to === drag.id)) {
+					const hit = this.flowEdgeAt(point, 10 / this.state.viewport.scale)
+					if (hit && hit.layout.chart.id === drag.chartId) spliceEdge = hit.edge.id
+				}
+				this.state.flowDrag = { chartId: drag.chartId, nodeId: drag.id, dx, dy, spliceEdge }
+				break
+			}
+			case "flowlink": {
+				if (
+					!drag.moved &&
+					Math.hypot(screen.x - drag.startScreen.x, screen.y - drag.startScreen.y) <
+						CLICK_SLOP_PX
+				)
+					break
+				drag.moved = true
+				const hit = this.flowAt(point, 6 / this.state.viewport.scale)
+				this.state.flowDrag = {
+					chartId: drag.chartId,
+					from: drag.from,
+					point,
+					target:
+						hit && hit.node.id !== drag.from && hit.layout.chart.id === drag.chartId
+							? hit.node.id
+							: null,
 				}
 				break
 			}
@@ -853,6 +1201,12 @@ export class CanvasController {
 		this.state.panning = false
 		this.state.guides = []
 		switch (drag.type) {
+			case "ink":
+				this.finishInk(drag, this.boardPoint(event))
+				break
+			case "erase":
+				this.finishErase(drag)
+				break
 			case "move":
 				if (drag.moved) drag.gesture?.commit("Move")
 				else if (drag.collapseTo) this.store.select(drag.collapseTo)
@@ -897,6 +1251,16 @@ export class CanvasController {
 				}
 				break
 			}
+			case "flownode": {
+				const feedback = this.state.flowDrag
+				this.state.flowDrag = null
+				if (!drag.moved || !feedback) break
+				this.dropFlowNode(drag, feedback)
+				break
+			}
+			case "flowlink":
+				this.finishFlowLink(drag, event)
+				break
 			case "marquee":
 				this.state.marquee = null
 				break
@@ -1112,6 +1476,11 @@ export class CanvasController {
 		this.state.guides = []
 		this.state.dragging = false
 		this.state.mapDrag = null
+		this.state.flowDrag = null
+		this.state.inkPreview = null
+		this.state.erasePending = null
+		this.state.eraser = null
+		this.state.laser = null
 		this.lastMove = null
 		this.clearConnectHints()
 		if (drag?.gesture) drag.gesture.cancel()
@@ -1126,6 +1495,16 @@ export class CanvasController {
 			this.store.select([line.id])
 			this.state.editingNew = false
 			this.state.editingId = line.id
+			return
+		}
+		// A double-click on a flowchart step or arrow edits its text, and never makes a shape under it.
+		const flowStep = this.flowAt(point, tolerance)
+		const flowLine = flowStep ? null : this.flowEdgeAt(point, tolerance * 3)
+		if (flowStep || flowLine) {
+			const id = flowStep ? flowStep.node.id : flowLine.edge.id
+			this.store.select([id])
+			this.state.editingFlowNew = false
+			this.state.editingFlowId = id
 			return
 		}
 		// A double-click on a mind map node edits its text, and never makes a shape under it.
@@ -1152,6 +1531,11 @@ export class CanvasController {
 			this.state.editingCell = null
 			// On a frame (its name or border) this edits the name; it never makes a card.
 			this.state.editingId = hit.id
+			return
+		}
+		// A whiteboard makes a text box instead of a shape.
+		if (this.store.canvas.value.doubleClick === "text") {
+			this.createAndSelect("text", defaultRect("text", point), { edit: true })
 			return
 		}
 		// Double-clicking empty canvas makes a shape, ready for typing.

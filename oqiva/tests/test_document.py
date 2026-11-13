@@ -310,7 +310,7 @@ class TestValidation(RestoresSettings, IntegrationTestCase):
 			mindmaps=[
 				mind_map(mind_node("root", None, 0), mind_node("n1", "root", 0), mind_node("n2", "root", 1))
 			],
-			flowcharts=[{"id": "f", "nodes": [{}]}],
+			flowcharts=[flow_chart(flow_node("f1", 0, 0))],
 		)
 		self.assertEqual(self.parse(raw)[1], 7)
 
@@ -717,3 +717,160 @@ class TestMindMaps(IntegrationTestCase):
 		self.addCleanup(frappe.db.set_single_value, "Oqiva Settings", "max_objects_per_board", 3000)
 		with self.assertRaises(OqivaLimitExceeded):
 			self.parse(mind_map(root, *kids))
+
+
+def flow_node(node_id, x=0, y=0, type="process", **over):
+	item = {"id": node_id, "type": type, "text": "Step", "x": x, "y": y, "manual": False}
+	item.update(over)
+	return item
+
+
+def flow_chart(*nodes, edges=(), chart_id="fc1", **over):
+	item = {
+		"id": chart_id,
+		"direction": "TB",
+		"numbered": False,
+		"nodes": list(nodes) or [flow_node("n1")],
+		"edges": list(edges),
+	}
+	item.update(over)
+	return item
+
+
+class TestFlowcharts(IntegrationTestCase):
+	"""A flowchart is typed steps with positions and connections between two different steps."""
+
+	def parse(self, *charts, objects=()):
+		return document_service.parse_document(doc(*objects, flowcharts=list(charts)))
+
+	def bad(self, *charts, objects=()):
+		with self.assertRaises(OqivaError):
+			self.parse(*charts, objects=objects)
+
+	def edge(self, edge_id, source, target, **over):
+		return {"id": edge_id, "from": source, "to": target, "label": "", "order": 0, **over}
+
+	def test_accepts_a_chart_with_every_step_type_and_labelled_connections(self):
+		chart = flow_chart(
+			flow_node("s", 0, 0, "terminator", text="Start"),
+			flow_node("d", 0, 120, "decision", text="OK?"),
+			flow_node("a", 0, 240, "process"),
+			flow_node("b", 200, 120, "io"),
+			flow_node("j", 200, 240, "junction", text=""),
+			edges=[
+				self.edge("e1", "s", "d"),
+				self.edge("e2", "d", "a", label="Yes"),
+				self.edge("e3", "d", "b", label="No", order=1),
+				self.edge("e4", "a", "j"),
+				self.edge("e5", "b", "j"),
+			],
+			direction="LR",
+			numbered=True,
+		)
+		document, count = self.parse(chart, objects=(shape("s1"),))
+		self.assertEqual(count, 6)
+		self.assertEqual(document["flowcharts"][0]["direction"], "LR")
+
+	def test_refuses_bad_steps_and_connections(self):
+		n1, n2 = flow_node("n1"), flow_node("n2", 0, 100)
+		for chart in (
+			flow_chart(flow_node("n1", type="star")),
+			flow_chart(flow_node("n1", text="x" * 201)),
+			flow_chart(flow_node("n1", x="left")),
+			flow_chart(flow_node("n1", y=1e9)),
+			flow_chart(flow_node("n1", manual="yes")),
+			flow_chart(n1, flow_node("n1")),  # a repeated id
+			flow_chart(n1, n2, edges=[self.edge("e", "n1", "n1")]),  # a loop
+			flow_chart(n1, n2, edges=[self.edge("e", "n1", "ghost")]),
+			flow_chart(n1, n2, edges=[self.edge("e", "n1", "n2"), self.edge("f", "n1", "n2")]),
+			flow_chart(n1, n2, edges=[self.edge("e", "n1", "n2", label="l" * 61)]),
+			flow_chart(n1, n2, edges=[self.edge("e", "n1", "n2", order=-1)]),
+			flow_chart(n1, n2, edges=[self.edge("n1", "n1", "n2")]),  # the id belongs to a step
+			flow_chart(n1, direction="diagonal"),
+			flow_chart(n1, numbered="yes"),
+		):
+			self.bad(chart)
+
+	def test_step_text_size_is_checked(self):
+		"""Success: a size from 8 to 200 is accepted. Boundary: outside that, or not a number, is refused."""
+		for size in (8, 40, 200):
+			self.parse(flow_chart(flow_node("n1", 0, 0, fontSize=size)))
+		for size in (7, 201, "big", True):
+			self.bad(flow_chart(flow_node("n1", 0, 0, fontSize=size)))
+
+	def test_refuses_ids_used_by_shapes_or_other_charts_and_too_many_things(self):
+		self.bad(flow_chart(flow_node("s1")), objects=(shape("s1"),))
+		self.bad(flow_chart(), flow_chart(flow_node("n1"), chart_id="fc2"))  # step id n1 twice
+		with self.assertRaises(OqivaLimitExceeded):
+			self.parse(*[flow_chart(flow_node(f"x{i}"), chart_id=f"c{i}") for i in range(51)])
+		self.bad(flow_chart(*[flow_node(f"n{i}") for i in range(501)]))
+
+
+def stroke(object_id="k1", points=None, **over):
+	item = shape(
+		object_id,
+		kind="stroke",
+		ink="pen",
+		points=[[0, 0], [0.5, 0.5], [1, 1]] if points is None else points,
+	)
+	item["style"] = {"fill": None, "stroke": "#112233", "strokeWidth": 6, "opacity": 1}
+	item.update(over)
+	return item
+
+
+class TestStrokesAndWhiteboardSettings(IntegrationTestCase):
+	"""Freehand strokes, the hand-drawn style and the board's double-click setting."""
+
+	def parse(self, *objects, **over):
+		return document_service.parse_document(doc(*objects, **over))
+
+	def bad(self, *objects, **over):
+		with self.assertRaises(OqivaError):
+			self.parse(*objects, **over)
+
+	def test_accepts_strokes_of_both_inks_up_to_80_wide(self):
+		"""Success: a pen and a highlighter stroke, a wide pen, a single-point dot."""
+		for item in (
+			stroke(),
+			stroke("k2", ink="highlighter"),
+			stroke("k3", style={"stroke": "#000000", "strokeWidth": 80, "opacity": 0.4}),
+			stroke("k4", points=[[0.5, 0.5]]),
+		):
+			self.parse(item)
+
+	def test_refuses_bad_strokes(self):
+		"""Failure: no points, a point outside the box, a malformed point, an unknown ink, too wide, too many."""
+		self.bad(stroke(points=[]))
+		self.bad(stroke(points=[[0, 1.5]]))
+		self.bad(stroke(points=[[0.1]]))
+		self.bad(stroke(points=[["a", "b"]]))
+		self.bad(stroke(points=[[True, 0]]))
+		self.bad(stroke(ink="marker"))
+		self.bad(stroke(style={"stroke": "#000000", "strokeWidth": 81}))
+		self.bad(stroke(points=[[0.5, 0.5]] * 4001))
+		self.bad(stroke(points="not a list"))
+
+	def test_a_border_is_still_limited_to_20_on_other_kinds(self):
+		"""Boundary: only a pen may be wider than 20."""
+		self.bad(shape("a", style={"fill": None, "stroke": "#000000", "strokeWidth": 30}))
+
+	def test_sketch_flag_and_canvas_settings(self):
+		"""Success and failure: the hand-drawn flag is a boolean; the canvas takes only known values."""
+		self.parse(shape("a", style={"fill": None, "stroke": "#000000", "sketch": True}))
+		self.bad(shape("a", style={"fill": None, "stroke": "#000000", "sketch": "yes"}))
+		for canvas in (
+			{"mode": "infinite", "grid": "off", "sketch": True, "doubleClick": "text"},
+			{"mode": "infinite", "grid": "off", "doubleClick": "shape"},
+		):
+			self.parse(canvas=canvas)
+		for canvas in (
+			{"mode": "infinite", "grid": "off", "sketch": "yes"},
+			{"mode": "infinite", "grid": "off", "doubleClick": "banana"},
+		):
+			self.bad(canvas=canvas)
+
+	def test_strokes_count_against_the_object_limit(self):
+		"""Boundary: every stroke is an object, so a drawing cannot grow without limit."""
+		many = [stroke(f"k{i}") for i in range(3001)]
+		with self.assertRaises(OqivaLimitExceeded):
+			self.parse(*many)

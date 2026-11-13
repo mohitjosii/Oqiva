@@ -26,6 +26,22 @@ export const SHORTCUTS = [
 	{ group: "Tools", keys: ["N"], label: "Sticky note" },
 	{ group: "Tools", keys: ["F"], label: "Frame (a named section)" },
 	{ group: "Tools", keys: ["Shift", "S"], label: "Shape library" },
+	{ group: "Draw", keys: ["P"], label: "Pen" },
+	{ group: "Draw", keys: ["Shift", "H"], label: "Highlighter" },
+	{ group: "Draw", keys: ["E"], label: "Eraser (cuts strokes, or removes whole objects)" },
+	{ group: "Draw", keys: ["Shift", "L"], label: "Laser pointer (never saved)" },
+	{ group: "Flowchart", keys: ["Shift", "F"], label: "New flowchart" },
+	{
+		group: "Flowchart",
+		keys: ["Enter"],
+		label: "Add a step after the selected one (on an arrow: insert one)",
+	},
+	{
+		group: "Flowchart",
+		keys: ["D", "T", "I", "J"],
+		label: "Add a decision, start or end, input or output, junction",
+	},
+	{ group: "Flowchart", keys: ["F2"], label: "Edit the text of a step or the label of an arrow" },
 	{ group: "Mind map", keys: ["M"], label: "New mind map in the middle of the screen" },
 	{ group: "Mind map", keys: ["Tab"], label: "Add a child to the selected node" },
 	{ group: "Mind map", keys: ["Enter"], label: "Add a sibling after it" },
@@ -59,6 +75,8 @@ const TOOL_KEYS = {
 	c: "comment",
 	n: "note",
 	f: "frame",
+	p: "pen",
+	e: "eraser",
 }
 const ARROWS = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }
 
@@ -75,6 +93,7 @@ const VIEW_ONLY = new Set([
 	"shortcuts",
 	"tool",
 	"mm.nav",
+	"fl.nav",
 ])
 
 // Inputs that take no typed text (a slider, a checkbox) must not swallow shortcuts such as undo.
@@ -118,9 +137,28 @@ function mindmapLookup(event) {
 	return null
 }
 
-function lookup(event, mindmap = false) {
+// With only flowchart steps or arrows selected, the flowchart owns Enter, D, T, I, J (add or insert a
+// step of that type) and the arrows (walk the chart instead of nudging).
+const FLOW_TYPE_KEYS = { d: "decision", t: "terminator", i: "io", j: "junction" }
+function flowchartLookup(event) {
+	const key = event.key
+	if (event.ctrlKey || event.metaKey || event.altKey) return null
+	if (key === "Enter" && !event.shiftKey) return { name: "fl.key", type: "process" }
+	if (!event.shiftKey && key.length === 1 && key.toLowerCase() in FLOW_TYPE_KEYS)
+		return { name: "fl.key", type: FLOW_TYPE_KEYS[key.toLowerCase()] }
+	if (key in MM_ARROWS) return { name: "fl.nav", direction: MM_ARROWS[key] }
+	if (key === "Delete" || key === "Backspace") return { name: "fl.delete" }
+	if (key === "F2") return { name: "fl.edit" }
+	return null
+}
+
+function lookup(event, mindmap = false, flowchart = false) {
 	if (mindmap) {
 		const found = mindmapLookup(event)
+		if (found) return found
+	}
+	if (flowchart) {
+		const found = flowchartLookup(event)
 		if (found) return found
 	}
 	const mod = event.ctrlKey || event.metaKey
@@ -150,7 +188,11 @@ function lookup(event, mindmap = false) {
 		const step = event.shiftKey ? 10 : 1
 		return { name: "nudge", dx: ARROWS[key][0] * step, dy: ARROWS[key][1] * step }
 	}
+	if (event.shiftKey && !mod && key.toLowerCase() === "h")
+		return { name: "tool", tool: "highlighter" }
+	if (event.shiftKey && !mod && key.toLowerCase() === "l") return { name: "tool", tool: "laser" }
 	if (!event.shiftKey && key.toLowerCase() === "m") return { name: "mm.new" }
+	if (event.shiftKey && key.toLowerCase() === "f" && !mod) return { name: "fl.new" }
 	if (!event.shiftKey && key.length === 1 && key.toLowerCase() in TOOL_KEYS) {
 		return { name: "tool", tool: TOOL_KEYS[key.toLowerCase()] }
 	}
@@ -159,19 +201,27 @@ function lookup(event, mindmap = false) {
 
 export function commandFor(
 	event,
-	{ editing = false, readonly = false, canComment = false, mindmap = false } = {},
+	{
+		editing = false,
+		readonly = false,
+		canComment = false,
+		mindmap = false,
+		flowchart = false,
+	} = {},
 ) {
 	if (editing || isTypingTarget(event.target)) return null
-	const command = lookup(event, mindmap)
+	const command = lookup(event, mindmap, flowchart)
 	if (!command) return null
 	if (readonly) {
 		if (!VIEW_ONLY.has(command.name)) return null
 		const allowed =
 			command.tool === "select" ||
 			command.tool === "hand" ||
+			command.tool === "laser" ||
 			(command.tool === "comment" && canComment)
 		if (command.name === "tool" && !allowed) return null
 	}
 	if (readonly && command.name.startsWith("mm.") && command.name !== "mm.nav") return null
+	if (readonly && command.name.startsWith("fl.") && command.name !== "fl.nav") return null
 	return command
 }

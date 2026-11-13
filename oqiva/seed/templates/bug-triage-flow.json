@@ -1,0 +1,370 @@
+{
+	"slug": "bug-triage-flow",
+	"name": "Bug triage process",
+	"description": "From a new bug report to a priority: reproduce it, check for data loss or security impact, and decide what happens next.",
+	"category": "Flowcharts",
+	"tags": [
+		"bug",
+		"triage",
+		"support",
+		"engineering",
+		"process"
+	],
+	"sort_order": 12,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -120,
+				"w": 1200,
+				"h": 40,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Bug triage process",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -70,
+				"w": 1400,
+				"h": 24,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "How a reported bug becomes a prioritised, owned ticket. Change the thresholds to match your team."
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": [
+			{
+				"id": "chart1",
+				"direction": "TB",
+				"numbered": false,
+				"nodes": [
+					{
+						"id": "start",
+						"type": "terminator",
+						"text": "Bug reported",
+						"x": 176,
+						"y": 100,
+						"manual": false
+					},
+					{
+						"id": "repro",
+						"type": "process",
+						"text": "Try to reproduce it",
+						"x": 176,
+						"y": 230,
+						"manual": false
+					},
+					{
+						"id": "d1",
+						"type": "decision",
+						"text": "Can we reproduce it?",
+						"x": 176,
+						"y": 392,
+						"manual": false
+					},
+					{
+						"id": "ask",
+						"type": "process",
+						"text": "Ask the reporter for steps, version and screenshots",
+						"x": 577,
+						"y": 582,
+						"manual": false
+					},
+					{
+						"id": "d3",
+						"type": "decision",
+						"text": "Reply within 7 days?",
+						"x": 831,
+						"y": 772,
+						"manual": false
+					},
+					{
+						"id": "close",
+						"type": "process",
+						"text": "Close as “cannot reproduce”",
+						"x": 887,
+						"y": 935,
+						"manual": false
+					},
+					{
+						"id": "end0",
+						"type": "terminator",
+						"text": "Closed",
+						"x": 890,
+						"y": 1070,
+						"manual": false
+					},
+					{
+						"id": "d2",
+						"type": "decision",
+						"text": "Data loss or security impact?",
+						"x": 176,
+						"y": 582,
+						"manual": false
+					},
+					{
+						"id": "p0",
+						"type": "process",
+						"text": "P0: page on-call and fix now",
+						"x": 485,
+						"y": 772,
+						"manual": false
+					},
+					{
+						"id": "hot",
+						"type": "process",
+						"text": "Release a hotfix",
+						"x": 620,
+						"y": 935,
+						"manual": false
+					},
+					{
+						"id": "notify",
+						"type": "io",
+						"text": "Tell affected customers",
+						"x": 617,
+						"y": 1070,
+						"manual": false
+					},
+					{
+						"id": "end1",
+						"type": "terminator",
+						"text": "Resolved",
+						"x": 617,
+						"y": 1200,
+						"manual": false
+					},
+					{
+						"id": "d4",
+						"type": "decision",
+						"text": "Affects many users?",
+						"x": 145,
+						"y": 772,
+						"manual": false
+					},
+					{
+						"id": "p1",
+						"type": "process",
+						"text": "P1: schedule in the next sprint",
+						"x": 100,
+						"y": 935,
+						"manual": false
+					},
+					{
+						"id": "p2",
+						"type": "process",
+						"text": "P2: add to the backlog",
+						"x": 373,
+						"y": 935,
+						"manual": false
+					},
+					{
+						"id": "tell",
+						"type": "io",
+						"text": "Tell the reporter what happens next",
+						"x": 236,
+						"y": 1070,
+						"manual": false
+					},
+					{
+						"id": "end2",
+						"type": "terminator",
+						"text": "Triaged",
+						"x": 236,
+						"y": 1200,
+						"manual": false
+					}
+				],
+				"edges": [
+					{
+						"id": "start-repro",
+						"from": "start",
+						"to": "repro",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "repro-d1",
+						"from": "repro",
+						"to": "d1",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "d1-d2",
+						"from": "d1",
+						"to": "d2",
+						"label": "Yes",
+						"order": 0
+					},
+					{
+						"id": "d1-ask",
+						"from": "d1",
+						"to": "ask",
+						"label": "No",
+						"order": 1
+					},
+					{
+						"id": "ask-d3",
+						"from": "ask",
+						"to": "d3",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "d3-repro",
+						"from": "d3",
+						"to": "repro",
+						"label": "Yes",
+						"order": 0
+					},
+					{
+						"id": "d3-close",
+						"from": "d3",
+						"to": "close",
+						"label": "No",
+						"order": 1
+					},
+					{
+						"id": "close-end0",
+						"from": "close",
+						"to": "end0",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "d2-d4",
+						"from": "d2",
+						"to": "d4",
+						"label": "No",
+						"order": 0
+					},
+					{
+						"id": "d2-p0",
+						"from": "d2",
+						"to": "p0",
+						"label": "Yes",
+						"order": 1
+					},
+					{
+						"id": "p0-hot",
+						"from": "p0",
+						"to": "hot",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "hot-notify",
+						"from": "hot",
+						"to": "notify",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "notify-end1",
+						"from": "notify",
+						"to": "end1",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "d4-p1",
+						"from": "d4",
+						"to": "p1",
+						"label": "Yes",
+						"order": 0
+					},
+					{
+						"id": "d4-p2",
+						"from": "d4",
+						"to": "p2",
+						"label": "No",
+						"order": 1
+					},
+					{
+						"id": "p1-tell",
+						"from": "p1",
+						"to": "tell",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "p2-tell",
+						"from": "p2",
+						"to": "tell",
+						"label": "",
+						"order": 0
+					},
+					{
+						"id": "tell-end2",
+						"from": "tell",
+						"to": "end2",
+						"label": "",
+						"order": 0
+					}
+				]
+			}
+		]
+	}
+}

@@ -1,0 +1,1592 @@
+{
+	"slug": "sprint-planning",
+	"name": "Sprint planning",
+	"description": "Sprint goal, definition of done, team capacity, risks and the committed backlog with estimates and owners.",
+	"category": "Planning",
+	"tags": [
+		"sprint",
+		"agile",
+		"scrum",
+		"planning"
+	],
+	"sort_order": 43,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -130,
+				"w": 1600,
+				"h": 44,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Sprint planning",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1600,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Sprint 24 · two weeks · replace the example text with your own. Plan to about 80% of capacity, so there is room for surprises."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f3",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 780,
+				"h": 170,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Sprint goal"
+			},
+			{
+				"id": "t4",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 50,
+				"w": 730,
+				"h": 53,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 18,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "By the end of the sprint,",
+									"b": 1
+								},
+								{
+									"t": " new customers can sign up, verify their email and reach the dashboard without help from support."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t5",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 125,
+				"w": 730,
+				"h": 22,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "One sentence. If the team cannot say it in one sentence, the sprint is too broad."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f6",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 820,
+				"y": 0,
+				"w": 780,
+				"h": 170,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Definition of done"
+			},
+			{
+				"id": "t7",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 845,
+				"y": 50,
+				"w": 730,
+				"h": 69,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "☐ Code reviewed and merged   ☐ Tests written and passing"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "☐ Works on staging   ☐ Docs / release note updated"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "☐ Product owner has accepted it"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f8",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 210,
+				"w": 780,
+				"h": 330,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Team capacity"
+			},
+			{
+				"id": "t9",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 260,
+				"w": 730,
+				"h": 252,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						220,
+						150,
+						150,
+						210
+					],
+					"rowH": [
+						42,
+						42,
+						42,
+						42,
+						42,
+						42
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Person",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Days available",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Focus factor",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Capacity (points)",
+												"b": 1
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Priya · backend"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "9"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "70%"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "13"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Marcus · frontend"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "10"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "70%"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "14"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Aisha · full stack"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "8"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "70%"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "11"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Tom · QA"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "10"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "60%"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "—"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Total",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "37",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							null,
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "38",
+												"b": 1
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							"#DBEAFE",
+							"#DBEAFE",
+							"#DBEAFE",
+							"#DBEAFE"
+						]
+					]
+				}
+			},
+			{
+				"id": "f10",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 820,
+				"y": 210,
+				"w": 780,
+				"h": 330,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Risks and dependencies"
+			},
+			{
+				"id": "n11",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 845,
+				"y": 265,
+				"w": 230,
+				"h": 150,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": "#FBCFE8",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Email provider approval takes up to 3 days"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n12",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1095,
+				"y": 265,
+				"w": 230,
+				"h": 150,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": "#FED7AA",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#7C2D12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Marcus is out Thursday week 2"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n13",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1345,
+				"y": 265,
+				"w": 230,
+				"h": 150,
+				"rotation": 0,
+				"z": 13,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Design for the dashboard empty state is not final"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t14",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 845,
+				"y": 440,
+				"w": 730,
+				"h": 22,
+				"rotation": 0,
+				"z": 14,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Mark each risk with an owner and the day you will check it."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f15",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 580,
+				"w": 1600,
+				"h": 520,
+				"rotation": 0,
+				"z": 15,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Committed work"
+			},
+			{
+				"id": "t16",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 635,
+				"w": 1535,
+				"h": 396,
+				"rotation": 0,
+				"z": 16,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						150,
+						760,
+						160,
+						230,
+						235
+					],
+					"rowH": [
+						44,
+						44,
+						44,
+						44,
+						44,
+						44,
+						44,
+						44,
+						44
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Ticket",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Story",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Estimate",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Owner",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Status",
+												"b": 1
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "APP-201"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Sign-up form with validation"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "3"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Marcus"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "To do"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "APP-202"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Send verification email"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "5"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Priya"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "To do"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "APP-203"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Verify-email landing page"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "2"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Marcus"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "To do"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "APP-204"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Dashboard empty state"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "3"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Aisha"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "To do"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "APP-205"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Rate-limit the sign-up endpoint"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "3"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Priya"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "To do"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "APP-206"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Onboarding checklist component"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "5"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Aisha"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "To do"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "APP-207"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "End-to-end test: sign up to dashboard"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "5"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Tom"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "To do"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							null,
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Total committed",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "26",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							null,
+							null
+						]
+					],
+					"fills": [
+						[
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							"#DBEAFE",
+							"#DBEAFE",
+							"#DBEAFE",
+							"#DBEAFE",
+							"#DBEAFE"
+						]
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

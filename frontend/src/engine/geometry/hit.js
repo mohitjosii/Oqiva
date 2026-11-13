@@ -3,6 +3,7 @@
 
 import { rotatePoint, centerOf, objectBounds, rectsIntersect } from "./bounds"
 import { polygonPoints } from "../model/shapes"
+import { distanceToStroke } from "../model/strokes"
 
 function pointInPolygon(point, polygon) {
 	let inside = false
@@ -25,6 +26,9 @@ export function pointInObject(object, point, tolerance = 0) {
 	const local = object.rotation ? rotatePoint(point, centerOf(object), -object.rotation) : point
 	const x = local.x - object.x
 	const y = local.y - object.y
+	// a stroke is only where the ink is (and a little round it), not its whole box
+	if (object.kind === "stroke")
+		return distanceToStroke(object, x, y) <= object.style.strokeWidth / 2 + tolerance
 	const w = object.w
 	const h = object.h
 	if (object.kind === "frame") return frameHit(x, y, w, h, tolerance, object.name)

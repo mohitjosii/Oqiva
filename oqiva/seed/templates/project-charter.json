@@ -1,0 +1,1428 @@
+{
+	"slug": "project-charter",
+	"name": "Project charter",
+	"description": "A one-page agreement: objective, success measures, scope in and out, milestones with owners, and a risk table.",
+	"category": "Planning",
+	"tags": [
+		"project",
+		"charter",
+		"scope",
+		"milestones",
+		"risks"
+	],
+	"sort_order": 45,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -130,
+				"w": 1600,
+				"h": 44,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Project charter",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1600,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "One page that says why the project exists, what it will deliver and who is involved. Agree it with the sponsor before work starts."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f3",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 780,
+				"h": 250,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Overview"
+			},
+			{
+				"id": "t4",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 50,
+				"w": 730,
+				"h": 190,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						190,
+						540
+					],
+					"rowH": [
+						38,
+						38,
+						38,
+						38,
+						38
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Project",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Customer portal redesign"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Sponsor",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Dana Whitfield, VP Customer Success"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Project lead",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Ravi Menon"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Start / target end",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "3 March  →  27 June"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Budget",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "$120,000 · 2 engineers, 1 designer, part-time QA"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#DBEAFE",
+							null
+						],
+						[
+							"#DBEAFE",
+							null
+						],
+						[
+							"#DBEAFE",
+							null
+						],
+						[
+							"#DBEAFE",
+							null
+						],
+						[
+							"#DBEAFE",
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "f5",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 820,
+				"y": 0,
+				"w": 780,
+				"h": 250,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Objective and success measures"
+			},
+			{
+				"id": "t6",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 845,
+				"y": 50,
+				"w": 730,
+				"h": 47,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Objective:",
+									"b": 1
+								},
+								{
+									"t": " customers can find answers and manage their account without contacting support."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t7",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 845,
+				"y": 120,
+				"w": 730,
+				"h": 65,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• Support tickets about account changes down 40% by Q3"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Portal satisfaction score from 3.4 to 4.2"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• 70% of active customers use the portal monthly"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f8",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 290,
+				"w": 780,
+				"h": 260,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#22C55E",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "In scope"
+			},
+			{
+				"id": "t9",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 340,
+				"w": 730,
+				"h": 90,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• New account, billing and invoice pages"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Single sign-on with the existing identity provider"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Redesigned knowledge base search"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Migration of existing customer data"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f10",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 820,
+				"y": 290,
+				"w": 780,
+				"h": 260,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#EF4444",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Out of scope"
+			},
+			{
+				"id": "t11",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 845,
+				"y": 340,
+				"w": 730,
+				"h": 90,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• Mobile app"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Changes to the billing system itself"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Multi-language support (considered for phase 2)"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Reporting for internal teams"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f12",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 590,
+				"w": 1600,
+				"h": 340,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Milestones"
+			},
+			{
+				"id": "t13",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 640,
+				"w": 1545,
+				"h": 225,
+				"rotation": 0,
+				"z": 13,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						520,
+						220,
+						300,
+						260,
+						245
+					],
+					"rowH": [
+						45,
+						45,
+						45,
+						45,
+						45
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Milestone",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Date",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Owner",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Status",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Depends on",
+												"b": 1
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Requirements signed off"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "28 Mar"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Ravi"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Done"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "—"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Design approved"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "25 Apr"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Mei (design)"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "In progress"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Requirements"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Beta with 20 customers"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "30 May"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Ravi"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Not started"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Design, SSO"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Full launch"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "27 Jun"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Dana"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Not started"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Beta feedback"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							null,
+							null,
+							"#BBF7D0",
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							"#FDE68A",
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "f14",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 970,
+				"w": 1600,
+				"h": 400,
+				"rotation": 0,
+				"z": 14,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Risks"
+			},
+			{
+				"id": "t15",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 1020,
+				"w": 1548,
+				"h": 208,
+				"rotation": 0,
+				"z": 15,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						478,
+						149,
+						129,
+						558,
+						234
+					],
+					"rowH": [
+						52,
+						52,
+						52,
+						52
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Risk",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Likelihood",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Impact",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "What we will do",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Owner",
+												"b": 1
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Single sign-on integration takes longer than planned"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Medium"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "High"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Start the SSO spike in week 1; agree a fallback login"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Priya"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Data migration finds bad records"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "High"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Medium"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Dry-run migration in staging every sprint"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Sam"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Key designer unavailable in May"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Low"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "High"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Freeze the design by 25 April; document decisions"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Ravi"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							"#FDE68A",
+							"#FECACA",
+							null,
+							null
+						],
+						[
+							null,
+							"#FECACA",
+							"#FDE68A",
+							null,
+							null
+						],
+						[
+							null,
+							"#BBF7D0",
+							"#FECACA",
+							null,
+							null
+						]
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

@@ -1,0 +1,1083 @@
+{
+	"slug": "interview-scorecard",
+	"name": "Interview scorecard",
+	"description": "A structured scorecard: skills with what good looks like, scores from each interviewer, evidence and a recommendation.",
+	"category": "People",
+	"tags": [
+		"hiring",
+		"interview",
+		"scorecard",
+		"recruiting"
+	],
+	"sort_order": 110,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -130,
+				"w": 1500,
+				"h": 44,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Interview scorecard",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1500,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Score each skill from 1 (no evidence) to 4 (strong evidence) right after the interview, before talking to anyone else."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f3",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 1500,
+				"h": 150,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Role"
+			},
+			{
+				"id": "t4",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 45,
+				"w": 1240,
+				"h": 80,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						180,
+						440,
+						180,
+						440
+					],
+					"rowH": [
+						40,
+						40
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Role",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Senior Product Designer"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Interviewer"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Mei"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Candidate",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Alex Rivera"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Date"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "14 May"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#DBEAFE",
+							null,
+							null,
+							null
+						],
+						[
+							"#DBEAFE",
+							null,
+							null,
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "f5",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 190,
+				"w": 1500,
+				"h": 480,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Scores"
+			},
+			{
+				"id": "t6",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 240,
+				"w": 1405,
+				"h": 372,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						200,
+						400,
+						90,
+						90,
+						90,
+						535
+					],
+					"rowH": [
+						62,
+						62,
+						62,
+						62,
+						62,
+						62
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Skill",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "What good looks like",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Alex",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Sam",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Jo",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Evidence",
+												"b": 1
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Craft"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Clear, polished work with reasons for each choice"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "4"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "3"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "4"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Walked through the checkout redesign in detail"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Problem solving"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Frames the problem before designing"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "3"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "3"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "3"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Asked good questions; solution was a little safe"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Communication"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Explains trade-offs to non-designers"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "4"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "4"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "3"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Clear and concise"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Collaboration"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Works with engineers and researchers"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "3"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "2"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "3"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Few examples of working with engineering"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Ownership"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Follows through from idea to launch"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "4"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "3"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "4"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Led two projects to launch"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							null,
+							"#BBF7D0",
+							"#DCFCE7",
+							"#BBF7D0",
+							null
+						],
+						[
+							null,
+							null,
+							"#DCFCE7",
+							"#DCFCE7",
+							"#DCFCE7",
+							null
+						],
+						[
+							null,
+							null,
+							"#BBF7D0",
+							"#BBF7D0",
+							"#DCFCE7",
+							null
+						],
+						[
+							null,
+							null,
+							"#DCFCE7",
+							"#FEF3C7",
+							"#DCFCE7",
+							null
+						],
+						[
+							null,
+							null,
+							"#BBF7D0",
+							"#DCFCE7",
+							"#BBF7D0",
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "f7",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 710,
+				"w": 740,
+				"h": 280,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Summary and recommendation"
+			},
+			{
+				"id": "t8",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 760,
+				"w": 690,
+				"h": 69,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Recommendation:",
+									"b": 1
+								},
+								{
+									"t": " Hire."
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Strong craft and ownership; coach on working closely with engineers during the first quarter."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t9",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 880,
+				"w": 690,
+				"h": 23,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Hire · Lean hire · Lean no hire · No hire"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f10",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 780,
+				"y": 710,
+				"w": 720,
+				"h": 280,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#F59E0B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Questions for the debrief"
+			},
+			{
+				"id": "t11",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 805,
+				"y": 760,
+				"w": 670,
+				"h": 65,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• How did Alex handle disagreement in the case study?"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Is the lower collaboration score about the example chosen, or a pattern?"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• What would success look like at 90 days?"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

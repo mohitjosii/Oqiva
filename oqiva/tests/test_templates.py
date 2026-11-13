@@ -474,3 +474,71 @@ class TestMindMapPreview(IntegrationTestCase):
 		self.assertNotIn("c1", {o["id"] for o in preview["objects"]})
 		entry["rootId"] = "nobody"
 		self.assertEqual(template_service.build_preview({"mindmaps": [entry]})["objects"], [])
+
+
+class TestFlowchartPreview(IntegrationTestCase):
+	def entry(self):
+		def node(node_id, kind, x, y, text):
+			return {"id": node_id, "type": kind, "x": x, "y": y, "text": text, "manual": False}
+
+		return {
+			"id": "f",
+			"direction": "TB",
+			"numbered": False,
+			"nodes": [
+				node("s", "terminator", 0, 0, "Start"),
+				node("d", "decision", 0, 150, "Ready?"),
+				node("p", "process", 300, 150, "Go"),
+			],
+			"edges": [
+				{"id": "e1", "from": "s", "to": "d", "label": "", "order": 0},
+				{"id": "e2", "from": "d", "to": "p", "label": "Yes", "order": 0},
+				{"id": "e3", "from": "d", "to": "ghost", "label": "", "order": 1},
+			],
+		}
+
+	def test_a_flowchart_is_sketched_for_the_gallery(self):
+		"""Success: each step is a box of its type's shape, and each arrow joins the facing sides."""
+		preview = template_service.build_preview(
+			{"objects": [], "connectors": [], "flowcharts": [self.entry()]}
+		)
+		boxes = {o["id"]: o for o in preview["objects"]}
+		self.assertEqual(set(boxes), {"s", "d", "p"})
+		self.assertEqual(boxes["d"]["shape"], "diamond")
+		self.assertEqual(boxes["s"]["label"], "Start")
+		lines = {c["id"]: c for c in preview["connectors"]}
+		self.assertEqual(set(lines), {"e1", "e2"})  # the arrow to a missing step is left out
+		self.assertEqual(lines["e1"]["from"]["anchor"], "s")  # downward
+		self.assertEqual(lines["e2"]["from"]["anchor"], "e")  # rightward
+
+	def test_an_arrow_that_loops_back_is_left_out_of_the_sketch(self):
+		"""Boundary: a thumbnail shows the forward flow only."""
+		entry = self.entry()
+		entry["edges"].append({"id": "back", "from": "p", "to": "s", "label": "", "order": 0})
+		entry["nodes"].append(
+			{"id": "up", "type": "process", "x": 0, "y": -200, "text": "Above", "manual": False}
+		)
+		entry["edges"].append({"id": "loop", "from": "d", "to": "up", "label": "", "order": 2})
+		preview = template_service.build_preview({"flowcharts": [entry]})
+		self.assertNotIn("loop", {c["id"] for c in preview["connectors"]})
+
+	def test_steps_without_a_position_are_left_out(self):
+		"""Boundary: a step that has no usable position is not drawn."""
+		entry = self.entry()
+		entry["nodes"][1]["x"] = "left"
+		preview = template_service.build_preview({"flowcharts": [entry]})
+		self.assertNotIn("d", {o["id"] for o in preview["objects"]})
+
+	def test_the_flowchart_templates_in_the_catalogue_carry_their_steps(self):
+		"""Success: the seeded flowchart templates are real flowcharts with a preview of them."""
+		seeded = frappe.get_all(
+			"Oqiva Template",
+			filters={"slug": ("in", ("decision-tree", "user-signup-flow"))},
+			fields=["slug", "document", "preview"],
+		)
+		self.assertEqual(len(seeded), 2)
+		for row in seeded:
+			document = json.loads(row.document)
+			self.assertEqual(len(document["flowcharts"]), 1)
+			self.assertEqual(document["objects"], [])
+			self.assertGreaterEqual(len(json.loads(row.preview)["objects"]), 8)

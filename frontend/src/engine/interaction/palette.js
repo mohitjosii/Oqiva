@@ -16,6 +16,7 @@ export const STYLE_SECTIONS = [
 	"opacity",
 	"radius",
 	"line",
+	"sketch",
 ]
 
 const OBJECT_ONLY = new Set(["fill", "text", "radius"])
@@ -31,6 +32,7 @@ export function capabilitiesOf(item) {
 				"border",
 				"text",
 				"opacity",
+				"sketch",
 				...(item.shape === "rectangle" ? ["radius"] : []),
 			])
 		case "text":
@@ -45,6 +47,8 @@ export function capabilitiesOf(item) {
 			return new Set(["border", "opacity"])
 		case "frame":
 			return new Set(["fill", "border", "opacity", "frameName"])
+		case "stroke":
+			return new Set(["border", "opacity"])
 		default:
 			return new Set() // a kind from a newer version: leave it alone
 	}

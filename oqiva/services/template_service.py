@@ -169,6 +169,65 @@ def _mindmap_preview(entry: dict) -> tuple[list, list]:
 	return boxes, lines
 
 
+FLOW_PREVIEW_SIZES = {
+	"terminator": (160, 56, "ellipse", "#DBEAFE"),
+	"process": (170, 64, "rectangle", "#FFFFFF"),
+	"decision": (190, 120, "diamond", "#FEF3C7"),
+	"io": (180, 64, "rectangle", "#E0F2FE"),
+	"junction": (24, 24, "ellipse", "#64748B"),
+}
+
+
+def _flowchart_preview(entry: dict) -> tuple[list, list]:
+	"""Boxes and lines that sketch a flowchart for a thumbnail. A step's position is already stored
+	(its centre), so this only gives each type its usual size and shape, and joins the steps by the
+	sides that face each other."""
+	nodes = {
+		n["id"]: n
+		for n in entry.get("nodes", [])
+		if isinstance(n, dict)
+		and isinstance(n.get("id"), str)
+		and isinstance(n.get("x"), int | float)
+		and isinstance(n.get("y"), int | float)
+	}
+	boxes = []
+	for node_id, node in nodes.items():
+		width, height, shape, fill = FLOW_PREVIEW_SIZES.get(node.get("type"), FLOW_PREVIEW_SIZES["process"])
+		boxes.append(
+			{
+				"id": node_id,
+				"kind": "shape",
+				"shape": shape,
+				"x": node["x"] - width / 2,
+				"y": node["y"] - height / 2,
+				"w": width,
+				"h": height,
+				"style": {"fill": fill, "stroke": "#475569"},
+				"label": (node.get("text") or "")[:LABEL_CHARS] or None,
+			}
+		)
+	lines = []
+	for edge in entry.get("edges", []):
+		a, b = nodes.get(edge.get("from")), nodes.get(edge.get("to"))
+		if not a or not b:
+			continue
+		dx, dy = b["x"] - a["x"], b["y"] - a["y"]
+		if (entry.get("direction") == "LR" and dx < 0) or (entry.get("direction") != "LR" and dy < 0):
+			continue  # an arrow that loops back would only be a diagonal scribble in a thumbnail
+		if abs(dy) >= abs(dx):
+			start, end = ("s", "n") if dy >= 0 else ("n", "s")
+		else:
+			start, end = ("e", "w") if dx >= 0 else ("w", "e")
+		lines.append(
+			{
+				"id": edge.get("id"),
+				"from": {"objectId": a["id"], "anchor": start},
+				"to": {"objectId": b["id"], "anchor": end},
+			}
+		)
+	return boxes, lines
+
+
 def build_preview(document: dict) -> dict:
 	"""What a thumbnail needs from a document: boxes with colours and a caption, and line ends.
 
@@ -200,6 +259,11 @@ def build_preview(document: dict) -> dict:
 	for entry in document.get("mindmaps", [])[:5]:
 		if isinstance(entry, dict) and len(objects) < MAX_PREVIEW_ITEMS:
 			boxes, lines = _mindmap_preview(entry)
+			objects.extend(boxes[: MAX_PREVIEW_ITEMS - len(objects)])
+			connectors.extend(lines[: MAX_PREVIEW_ITEMS - len(connectors)])
+	for entry in document.get("flowcharts", [])[:5]:
+		if isinstance(entry, dict) and len(objects) < MAX_PREVIEW_ITEMS:
+			boxes, lines = _flowchart_preview(entry)
 			objects.extend(boxes[: MAX_PREVIEW_ITEMS - len(objects)])
 			connectors.extend(lines[: MAX_PREVIEW_ITEMS - len(connectors)])
 	return {"objects": objects, "connectors": connectors}

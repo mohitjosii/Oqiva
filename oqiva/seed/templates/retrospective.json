@@ -1,14 +1,15 @@
 {
 	"slug": "retrospective",
-	"name": "Retrospective",
-	"description": "What went well, what to improve, and what to do next.",
+	"name": "Sprint retrospective",
+	"description": "A facilitated agenda, four columns for notes, and a short action list with owners and due dates.",
 	"category": "Planning",
 	"tags": [
 		"retro",
 		"team",
-		"agile"
+		"agile",
+		"scrum"
 	],
-	"sort_order": 40,
+	"sort_order": 44,
 	"document": {
 		"schemaVersion": 1,
 		"canvas": {
@@ -22,80 +23,345 @@
 		},
 		"objects": [
 			{
-				"id": "frame-1",
-				"kind": "frame",
+				"id": "t1",
+				"kind": "text",
 				"shape": "rectangle",
 				"x": 0,
-				"y": 0,
-				"w": 380,
-				"h": 520,
+				"y": -130,
+				"w": 1500,
+				"h": 44,
 				"rotation": 0,
 				"z": 1,
 				"style": {
-					"fill": "#F8FAFC",
-					"stroke": "#94A3B8",
-					"strokeWidth": 1.5,
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
 					"dash": "solid",
 					"opacity": 1,
-					"radius": 10
+					"radius": 8
 				},
-				"text": null,
-				"name": "Went well"
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Sprint retrospective",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
 			},
 			{
-				"id": "frame-2",
-				"kind": "frame",
+				"id": "t2",
+				"kind": "text",
 				"shape": "rectangle",
-				"x": 420,
-				"y": 0,
-				"w": 380,
-				"h": 520,
+				"x": 0,
+				"y": -86,
+				"w": 1500,
+				"h": 26,
 				"rotation": 0,
 				"z": 2,
 				"style": {
-					"fill": "#F8FAFC",
-					"stroke": "#94A3B8",
-					"strokeWidth": 1.5,
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
 					"dash": "solid",
 					"opacity": 1,
-					"radius": 10
+					"radius": 8
 				},
-				"text": null,
-				"name": "To improve"
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Everyone writes notes in silence for 10 minutes, then we group, vote and pick one or two things to change."
+								}
+							]
+						}
+					]
+				}
 			},
 			{
-				"id": "frame-3",
-				"kind": "frame",
+				"id": "s3",
+				"kind": "shape",
 				"shape": "rectangle",
-				"x": 840,
+				"x": 0,
 				"y": 0,
-				"w": 380,
-				"h": 520,
+				"w": 260,
+				"h": 90,
 				"rotation": 0,
 				"z": 3,
 				"style": {
+					"fill": "#F1F5F9",
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 14,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Check-in",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "5 min"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "One word: how was the sprint?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s4",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 300,
+				"y": 0,
+				"w": 260,
+				"h": 90,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#F1F5F9",
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 14,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Gather",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "10 min"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Write notes, one idea per note"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s5",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 600,
+				"y": 0,
+				"w": 260,
+				"h": 90,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#F1F5F9",
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 14,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Group and vote",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "10 min"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Cluster; three dots each"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s6",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 900,
+				"y": 0,
+				"w": 260,
+				"h": 90,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#F1F5F9",
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 14,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Discuss",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "20 min"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Top-voted topics first"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s7",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1200,
+				"y": 0,
+				"w": 260,
+				"h": 90,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#F1F5F9",
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 14,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Actions",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "10 min"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner and date for each"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f12",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 140,
+				"w": 360,
+				"h": 460,
+				"rotation": 0,
+				"z": 12,
+				"style": {
 					"fill": "#F8FAFC",
-					"stroke": "#94A3B8",
+					"stroke": "#22C55E",
 					"strokeWidth": 1.5,
 					"dash": "solid",
 					"opacity": 1,
 					"radius": 10
 				},
 				"text": null,
-				"name": "Actions"
+				"name": "What went well"
 			},
 			{
-				"id": "n1",
+				"id": "n13",
 				"kind": "note",
 				"shape": "rectangle",
-				"x": 30,
-				"y": 50,
-				"w": 200,
-				"h": 140,
+				"x": 70,
+				"y": 195,
+				"w": 220,
+				"h": 110,
 				"rotation": 0,
-				"z": 4,
+				"z": 13,
 				"style": {
-					"fill": "#86EFAC",
+					"fill": "#BBF7D0",
 					"stroke": null,
 					"strokeWidth": 0,
 					"dash": "solid",
@@ -104,13 +370,13 @@
 				},
 				"text": {
 					"align": "left",
-					"size": 18,
+					"size": 16,
 					"color": "#14532D",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Shipped on time"
+									"t": "Releases were calm for once"
 								}
 							]
 						}
@@ -118,17 +384,17 @@
 				}
 			},
 			{
-				"id": "n2",
+				"id": "n14",
 				"kind": "note",
 				"shape": "rectangle",
-				"x": 450,
-				"y": 50,
-				"w": 200,
-				"h": 140,
+				"x": 70,
+				"y": 325,
+				"w": 220,
+				"h": 110,
 				"rotation": 0,
-				"z": 5,
+				"z": 14,
 				"style": {
-					"fill": "#FDBA74",
+					"fill": "#BBF7D0",
 					"stroke": null,
 					"strokeWidth": 0,
 					"dash": "solid",
@@ -137,13 +403,13 @@
 				},
 				"text": {
 					"align": "left",
-					"size": 18,
-					"color": "#7C2D12",
+					"size": 16,
+					"color": "#14532D",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Slow reviews"
+									"t": "Pairing on the import bug"
 								}
 							]
 						}
@@ -151,17 +417,38 @@
 				}
 			},
 			{
-				"id": "n3",
+				"id": "f15",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 380,
+				"y": 140,
+				"w": 360,
+				"h": 460,
+				"rotation": 0,
+				"z": 15,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#EF4444",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "What did not go well"
+			},
+			{
+				"id": "n16",
 				"kind": "note",
 				"shape": "rectangle",
-				"x": 870,
-				"y": 50,
-				"w": 200,
-				"h": 140,
+				"x": 450,
+				"y": 195,
+				"w": 220,
+				"h": 110,
 				"rotation": 0,
-				"z": 6,
+				"z": 16,
 				"style": {
-					"fill": "#93C5FD",
+					"fill": "#FBCFE8",
 					"stroke": null,
 					"strokeWidth": 0,
 					"dash": "solid",
@@ -170,13 +457,581 @@
 				},
 				"text": {
 					"align": "left",
-					"size": 18,
+					"size": 16,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Specs changed mid-sprint"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n17",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 450,
+				"y": 325,
+				"w": 220,
+				"h": 110,
+				"rotation": 0,
+				"z": 17,
+				"style": {
+					"fill": "#FBCFE8",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Too many meetings on Wednesday"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f18",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 760,
+				"y": 140,
+				"w": 360,
+				"h": 460,
+				"rotation": 0,
+				"z": 18,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Ideas to try"
+			},
+			{
+				"id": "n19",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 830,
+				"y": 195,
+				"w": 220,
+				"h": 110,
+				"rotation": 0,
+				"z": 19,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
 					"color": "#1E3A8A",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Pair on reviews"
+									"t": "Demo to customers every second sprint"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n20",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 830,
+				"y": 325,
+				"w": 220,
+				"h": 110,
+				"rotation": 0,
+				"z": 20,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "A shared on-call calendar"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f21",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 1140,
+				"y": 140,
+				"w": 360,
+				"h": 460,
+				"rotation": 0,
+				"z": 21,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Questions"
+			},
+			{
+				"id": "n22",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1210,
+				"y": 195,
+				"w": 220,
+				"h": 110,
+				"rotation": 0,
+				"z": 22,
+				"style": {
+					"fill": "#DDD6FE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Who owns the staging database?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f23",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 640,
+				"w": 1520,
+				"h": 330,
+				"rotation": 0,
+				"z": 23,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Action items (limit: two)"
+			},
+			{
+				"id": "t24",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 690,
+				"w": 1465,
+				"h": 230,
+				"rotation": 0,
+				"z": 24,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						700,
+						220,
+						220,
+						150,
+						175
+					],
+					"rowH": [
+						46,
+						46,
+						46,
+						46,
+						46
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Action",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Owner",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Due",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Done?",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Next review",
+												"b": 1
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "No new scope after day 2 of the sprint unless something is removed"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Product owner"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Next sprint"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "☐"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Retro"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Move the long meeting to Tuesday afternoon"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Scrum master"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "This week"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "☐"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Retro"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							null,
+							null,
+							null,
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "☐"
+											}
+										]
+									}
+								]
+							},
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "☐"
+											}
+										]
+									}
+								]
+							},
+							null
+						]
+					],
+					"fills": [
+						[
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "t25",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 1000,
+				"w": 1500,
+				"h": 24,
+				"rotation": 0,
+				"z": 25,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Working agreement for this session:",
+									"b": 1
+								},
+								{
+									"t": " what is said here stays here · talk about the work, not the people · everyone speaks before anyone speaks twice."
 								}
 							]
 						}
@@ -184,7 +1039,108 @@
 				}
 			}
 		],
-		"connectors": [],
+		"connectors": [
+			{
+				"id": "l8",
+				"from": {
+					"objectId": "s3",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "s4",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 8
+			},
+			{
+				"id": "l9",
+				"from": {
+					"objectId": "s4",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "s5",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 9
+			},
+			{
+				"id": "l10",
+				"from": {
+					"objectId": "s5",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "s6",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 10
+			},
+			{
+				"id": "l11",
+				"from": {
+					"objectId": "s6",
+					"anchor": "e"
+				},
+				"to": {
+					"objectId": "s7",
+					"anchor": "w"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 11
+			}
+		],
 		"mindmaps": [],
 		"flowcharts": []
 	}

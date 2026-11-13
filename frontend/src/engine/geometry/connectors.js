@@ -327,7 +327,7 @@ export function connectorPath(connector, resolved) {
 	return { points, d, mid, startDir: unit(first), endDir: unit(last), p0, p1 }
 }
 
-function distanceToSegment(p, a, b) {
+export function distanceToSegment(p, a, b) {
 	const ab = sub(b, a)
 	const lengthSquared = ab.x * ab.x + ab.y * ab.y
 	const t = lengthSquared

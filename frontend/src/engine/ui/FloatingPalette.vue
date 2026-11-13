@@ -32,6 +32,55 @@ const percent = computed(() => Math.round(state.value.viewport.scale * 100))
 const shapeTool = computed(() => toolById(state.value.lastShapeTool) || SHAPE_TOOLS[0])
 const shapeActive = computed(() => SHAPE_TOOLS.some((tool) => tool.id === state.value.tool))
 
+// The drawing tools share one button with a menu, like shapes and lines do.
+const DRAW_TOOLS = [
+	{ id: "pen", label: "Pen (P)", icon: "lucide-pen-line" },
+	{ id: "highlighter", label: "Highlighter (Shift+H)", icon: "lucide-highlighter" },
+	{ id: "eraser", label: "Eraser (E)", icon: "lucide-eraser" },
+	{ id: "laser", label: "Laser pointer (Shift+L)", icon: "lucide-locate-fixed" },
+]
+const drawTool = computed(
+	() => DRAW_TOOLS.find((tool) => tool.id === state.value.lastDrawTool) || DRAW_TOOLS[0],
+)
+const drawActive = computed(() => DRAW_TOOLS.some((tool) => tool.id === state.value.tool))
+const drawOptions = computed(() => [
+	{
+		group: "Draw",
+		items: DRAW_TOOLS.map((tool) => ({
+			label: tool.label,
+			icon: tool.icon,
+			// a viewer cannot draw, but can still point with the laser
+			disabled: readonly.value && tool.id !== "laser",
+			onClick: () => {
+				state.value.lastDrawTool = tool.id
+				chooseTool(tool.id)
+			},
+		})),
+	},
+	{
+		group: "This board",
+		items: [
+			{
+				label: "Hand-drawn outlines",
+				icon: canvas.value.sketch ? "check" : null,
+				disabled: readonly.value,
+				onClick: () =>
+					props.store.setCanvas({ sketch: !canvas.value.sketch }, "Drawing style"),
+			},
+			{
+				label: "Double-click adds a text box",
+				icon: canvas.value.doubleClick === "text" ? "check" : null,
+				disabled: readonly.value,
+				onClick: () =>
+					props.store.setCanvas(
+						{ doubleClick: canvas.value.doubleClick === "text" ? "shape" : "text" },
+						"Double-click setting",
+					),
+			},
+		],
+	},
+])
+
 const lineTool = computed(
 	() => connectorToolById(state.value.lastConnectorTool) || CONNECTOR_TOOLS[0],
 )
@@ -59,6 +108,13 @@ function newMap() {
 	props.controller.cancel()
 	props.controller.mapCommand({ name: "mm.new" })
 	toast.info("Type its name, then Tab adds a branch and Enter a sibling.")
+}
+
+// A new flowchart (Start, a step and End, joined) below the rest of the board, ready to type over.
+function newFlowchart() {
+	props.controller.cancel()
+	props.controller.flowCommand({ name: "fl.new" })
+	toast.info("Type the step, then Enter adds the next one. D adds a decision.")
 }
 
 function chooseTable({ rows, cols }) {
@@ -203,6 +259,15 @@ const settingsOptions = computed(() => [
 			:active="state.tool === 'hand'"
 			@click="chooseTool('hand')"
 		/>
+		<Dropdown :options="drawOptions">
+			<ToolButton
+				:icon="drawTool.icon"
+				caret
+				title="Draw: pen, highlighter, eraser, laser"
+				:active="drawActive"
+				data-testid="draw-button"
+			/>
+		</Dropdown>
 		<span class="mx-1 h-6 w-px shrink-0 bg-outline-gray-2" aria-hidden="true" />
 		<ToolButton
 			icon="lucide-shapes"
@@ -259,6 +324,13 @@ const settingsOptions = computed(() => [
 			:disabled="readonly"
 			data-testid="mindmap-tool"
 			@click="newMap"
+		/>
+		<ToolButton
+			icon="lucide-workflow"
+			title="New flowchart (Shift+F)"
+			:disabled="readonly"
+			data-testid="flowchart-tool"
+			@click="newFlowchart"
 		/>
 		<ToolButton
 			icon="lucide-frame"

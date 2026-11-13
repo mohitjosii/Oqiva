@@ -11,6 +11,7 @@ import { NOTE_COLORS, sanitizeLink } from "../model/schema"
 import { SHAPE_TOOLS } from "../model/shapes"
 import BarMenu from "./BarMenu.vue"
 import ColorSwatches from "./ColorSwatches.vue"
+import FontSizeField from "./FontSizeField.vue"
 import PaletteTile from "./PaletteTile.vue"
 
 const props = defineProps({
@@ -19,7 +20,6 @@ const props = defineProps({
 	links: { type: Object, default: null }, // {searchBoards(query)} from the page
 })
 
-const SIZES = [12, 14, 16, 18, 20, 24, 32, 48, 64]
 const WIDTHS = [1, 2, 3, 4, 6, 8]
 const state = computed(() => props.store.state)
 const objects = computed(() => props.store.selectedObjects())
@@ -139,6 +139,8 @@ const stroke = computed(() => shared((item) => item.style?.stroke))
 const strokeWidth = computed(() => shared((item) => item.style?.strokeWidth))
 const dash = computed(() => shared((item) => item.style?.dash))
 const opacity = computed(() => shared((item) => item.style?.opacity))
+// null follows the board, true is hand-drawn, false is clean; undefined when the selection differs
+const sketchValue = computed(() => shared((item) => item.style?.sketch ?? null))
 const radius = computed(() => shared((item) => item.style?.radius))
 const textColor = computed(() => sharedText((item) => item.text.color))
 const textSize = computed(() => sharedText((item) => item.text.size))
@@ -166,13 +168,6 @@ const alignOptions = computed(() =>
 		})),
 )
 
-const sizeOptions = computed(() =>
-	SIZES.map((size) => ({
-		label: `${size}`,
-		icon: size === textSize.value ? "check" : null,
-		onClick: () => style("textSize", size),
-	})),
-)
 const widthOptions = computed(() =>
 	WIDTHS.map((width) => ({
 		label: `${width} px`,
@@ -814,15 +809,10 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 		>
 			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Text</h3>
 			<div class="mb-1 flex flex-wrap items-center gap-0.5">
-				<Dropdown :options="sizeOptions">
-					<button
-						type="button"
-						class="rounded border border-outline-gray-2 px-2 py-0.5 text-xs text-ink-gray-8 hover:bg-surface-gray-2"
-						data-testid="text-size"
-					>
-						{{ textSize === undefined ? "Mixed" : textSize }}
-					</button>
-				</Dropdown>
+				<FontSizeField
+					:model-value="textSize === undefined ? null : textSize"
+					@update:model-value="(size) => style('textSize', size)"
+				/>
 				<PaletteTile
 					icon="lucide-bold"
 					title="Bold"
@@ -872,6 +862,27 @@ const percent = (value) => (typeof value === "number" ? Math.round(value * 100) 
 				:recent="state.recentColors"
 				@pick="(c) => style('textColor', c, { recent: true })"
 			/>
+		</BarMenu>
+
+		<BarMenu v-if="has('sketch')" label="Hand-drawn style" icon="lucide-pencil-ruler">
+			<h3 class="mb-1 text-xs font-medium text-ink-gray-6">Outline style</h3>
+			<div class="flex flex-col gap-1" data-testid="sketch-options">
+				<button
+					v-for="[label, value] in [
+						['Same as the board', null],
+						['Hand-drawn', true],
+						['Clean', false],
+					]"
+					:key="label"
+					type="button"
+					class="rounded-md border border-outline-gray-2 px-2 py-1 text-left text-xs text-ink-gray-8 hover:bg-surface-gray-2"
+					:class="sketchValue === value ? 'bg-surface-gray-3 font-semibold' : ''"
+					:data-testid="`sketch-${value === null ? 'board' : value ? 'on' : 'off'}`"
+					@click="style('sketch', value)"
+				>
+					{{ label }}
+				</button>
+			</div>
 		</BarMenu>
 
 		<BarMenu v-if="has('opacity')" label="Transparency" icon="lucide-blend">

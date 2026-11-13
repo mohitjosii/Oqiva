@@ -1,12 +1,13 @@
 {
 	"slug": "web-app-architecture",
 	"name": "Web application architecture",
-	"description": "Client, services and data, with the calls between them.",
+	"description": "Clients, edge, application services and data in labelled layers, with the request path, queue and decision notes.",
 	"category": "Architecture",
 	"tags": [
 		"architecture",
 		"engineering",
-		"system design"
+		"system design",
+		"web"
 	],
 	"sort_order": 20,
 	"document": {
@@ -22,80 +23,105 @@
 		},
 		"objects": [
 			{
-				"id": "frame-1",
-				"kind": "frame",
+				"id": "t1",
+				"kind": "text",
 				"shape": "rectangle",
-				"x": -60,
-				"y": -60,
-				"w": 320,
-				"h": 300,
+				"x": 0,
+				"y": -130,
+				"w": 1600,
+				"h": 44,
 				"rotation": 0,
 				"z": 1,
 				"style": {
-					"fill": "#F8FAFC",
-					"stroke": "#94A3B8",
-					"strokeWidth": 1.5,
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
 					"dash": "solid",
 					"opacity": 1,
-					"radius": 10
+					"radius": 8
 				},
-				"text": null,
-				"name": "Client"
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Web application architecture",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
 			},
 			{
-				"id": "frame-2",
-				"kind": "frame",
+				"id": "t2",
+				"kind": "text",
 				"shape": "rectangle",
-				"x": 320,
-				"y": -60,
-				"w": 560,
-				"h": 300,
+				"x": 0,
+				"y": -86,
+				"w": 1600,
+				"h": 26,
 				"rotation": 0,
 				"z": 2,
 				"style": {
-					"fill": "#F8FAFC",
-					"stroke": "#94A3B8",
-					"strokeWidth": 1.5,
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
 					"dash": "solid",
 					"opacity": 1,
-					"radius": 10
+					"radius": 8
 				},
-				"text": null,
-				"name": "Services"
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Request flow from the browser to the data. Replace each box with your own components; add a note wherever a decision matters."
+								}
+							]
+						}
+					]
+				}
 			},
 			{
-				"id": "frame-3",
+				"id": "f3",
 				"kind": "frame",
 				"shape": "rectangle",
-				"x": 940,
-				"y": -60,
-				"w": 320,
-				"h": 300,
+				"x": 0,
+				"y": 0,
+				"w": 1600,
+				"h": 150,
 				"rotation": 0,
 				"z": 3,
 				"style": {
 					"fill": "#F8FAFC",
-					"stroke": "#94A3B8",
+					"stroke": "#3B82F6",
 					"strokeWidth": 1.5,
 					"dash": "solid",
 					"opacity": 1,
 					"radius": 10
 				},
 				"text": null,
-				"name": "Data"
+				"name": "Clients"
 			},
 			{
-				"id": "user",
+				"id": "s4",
 				"kind": "shape",
-				"shape": "ellipse",
-				"x": 30,
-				"y": 30,
-				"w": 180,
-				"h": 120,
+				"shape": "rectangle",
+				"x": 80,
+				"y": 50,
+				"w": 300,
+				"h": 70,
 				"rotation": 0,
 				"z": 4,
 				"style": {
-					"fill": "#FFFFFF",
+					"fill": "#DBEAFE",
 					"stroke": "#3B82F6",
 					"strokeWidth": 2,
 					"dash": "solid",
@@ -104,13 +130,20 @@
 				},
 				"text": {
 					"align": "center",
-					"size": 16,
+					"size": 15,
 					"color": "#1E3A8A",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Customer"
+									"t": "Web app"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Single-page app (Vue)"
 								}
 							]
 						}
@@ -118,13 +151,13 @@
 				}
 			},
 			{
-				"id": "web",
+				"id": "s5",
 				"kind": "shape",
 				"shape": "rectangle",
-				"x": 400,
-				"y": 20,
-				"w": 160,
-				"h": 90,
+				"x": 650,
+				"y": 50,
+				"w": 300,
+				"h": 70,
 				"rotation": 0,
 				"z": 5,
 				"style": {
@@ -137,13 +170,20 @@
 				},
 				"text": {
 					"align": "center",
-					"size": 16,
+					"size": 15,
 					"color": "#1E3A8A",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Web app"
+									"t": "Mobile app"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "iOS and Android"
 								}
 							]
 						}
@@ -151,13 +191,13 @@
 				}
 			},
 			{
-				"id": "api",
+				"id": "s6",
 				"kind": "shape",
 				"shape": "rectangle",
-				"x": 640,
-				"y": 20,
-				"w": 160,
-				"h": 90,
+				"x": 1220,
+				"y": 50,
+				"w": 300,
+				"h": 70,
 				"rotation": 0,
 				"z": 6,
 				"style": {
@@ -170,13 +210,20 @@
 				},
 				"text": {
 					"align": "center",
-					"size": 16,
+					"size": 15,
 					"color": "#1E3A8A",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "API"
+									"t": "Public API users"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Scripts, integrations"
 								}
 							]
 						}
@@ -184,51 +231,39 @@
 				}
 			},
 			{
-				"id": "auth",
-				"kind": "shape",
+				"id": "f7",
+				"kind": "frame",
 				"shape": "rectangle",
-				"x": 520,
-				"y": 150,
-				"w": 160,
-				"h": 90,
+				"x": 0,
+				"y": 190,
+				"w": 1600,
+				"h": 150,
 				"rotation": 0,
 				"z": 7,
 				"style": {
-					"fill": "#DBEAFE",
-					"stroke": "#3B82F6",
-					"strokeWidth": 2,
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
 					"dash": "solid",
 					"opacity": 1,
-					"radius": 8
+					"radius": 10
 				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#1E3A8A",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Sign-in"
-								}
-							]
-						}
-					]
-				}
+				"text": null,
+				"name": "Edge"
 			},
 			{
-				"id": "db",
+				"id": "s8",
 				"kind": "shape",
-				"shape": "cylinder",
-				"x": 1030,
-				"y": 30,
-				"w": 160,
-				"h": 110,
+				"shape": "rectangle",
+				"x": 180,
+				"y": 240,
+				"w": 340,
+				"h": 70,
 				"rotation": 0,
 				"z": 8,
 				"style": {
-					"fill": "#DCFCE7",
-					"stroke": "#22C55E",
+					"fill": "#F1F5F9",
+					"stroke": "#64748B",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1,
@@ -236,79 +271,523 @@
 				},
 				"text": {
 					"align": "center",
-					"size": 16,
-					"color": "#166534",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Database"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "files",
-				"kind": "shape",
-				"shape": "rectangle",
-				"x": 1010,
-				"y": 160,
-				"w": 180,
-				"h": 80,
-				"rotation": 0,
-				"z": 9,
-				"style": {
-					"fill": "#DCFCE7",
-					"stroke": "#22C55E",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#166534",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "File storage"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "note",
-				"kind": "text",
-				"shape": "rectangle",
-				"x": 400,
-				"y": 270,
-				"w": 520,
-				"h": 22,
-				"rotation": 0,
-				"z": 10,
-				"style": {
-					"fill": null,
-					"stroke": null,
-					"strokeWidth": 0,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "left",
-					"size": 14,
+					"size": 15,
 					"color": "#1E293B",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Everything on the right is private to the services."
+									"t": "CDN"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Static files and images"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s9",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 760,
+				"y": 240,
+				"w": 340,
+				"h": 70,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#F1F5F9",
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Load balancer + web firewall"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "TLS ends here"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f10",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 380,
+				"w": 1600,
+				"h": 330,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Application"
+			},
+			{
+				"id": "s11",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 620,
+				"y": 430,
+				"w": 360,
+				"h": 70,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "API gateway"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Auth, rate limits, routing"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s12",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 80,
+				"y": 580,
+				"w": 330,
+				"h": 90,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Accounts service"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Sign-up, profiles, billing"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s13",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 540,
+				"y": 580,
+				"w": 330,
+				"h": 90,
+				"rotation": 0,
+				"z": 13,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Content service"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Boards, files, comments"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s14",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1000,
+				"y": 580,
+				"w": 330,
+				"h": 90,
+				"rotation": 0,
+				"z": 14,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Notifications"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Email and in-app"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s15",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 1370,
+				"y": 580,
+				"w": 190,
+				"h": 90,
+				"rotation": 0,
+				"z": 15,
+				"style": {
+					"fill": "#FEF3C7",
+					"stroke": "#F59E0B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#78350F",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Job queue"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f16",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 750,
+				"w": 1600,
+				"h": 220,
+				"rotation": 0,
+				"z": 16,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#22C55E",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Data"
+			},
+			{
+				"id": "s17",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 80,
+				"y": 810,
+				"w": 300,
+				"h": 110,
+				"rotation": 0,
+				"z": 17,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Primary database"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "PostgreSQL"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s18",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 540,
+				"y": 810,
+				"w": 300,
+				"h": 110,
+				"rotation": 0,
+				"z": 18,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Cache"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Redis"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s19",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 1000,
+				"y": 810,
+				"w": 300,
+				"h": 110,
+				"rotation": 0,
+				"z": 19,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Object storage"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Uploads and exports"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n32",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1640,
+				"y": 380,
+				"w": 240,
+				"h": 190,
+				"rotation": 0,
+				"z": 32,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Decisions to record"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Why a gateway?"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Where does auth live?"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• What must never be cached?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n33",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1640,
+				"y": 600,
+				"w": 240,
+				"h": 190,
+				"rotation": 0,
+				"z": 33,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Non-functional targets"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• 99.9% availability"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• p95 under 300 ms"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Daily backups, 30 days"
 								}
 							]
 						}
@@ -318,14 +797,14 @@
 		],
 		"connectors": [
 			{
-				"id": "line-1",
+				"id": "l20",
 				"from": {
-					"objectId": "user",
-					"anchor": "e"
+					"objectId": "s4",
+					"anchor": "s"
 				},
 				"to": {
-					"objectId": "web",
-					"anchor": "w"
+					"objectId": "s9",
+					"anchor": "n"
 				},
 				"geometry": "elbow",
 				"heads": {
@@ -334,24 +813,272 @@
 				},
 				"bend": 0,
 				"style": {
-					"stroke": "#2563EB",
+					"stroke": "#475569",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1
 				},
-				"label": {
-					"text": "HTTPS"
-				},
-				"z": 1
+				"label": null,
+				"z": 20
 			},
 			{
-				"id": "line-2",
+				"id": "l21",
 				"from": {
-					"objectId": "web",
+					"objectId": "s5",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s9",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 21
+			},
+			{
+				"id": "l22",
+				"from": {
+					"objectId": "s6",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s9",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 22
+			},
+			{
+				"id": "l23",
+				"from": {
+					"objectId": "s4",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s8",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "dashed",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 23
+			},
+			{
+				"id": "l24",
+				"from": {
+					"objectId": "s9",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s11",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 24
+			},
+			{
+				"id": "l25",
+				"from": {
+					"objectId": "s11",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s12",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 25
+			},
+			{
+				"id": "l26",
+				"from": {
+					"objectId": "s11",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s13",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 26
+			},
+			{
+				"id": "l27",
+				"from": {
+					"objectId": "s11",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s14",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 27
+			},
+			{
+				"id": "l28",
+				"from": {
+					"objectId": "s12",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s17",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 28
+			},
+			{
+				"id": "l29",
+				"from": {
+					"objectId": "s13",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s18",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 29
+			},
+			{
+				"id": "l30",
+				"from": {
+					"objectId": "s13",
+					"anchor": "se"
+				},
+				"to": {
+					"objectId": "s19",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 30
+			},
+			{
+				"id": "l31",
+				"from": {
+					"objectId": "s14",
 					"anchor": "e"
 				},
 				"to": {
-					"objectId": "api",
+					"objectId": "s15",
 					"anchor": "w"
 				},
 				"geometry": "straight",
@@ -361,90 +1088,13 @@
 				},
 				"bend": 0,
 				"style": {
-					"stroke": "#2563EB",
+					"stroke": "#475569",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1
 				},
 				"label": null,
-				"z": 2
-			},
-			{
-				"id": "line-3",
-				"from": {
-					"objectId": "web",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "auth",
-					"anchor": "w"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 3
-			},
-			{
-				"id": "line-4",
-				"from": {
-					"objectId": "api",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "db",
-					"anchor": "w"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": {
-					"text": "SQL"
-				},
-				"z": 4
-			},
-			{
-				"id": "line-5",
-				"from": {
-					"objectId": "api",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "files",
-					"anchor": "w"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 5
+				"z": 31
 			}
 		],
 		"mindmaps": [],

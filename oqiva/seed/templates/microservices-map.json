@@ -1,11 +1,12 @@
 {
 	"slug": "microservices-map",
 	"name": "Microservices map",
-	"description": "Services, the gateway in front and the queue between them.",
+	"description": "A gateway, five services, a message bus and the databases each service owns, with rules of the road and open questions.",
 	"category": "Architecture",
 	"tags": [
 		"architecture",
 		"microservices",
+		"events",
 		"queue"
 	],
 	"sort_order": 21,
@@ -22,18 +23,85 @@
 		},
 		"objects": [
 			{
-				"id": "gateway",
-				"kind": "shape",
-				"shape": "hexagon",
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
 				"x": 0,
-				"y": 160,
-				"w": 170,
-				"h": 100,
+				"y": -130,
+				"w": 1600,
+				"h": 44,
 				"rotation": 0,
 				"z": 1,
 				"style": {
-					"fill": "#EDE9FE",
-					"stroke": "#8B5CF6",
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Microservices map",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1600,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Who calls whom, and what each service owns. Solid lines are synchronous calls, dashed lines are events on the message bus."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s3",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 560,
+				"y": 0,
+				"w": 300,
+				"h": 80,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#1E293B",
+					"stroke": "#1E293B",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1,
@@ -41,8 +109,8 @@
 				},
 				"text": {
 					"align": "center",
-					"size": 16,
-					"color": "#5B21B6",
+					"size": 17,
+					"color": "#FFFFFF",
 					"paragraphs": [
 						{
 							"runs": [
@@ -55,79 +123,13 @@
 				}
 			},
 			{
-				"id": "users",
+				"id": "s4",
 				"kind": "shape",
 				"shape": "rectangle",
-				"x": 260,
-				"y": 0,
-				"w": 180,
-				"h": 90,
-				"rotation": 0,
-				"z": 2,
-				"style": {
-					"fill": "#DBEAFE",
-					"stroke": "#3B82F6",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#1E3A8A",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Users"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "orders",
-				"kind": "shape",
-				"shape": "rectangle",
-				"x": 260,
-				"y": 160,
-				"w": 180,
-				"h": 90,
-				"rotation": 0,
-				"z": 3,
-				"style": {
-					"fill": "#DBEAFE",
-					"stroke": "#3B82F6",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#1E3A8A",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Orders"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "catalog",
-				"kind": "shape",
-				"shape": "rectangle",
-				"x": 260,
-				"y": 320,
-				"w": 180,
-				"h": 90,
+				"x": -20,
+				"y": 200,
+				"w": 290,
+				"h": 100,
 				"rotation": 0,
 				"z": 4,
 				"style": {
@@ -140,46 +142,21 @@
 				},
 				"text": {
 					"align": "center",
-					"size": 16,
+					"size": 15,
 					"color": "#1E3A8A",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Catalogue"
+									"t": "Users",
+									"b": 1
 								}
 							]
-						}
-					]
-				}
-			},
-			{
-				"id": "bus",
-				"kind": "shape",
-				"shape": "rectangle",
-				"x": 520,
-				"y": 160,
-				"w": 190,
-				"h": 70,
-				"rotation": 0,
-				"z": 5,
-				"style": {
-					"fill": "#FFEDD5",
-					"stroke": "#F97316",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#9A3412",
-					"paragraphs": [
+						},
 						{
 							"runs": [
 								{
-									"t": "Message bus"
+									"t": "accounts, sessions"
 								}
 							]
 						}
@@ -187,81 +164,15 @@
 				}
 			},
 			{
-				"id": "payments",
+				"id": "s6",
 				"kind": "shape",
 				"shape": "rectangle",
-				"x": 780,
-				"y": 0,
-				"w": 180,
-				"h": 90,
+				"x": 310,
+				"y": 200,
+				"w": 290,
+				"h": 100,
 				"rotation": 0,
 				"z": 6,
-				"style": {
-					"fill": "#FFEDD5",
-					"stroke": "#F97316",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#9A3412",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Payments"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "mail",
-				"kind": "shape",
-				"shape": "rectangle",
-				"x": 780,
-				"y": 320,
-				"w": 180,
-				"h": 90,
-				"rotation": 0,
-				"z": 7,
-				"style": {
-					"fill": "#FFEDD5",
-					"stroke": "#F97316",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#9A3412",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Notifications"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "db",
-				"kind": "shape",
-				"shape": "cylinder",
-				"x": 780,
-				"y": 160,
-				"w": 160,
-				"h": 110,
-				"rotation": 0,
-				"z": 8,
 				"style": {
 					"fill": "#DCFCE7",
 					"stroke": "#22C55E",
@@ -272,13 +183,513 @@
 				},
 				"text": {
 					"align": "center",
-					"size": 16,
-					"color": "#166534",
+					"size": 15,
+					"color": "#14532D",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Orders database"
+									"t": "Catalogue",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "products, search"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s8",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 640,
+				"y": 200,
+				"w": 290,
+				"h": 100,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Orders",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "carts, checkout"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s10",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 970,
+				"y": 200,
+				"w": 290,
+				"h": 100,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#FEF3C7",
+					"stroke": "#F59E0B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#78350F",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Billing",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "invoices, payments"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s12",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1300,
+				"y": 200,
+				"w": 290,
+				"h": 100,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": "#FCE7F3",
+					"stroke": "#EC4899",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Notifications",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "email, push"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s14",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 440,
+				"w": 1560,
+				"h": 70,
+				"rotation": 0,
+				"z": 14,
+				"style": {
+					"fill": "#F1F5F9",
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 17,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Message bus (events)"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s20",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": -20,
+				"y": 600,
+				"w": 290,
+				"h": 90,
+				"rotation": 0,
+				"z": 20,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 14,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "PostgreSQL"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "(owned by Users)"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s22",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 310,
+				"y": 600,
+				"w": 290,
+				"h": 90,
+				"rotation": 0,
+				"z": 22,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 14,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Search index + PostgreSQL"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "(owned by Catalogue)"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s24",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 640,
+				"y": 600,
+				"w": 290,
+				"h": 90,
+				"rotation": 0,
+				"z": 24,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 14,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "PostgreSQL"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "(owned by Orders)"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s26",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 970,
+				"y": 600,
+				"w": 290,
+				"h": 90,
+				"rotation": 0,
+				"z": 26,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 14,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "PostgreSQL"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "(owned by Billing)"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s28",
+				"kind": "shape",
+				"shape": "cylinder",
+				"x": 1300,
+				"y": 600,
+				"w": 290,
+				"h": 90,
+				"rotation": 0,
+				"z": 28,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 14,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Redis"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "(owned by Notifications)"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f30",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 760,
+				"w": 780,
+				"h": 260,
+				"rotation": 0,
+				"z": 30,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Rules of the road"
+			},
+			{
+				"id": "t31",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 810,
+				"w": 730,
+				"h": 65,
+				"rotation": 0,
+				"z": 31,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• A service owns its data; others ask through its API or events"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Calls between services time out after 2 seconds and retry once"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Every event has an id, so handlers can ignore duplicates"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f32",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 820,
+				"y": 760,
+				"w": 740,
+				"h": 260,
+				"rotation": 0,
+				"z": 32,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#F59E0B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Open questions"
+			},
+			{
+				"id": "t33",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 845,
+				"y": 810,
+				"w": 690,
+				"h": 65,
+				"rotation": 0,
+				"z": 33,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• Should Billing call Orders, or only listen to events?"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Which service owns the customer's address?"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• How do we trace one request across five services?"
 								}
 							]
 						}
@@ -288,190 +699,13 @@
 		],
 		"connectors": [
 			{
-				"id": "line-1",
+				"id": "l5",
 				"from": {
-					"objectId": "gateway",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "users",
-					"anchor": "w"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 1
-			},
-			{
-				"id": "line-2",
-				"from": {
-					"objectId": "gateway",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "orders",
-					"anchor": "w"
-				},
-				"geometry": "straight",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 2
-			},
-			{
-				"id": "line-3",
-				"from": {
-					"objectId": "gateway",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "catalog",
-					"anchor": "w"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 3
-			},
-			{
-				"id": "line-4",
-				"from": {
-					"objectId": "orders",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "bus",
-					"anchor": "w"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": {
-					"text": "order placed"
-				},
-				"z": 4
-			},
-			{
-				"id": "line-5",
-				"from": {
-					"objectId": "bus",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "payments",
-					"anchor": "w"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 5
-			},
-			{
-				"id": "line-6",
-				"from": {
-					"objectId": "bus",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "mail",
-					"anchor": "w"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 6
-			},
-			{
-				"id": "line-7",
-				"from": {
-					"objectId": "orders",
-					"anchor": "e"
-				},
-				"to": {
-					"objectId": "db",
-					"anchor": "w"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "dashed",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 7
-			},
-			{
-				"id": "line-8",
-				"from": {
-					"objectId": "payments",
+					"objectId": "s3",
 					"anchor": "s"
 				},
 				"to": {
-					"objectId": "db",
+					"objectId": "s4",
 					"anchor": "n"
 				},
 				"geometry": "elbow",
@@ -481,13 +715,363 @@
 				},
 				"bend": 0,
 				"style": {
-					"stroke": "#2563EB",
+					"stroke": "#475569",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1
 				},
 				"label": null,
-				"z": 8
+				"z": 5
+			},
+			{
+				"id": "l7",
+				"from": {
+					"objectId": "s3",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s6",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 7
+			},
+			{
+				"id": "l9",
+				"from": {
+					"objectId": "s3",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s8",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 9
+			},
+			{
+				"id": "l11",
+				"from": {
+					"objectId": "s3",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s10",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 11
+			},
+			{
+				"id": "l13",
+				"from": {
+					"objectId": "s3",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s12",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 13
+			},
+			{
+				"id": "l15",
+				"from": {
+					"objectId": "s4",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s14",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "dashed",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 15
+			},
+			{
+				"id": "l16",
+				"from": {
+					"objectId": "s6",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s14",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "dashed",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 16
+			},
+			{
+				"id": "l17",
+				"from": {
+					"objectId": "s8",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s14",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "dashed",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 17
+			},
+			{
+				"id": "l18",
+				"from": {
+					"objectId": "s10",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s14",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "dashed",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 18
+			},
+			{
+				"id": "l19",
+				"from": {
+					"objectId": "s12",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s14",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#64748B",
+					"strokeWidth": 2,
+					"dash": "dashed",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 19
+			},
+			{
+				"id": "l21",
+				"from": {
+					"objectId": "s14",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s20",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "none"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#CBD5E1",
+					"strokeWidth": 2,
+					"dash": "dotted",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 21
+			},
+			{
+				"id": "l23",
+				"from": {
+					"objectId": "s14",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s22",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "none"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#CBD5E1",
+					"strokeWidth": 2,
+					"dash": "dotted",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 23
+			},
+			{
+				"id": "l25",
+				"from": {
+					"objectId": "s14",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s24",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "none"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#CBD5E1",
+					"strokeWidth": 2,
+					"dash": "dotted",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 25
+			},
+			{
+				"id": "l27",
+				"from": {
+					"objectId": "s14",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s26",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "none"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#CBD5E1",
+					"strokeWidth": 2,
+					"dash": "dotted",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 27
+			},
+			{
+				"id": "l29",
+				"from": {
+					"objectId": "s14",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s28",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "none"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#CBD5E1",
+					"strokeWidth": 2,
+					"dash": "dotted",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 29
 			}
 		],
 		"mindmaps": [],

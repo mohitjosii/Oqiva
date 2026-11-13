@@ -16,11 +16,14 @@ const CATEGORIES = new Set([
 	"Engineering",
 	"Business",
 	"Product",
+	"Meetings",
+	"Marketing",
+	"People",
 ])
 
 describe("seed templates", () => {
-	it("has the 14 templates and the starter boards", () => {
-		expect(files.length).toBeGreaterThanOrEqual(19)
+	it("has the catalogue and the starter boards", () => {
+		expect(files.length).toBeGreaterThanOrEqual(37)
 		for (const slug of [
 			"blank",
 			"user-signup-flow",
@@ -51,16 +54,14 @@ describe("seed templates", () => {
 		})
 	}
 
-	it("is deterministic: the files carry fixed ids", () => {
-		const a = JSON.parse(fs.readFileSync(path.join(DIR, "kanban-board.json"), "utf8"))
-		expect(a.document.objects.map((o) => o.id)).toEqual([
-			"frame-1",
-			"frame-2",
-			"frame-3",
-			"a",
-			"b",
-			"c",
-			"d",
-		])
+	it("is deterministic: the files carry fixed, unique ids", () => {
+		for (const name of files) {
+			const file = JSON.parse(fs.readFileSync(path.join(DIR, name), "utf8"))
+			const ids = file.document.objects.map((o) => o.id)
+			expect(new Set(ids).size, name).toBe(ids.length)
+			for (const id of ids) expect(typeof id).toBe("string")
+		}
+		const kanban = JSON.parse(fs.readFileSync(path.join(DIR, "kanban-board.json"), "utf8"))
+		expect(kanban.document.objects.filter((o) => o.kind === "frame")).toHaveLength(5)
 	})
 })

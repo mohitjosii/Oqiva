@@ -1,0 +1,1037 @@
+{
+	"slug": "business-model-canvas",
+	"name": "Business model canvas",
+	"description": "The nine blocks of the canvas, each with a prompt and an example note, from customers and value to costs and revenue.",
+	"category": "Business",
+	"tags": [
+		"business model",
+		"canvas",
+		"strategy",
+		"startup"
+	],
+	"sort_order": 72,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -130,
+				"w": 1600,
+				"h": 44,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Business model canvas",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1600,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Fill the blocks in roughly this order: customers, value, channels, revenue, then the rest. One idea per sticky note."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f3",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 320,
+				"h": 680,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#64748B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Key partners"
+			},
+			{
+				"id": "t4",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 20,
+				"y": 40,
+				"w": 280,
+				"h": 22,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Who helps us? What do they provide?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n5",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 40,
+				"y": 90,
+				"w": 240,
+				"h": 180,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Payment provider"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Cloud host"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f6",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 340,
+				"y": 0,
+				"w": 320,
+				"h": 320,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#64748B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Key activities"
+			},
+			{
+				"id": "t7",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 360,
+				"y": 40,
+				"w": 280,
+				"h": 22,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "What must we do well?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n8",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 380,
+				"y": 90,
+				"w": 240,
+				"h": 120,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Build the product"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Support customers"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f9",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 340,
+				"y": 360,
+				"w": 320,
+				"h": 320,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#64748B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Key resources"
+			},
+			{
+				"id": "t10",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 360,
+				"y": 400,
+				"w": 280,
+				"h": 22,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "What do we need to deliver?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n11",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 380,
+				"y": 450,
+				"w": 240,
+				"h": 120,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Engineering team"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Brand and trust"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f12",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 680,
+				"y": 0,
+				"w": 320,
+				"h": 680,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#F59E0B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Value propositions"
+			},
+			{
+				"id": "t13",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 700,
+				"y": 40,
+				"w": 280,
+				"h": 22,
+				"rotation": 0,
+				"z": 13,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "What problem do we solve? Why us?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n14",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 720,
+				"y": 90,
+				"w": 240,
+				"h": 180,
+				"rotation": 0,
+				"z": 14,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Draw and plan together,"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "in one shared place"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f15",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 1020,
+				"y": 0,
+				"w": 320,
+				"h": 320,
+				"rotation": 0,
+				"z": 15,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Customer relationships"
+			},
+			{
+				"id": "t16",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1040,
+				"y": 40,
+				"w": 280,
+				"h": 22,
+				"rotation": 0,
+				"z": 16,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "How do we win and keep customers?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n17",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1060,
+				"y": 90,
+				"w": 240,
+				"h": 120,
+				"rotation": 0,
+				"z": 17,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Self-service,"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "in-app help"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f18",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 1020,
+				"y": 360,
+				"w": 320,
+				"h": 320,
+				"rotation": 0,
+				"z": 18,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Channels"
+			},
+			{
+				"id": "t19",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1040,
+				"y": 400,
+				"w": 280,
+				"h": 22,
+				"rotation": 0,
+				"z": 19,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "How do customers find and reach us?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n20",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1060,
+				"y": 450,
+				"w": 240,
+				"h": 120,
+				"rotation": 0,
+				"z": 20,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Website"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Search, referrals"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f21",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 1360,
+				"y": 0,
+				"w": 320,
+				"h": 680,
+				"rotation": 0,
+				"z": 21,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Customer segments"
+			},
+			{
+				"id": "t22",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1380,
+				"y": 40,
+				"w": 280,
+				"h": 22,
+				"rotation": 0,
+				"z": 22,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Who are we creating value for?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n23",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1400,
+				"y": 90,
+				"w": 240,
+				"h": 180,
+				"rotation": 0,
+				"z": 23,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Product teams"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Agencies"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Teachers"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f24",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 760,
+				"w": 810,
+				"h": 300,
+				"rotation": 0,
+				"z": 24,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#EF4444",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Cost structure"
+			},
+			{
+				"id": "t25",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 20,
+				"y": 800,
+				"w": 770,
+				"h": 22,
+				"rotation": 0,
+				"z": 25,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "What are our biggest costs? Which are fixed and which grow with customers?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n26",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 40,
+				"y": 850,
+				"w": 300,
+				"h": 140,
+				"rotation": 0,
+				"z": 26,
+				"style": {
+					"fill": "#FBCFE8",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Salaries"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Hosting and storage"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Payment fees"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n27",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 380,
+				"y": 850,
+				"w": 300,
+				"h": 140,
+				"rotation": 0,
+				"z": 27,
+				"style": {
+					"fill": "#FBCFE8",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Support tools"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Marketing"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f28",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 850,
+				"y": 760,
+				"w": 810,
+				"h": 300,
+				"rotation": 0,
+				"z": 28,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#22C55E",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Revenue streams"
+			},
+			{
+				"id": "t29",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 870,
+				"y": 800,
+				"w": 770,
+				"h": 22,
+				"rotation": 0,
+				"z": 29,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 13,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "What do customers pay for? How much, and how often?"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n30",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 890,
+				"y": 850,
+				"w": 300,
+				"h": 140,
+				"rotation": 0,
+				"z": 30,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Monthly seats"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Annual plans (2 months free)"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n31",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1230,
+				"y": 850,
+				"w": 300,
+				"h": 140,
+				"rotation": 0,
+				"z": 31,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Training for teams"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Enterprise support"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

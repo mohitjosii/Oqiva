@@ -2,6 +2,7 @@
 
 import { copySelection, cutSelection } from "./clipboard"
 import { runMindmapCommand } from "../modes/mindmap/commands"
+import { runFlowCommand } from "../modes/flowchart/commands"
 import { contentBounds, fitView, zoomIn, zoomOut, zoomTo } from "./view"
 
 export function runCommand(store, controller, command, ui = {}) {
@@ -30,7 +31,10 @@ export function runCommand(store, controller, command, ui = {}) {
 			// One press steps back one level: half-done drag, then tool, then selection.
 			if (controller.drag) return controller.cancel()
 			if (state.painter) return (state.painter = null)
-			if (state.tool !== "select") return (state.tool = "select")
+			if (state.tool !== "select") {
+				controller.cancel() // the laser, the eraser's tip and a half-drawn stroke go with the tool
+				return (state.tool = "select")
+			}
 			return store.clearSelection()
 		case "tool":
 			controller.cancel()
@@ -55,6 +59,7 @@ export function runCommand(store, controller, command, ui = {}) {
 			// The mind map's own commands (mm.child, mm.sibling, ...). They may ask a question first, so
 			// they can finish later.
 			if (command.name.startsWith("mm.")) return runMindmapCommand(store, command, ui.mindmap)
+			if (command.name.startsWith("fl.")) return runFlowCommand(store, command, ui.flowchart)
 			return undefined
 	}
 }

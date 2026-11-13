@@ -1,12 +1,13 @@
 {
 	"slug": "okr-tree",
-	"name": "Objectives and key results",
-	"description": "One objective, its key results and who owns them.",
+	"name": "Objectives and key results (OKRs)",
+	"description": "One objective, its measurable key results with a weekly tracker, and the initiatives that will move them.",
 	"category": "Business",
 	"tags": [
 		"okr",
 		"goals",
-		"strategy"
+		"strategy",
+		"quarterly"
 	],
 	"sort_order": 70,
 	"document": {
@@ -22,17 +23,125 @@
 		},
 		"objects": [
 			{
-				"id": "obj",
-				"kind": "shape",
+				"id": "t1",
+				"kind": "text",
 				"shape": "rectangle",
-				"x": 260,
-				"y": 0,
-				"w": 240,
-				"h": 100,
+				"x": 0,
+				"y": -130,
+				"w": 1600,
+				"h": 44,
 				"rotation": 0,
 				"z": 1,
 				"style": {
-					"fill": "#FFFFFF",
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Objectives and key results (OKRs)",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1600,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "An objective says where we want to go; key results are how we will know we got there. Aim for 3–5 key results, and score them 0 to 1 at the end."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s3",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 430,
+				"y": 0,
+				"w": 740,
+				"h": 130,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#1E293B",
+					"stroke": "#1E293B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 20,
+					"color": "#FFFFFF",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Objective",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Make the product the easiest way for teams to share ideas visually"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s4",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 240,
+				"w": 380,
+				"h": 140,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#DBEAFE",
 					"stroke": "#3B82F6",
 					"strokeWidth": 2,
 					"dash": "solid",
@@ -47,7 +156,29 @@
 						{
 							"runs": [
 								{
-									"t": "Objective"
+									"t": "KR1",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Weekly active teams"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "from 1,200 to 2,000"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Growth"
 								}
 							]
 						}
@@ -55,114 +186,781 @@
 				}
 			},
 			{
-				"id": "kr1",
+				"id": "s6",
 				"kind": "shape",
+				"shape": "rectangle",
+				"x": 410,
+				"y": 240,
+				"w": 380,
+				"h": 140,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "KR2",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Time to first shared board"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "from 18 min to 6 min"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Product"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s8",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 820,
+				"y": 240,
+				"w": 380,
+				"h": 140,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "KR3",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Customer satisfaction"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "from 4.1 to 4.5"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Support"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s10",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1230,
+				"y": 240,
+				"w": 380,
+				"h": 140,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#FEF3C7",
+					"stroke": "#F59E0B",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 16,
+					"color": "#78350F",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "KR4",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "p95 page load"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "below 1.5 seconds"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Owner: Engineering"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f12",
+				"kind": "frame",
 				"shape": "rectangle",
 				"x": 0,
-				"y": 160,
-				"w": 190,
-				"h": 90,
+				"y": 440,
+				"w": 1600,
+				"h": 460,
 				"rotation": 0,
-				"z": 2,
+				"z": 12,
 				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#111827",
-					"strokeWidth": 2,
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
 					"dash": "solid",
 					"opacity": 1,
-					"radius": 8
+					"radius": 10
 				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#111827",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Key result 1"
-								}
-							]
-						}
-					]
-				}
+				"text": null,
+				"name": "Key results tracker"
 			},
 			{
-				"id": "kr2",
-				"kind": "shape",
+				"id": "t13",
+				"kind": "table",
 				"shape": "rectangle",
-				"x": 260,
-				"y": 160,
-				"w": 190,
-				"h": 90,
+				"x": 25,
+				"y": 490,
+				"w": 1548,
+				"h": 250,
 				"rotation": 0,
-				"z": 3,
+				"z": 13,
 				"style": {
 					"fill": "#FFFFFF",
-					"stroke": "#111827",
-					"strokeWidth": 2,
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
 					"dash": "solid",
 					"opacity": 1,
-					"radius": 8
+					"radius": 0
 				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#111827",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Key result 2"
-								}
-							]
-						}
+				"text": null,
+				"table": {
+					"colW": [
+						89,
+						556,
+						149,
+						149,
+						149,
+						158,
+						298
+					],
+					"rowH": [
+						50,
+						50,
+						50,
+						50,
+						50
+					],
+					"cells": [
+						[
+							null,
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Key result",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Start",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Target",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Now",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Score",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Confidence",
+												"b": 1
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "KR1"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Weekly active teams"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "1,200"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "2,000"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "1,450"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "0.31"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Medium"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "KR2"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Time to first shared board (min)"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "18"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "6"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "11"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "0.58"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "High"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "KR3"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Customer satisfaction"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "4.1"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "4.5"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "4.2"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "0.25"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Low"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "KR4"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "p95 page load (s)"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "2.8"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "1.5"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "1.9"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "0.69"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "High"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							"#FDE68A"
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							"#BBF7D0"
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							"#FECACA"
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null,
+							null,
+							"#BBF7D0"
+						]
 					]
 				}
 			},
 			{
-				"id": "kr3",
-				"kind": "shape",
-				"shape": "rectangle",
-				"x": 520,
-				"y": 160,
-				"w": 190,
-				"h": 90,
-				"rotation": 0,
-				"z": 4,
-				"style": {
-					"fill": "#FFFFFF",
-					"stroke": "#111827",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 8
-				},
-				"text": {
-					"align": "center",
-					"size": 16,
-					"color": "#111827",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Key result 3"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "owner",
+				"id": "t14",
 				"kind": "text",
 				"shape": "rectangle",
-				"x": 20,
-				"y": 360,
-				"w": 520,
-				"h": 22,
+				"x": 25,
+				"y": 780,
+				"w": 1550,
+				"h": 24,
 				"rotation": 0,
-				"z": 5,
+				"z": 14,
 				"style": {
 					"fill": null,
 					"stroke": null,
@@ -173,13 +971,170 @@
 				},
 				"text": {
 					"align": "left",
-					"size": 14,
-					"color": "#1E293B",
+					"size": 15,
+					"color": "#64748B",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Write one owner and one number under each key result."
+									"t": "Check-in every week:",
+									"b": 1
+								},
+								{
+									"t": " update Now and Confidence. Score at the end of the quarter: 0.7 is a good result; 1.0 usually means the target was too easy."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f15",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 940,
+				"w": 1600,
+				"h": 220,
+				"rotation": 0,
+				"z": 15,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Initiatives that move the key results"
+			},
+			{
+				"id": "n16",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 990,
+				"w": 360,
+				"h": 100,
+				"rotation": 0,
+				"z": 16,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Guided onboarding"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n17",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 415,
+				"y": 990,
+				"w": 360,
+				"h": 100,
+				"rotation": 0,
+				"z": 17,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Template gallery"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n18",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 805,
+				"y": 990,
+				"w": 360,
+				"h": 100,
+				"rotation": 0,
+				"z": 18,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Image CDN and caching"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n19",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1195,
+				"y": 990,
+				"w": 360,
+				"h": 100,
+				"rotation": 0,
+				"z": 19,
+				"style": {
+					"fill": "#DDD6FE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "In-app feedback prompt"
 								}
 							]
 						}
@@ -189,38 +1144,13 @@
 		],
 		"connectors": [
 			{
-				"id": "line-1",
+				"id": "l5",
 				"from": {
-					"objectId": "obj",
-					"anchor": "w"
-				},
-				"to": {
-					"objectId": "kr1",
-					"anchor": "e"
-				},
-				"geometry": "elbow",
-				"heads": {
-					"start": "none",
-					"end": "arrow"
-				},
-				"bend": 0,
-				"style": {
-					"stroke": "#2563EB",
-					"strokeWidth": 2,
-					"dash": "solid",
-					"opacity": 1
-				},
-				"label": null,
-				"z": 1
-			},
-			{
-				"id": "line-2",
-				"from": {
-					"objectId": "obj",
+					"objectId": "s3",
 					"anchor": "s"
 				},
 				"to": {
-					"objectId": "kr2",
+					"objectId": "s4",
 					"anchor": "n"
 				},
 				"geometry": "elbow",
@@ -230,23 +1160,23 @@
 				},
 				"bend": 0,
 				"style": {
-					"stroke": "#2563EB",
+					"stroke": "#475569",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1
 				},
 				"label": null,
-				"z": 2
+				"z": 5
 			},
 			{
-				"id": "line-3",
+				"id": "l7",
 				"from": {
-					"objectId": "obj",
-					"anchor": "e"
+					"objectId": "s3",
+					"anchor": "s"
 				},
 				"to": {
-					"objectId": "kr3",
-					"anchor": "w"
+					"objectId": "s6",
+					"anchor": "n"
 				},
 				"geometry": "elbow",
 				"heads": {
@@ -255,13 +1185,63 @@
 				},
 				"bend": 0,
 				"style": {
-					"stroke": "#2563EB",
+					"stroke": "#475569",
 					"strokeWidth": 2,
 					"dash": "solid",
 					"opacity": 1
 				},
 				"label": null,
-				"z": 3
+				"z": 7
+			},
+			{
+				"id": "l9",
+				"from": {
+					"objectId": "s3",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s8",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 9
+			},
+			{
+				"id": "l11",
+				"from": {
+					"objectId": "s3",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s10",
+					"anchor": "n"
+				},
+				"geometry": "elbow",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 11
 			}
 		],
 		"mindmaps": [],

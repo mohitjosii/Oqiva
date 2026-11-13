@@ -1,0 +1,1572 @@
+{
+	"slug": "incident-postmortem",
+	"name": "Incident postmortem",
+	"description": "A blameless review: summary, timeline, a five-whys chain, what went well and badly, and owned action items.",
+	"category": "Engineering",
+	"tags": [
+		"postmortem",
+		"incident",
+		"sre",
+		"retrospective",
+		"engineering"
+	],
+	"sort_order": 63,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -130,
+				"w": 1500,
+				"h": 44,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Incident postmortem",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1500,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Blameless: ask what let this happen, not who did it. Finish within five working days while memories are fresh."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f3",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 1500,
+				"h": 270,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Summary"
+			},
+			{
+				"id": "t4",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 50,
+				"w": 1449,
+				"h": 200,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						196,
+						1253
+					],
+					"rowH": [
+						40,
+						40,
+						40,
+						40,
+						40
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Incident",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "INC-482 · Checkout unavailable for 47 minutes · Severity 1"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "When",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Tue 12 Mar, 14:02–14:49 UTC"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Impact",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "About 3,100 customers could not pay; an estimated $41,000 in delayed orders. No data was lost."
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Detected by",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Customer reports, 9 minutes after it began (no alert fired)"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Incident lead / author",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Ana Souza / Tom Okafor"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#DBEAFE",
+							null
+						],
+						[
+							"#DBEAFE",
+							null
+						],
+						[
+							"#DBEAFE",
+							null
+						],
+						[
+							"#DBEAFE",
+							null
+						],
+						[
+							"#DBEAFE",
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "f5",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 310,
+				"w": 1500,
+				"h": 330,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Timeline (UTC)"
+			},
+			{
+				"id": "t6",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 360,
+				"w": 1448,
+				"h": 240,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						127,
+						953,
+						368
+					],
+					"rowH": [
+						40,
+						40,
+						40,
+						40,
+						40,
+						40
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Time",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "What happened",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Who",
+												"b": 1
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "14:02"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Deploy of version 3.18 reaches all servers"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Release bot"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "14:11"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "First customer reports; support opens a ticket"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Support"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "14:15"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "On-call paged; incident declared"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Ana"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "14:31"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Cause found: a database migration locked the orders table"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Tom"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "14:49"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Migration cancelled and the lock released; checkout recovers"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Tom, Ana"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null
+						]
+					]
+				}
+			},
+			{
+				"id": "f7",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 680,
+				"w": 740,
+				"h": 480,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Root cause: five whys"
+			},
+			{
+				"id": "s8",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 110,
+				"y": 730,
+				"w": 520,
+				"h": 56,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": "#FEE2E2",
+					"stroke": "#EF4444",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#7F1D1D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Checkout failed"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s9",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 110,
+				"y": 812,
+				"w": 520,
+				"h": 56,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "The orders table was locked"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s11",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 110,
+				"y": 894,
+				"w": 520,
+				"h": 56,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "A migration ran in the middle of the day"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s13",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 110,
+				"y": 976,
+				"w": 520,
+				"h": 56,
+				"rotation": 0,
+				"z": 13,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Migrations run automatically on deploy"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s15",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 110,
+				"y": 1058,
+				"w": 520,
+				"h": 56,
+				"rotation": 0,
+				"z": 15,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#94A3B8",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "center",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "No check that a migration is safe to run on a busy table"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f17",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 780,
+				"y": 680,
+				"w": 720,
+				"h": 210,
+				"rotation": 0,
+				"z": 17,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#22C55E",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "What went well"
+			},
+			{
+				"id": "t18",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 805,
+				"y": 730,
+				"w": 670,
+				"h": 65,
+				"rotation": 0,
+				"z": 18,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• The on-call engineer responded in 4 minutes"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Rolling back the migration was quick once found"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Support kept customers informed"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f19",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 780,
+				"y": 940,
+				"w": 720,
+				"h": 220,
+				"rotation": 0,
+				"z": 19,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#EF4444",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "What went badly"
+			},
+			{
+				"id": "t20",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 805,
+				"y": 990,
+				"w": 670,
+				"h": 65,
+				"rotation": 0,
+				"z": 20,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• No alert fired for failed checkouts"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• It took 16 minutes to find the cause"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• The runbook did not cover migrations"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f21",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 1200,
+				"w": 1500,
+				"h": 380,
+				"rotation": 0,
+				"z": 21,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#94A3B8",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Action items"
+			},
+			{
+				"id": "t22",
+				"kind": "table",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 1250,
+				"w": 1447,
+				"h": 260,
+				"rotation": 0,
+				"z": 22,
+				"style": {
+					"fill": "#FFFFFF",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 0
+				},
+				"text": null,
+				"table": {
+					"colW": [
+						629,
+						186,
+						186,
+						196,
+						250
+					],
+					"rowH": [
+						52,
+						52,
+						52,
+						52,
+						52
+					],
+					"cells": [
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Action",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Type",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Owner",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Due",
+												"b": 1
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#FFFFFF",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Ticket",
+												"b": 1
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Alert when checkout success rate drops below 95%"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Detect"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Ana"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "22 Mar"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "OPS-901"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Run migrations in a separate step with a lock timeout"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Prevent"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Tom"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "29 Mar"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "OPS-902"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Add a “slow migration” section to the runbook"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Respond"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Priya"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "22 Mar"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "OPS-903"
+											}
+										]
+									}
+								]
+							}
+						],
+						[
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Test migrations against a copy of production data"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Prevent"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "Tom"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "12 Apr"
+											}
+										]
+									}
+								]
+							},
+							{
+								"align": "left",
+								"size": 14,
+								"color": "#1E293B",
+								"paragraphs": [
+									{
+										"runs": [
+											{
+												"t": "OPS-904"
+											}
+										]
+									}
+								]
+							}
+						]
+					],
+					"fills": [
+						[
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6",
+							"#3B82F6"
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						],
+						[
+							null,
+							null,
+							null,
+							null,
+							null
+						]
+					]
+				}
+			}
+		],
+		"connectors": [
+			{
+				"id": "l10",
+				"from": {
+					"objectId": "s8",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s9",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 10
+			},
+			{
+				"id": "l12",
+				"from": {
+					"objectId": "s9",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s11",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 12
+			},
+			{
+				"id": "l14",
+				"from": {
+					"objectId": "s11",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s13",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 14
+			},
+			{
+				"id": "l16",
+				"from": {
+					"objectId": "s13",
+					"anchor": "s"
+				},
+				"to": {
+					"objectId": "s15",
+					"anchor": "n"
+				},
+				"geometry": "straight",
+				"heads": {
+					"start": "none",
+					"end": "arrow"
+				},
+				"bend": 0,
+				"style": {
+					"stroke": "#475569",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1
+				},
+				"label": null,
+				"z": 16
+			}
+		],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

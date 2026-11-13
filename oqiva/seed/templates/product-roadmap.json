@@ -1,0 +1,818 @@
+{
+	"slug": "product-roadmap",
+	"name": "Product roadmap",
+	"description": "A Now / Next / Later roadmap where every card states the problem it solves, plus a not-doing list and open questions.",
+	"category": "Product",
+	"tags": [
+		"roadmap",
+		"product",
+		"strategy",
+		"planning"
+	],
+	"sort_order": 80,
+	"document": {
+		"schemaVersion": 1,
+		"canvas": {
+			"mode": "infinite",
+			"preset": "16:9",
+			"background": null,
+			"grid": "off"
+		},
+		"theme": {
+			"preset": "ocean"
+		},
+		"objects": [
+			{
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -130,
+				"w": 1600,
+				"h": 44,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Product roadmap: Now, Next, Later",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1600,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Now is committed, Next is planned, Later is an honest maybe. Each card names the problem it solves, not just a feature."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f3",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 0,
+				"w": 520,
+				"h": 600,
+				"rotation": 0,
+				"z": 3,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#22C55E",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Now · this quarter"
+			},
+			{
+				"id": "t4",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 45,
+				"w": 470,
+				"h": 23,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Committed. Owners and dates are known."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f5",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 540,
+				"y": 0,
+				"w": 520,
+				"h": 600,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Next · following quarter"
+			},
+			{
+				"id": "t6",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 565,
+				"y": 45,
+				"w": 470,
+				"h": 23,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Planned. Scope may still change."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f7",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 1080,
+				"y": 0,
+				"w": 520,
+				"h": 600,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#64748B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Later · beyond that"
+			},
+			{
+				"id": "t8",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 1105,
+				"y": 45,
+				"w": 470,
+				"h": 23,
+				"rotation": 0,
+				"z": 8,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Ideas we believe in. No dates."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s9",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 85,
+				"w": 470,
+				"h": 150,
+				"rotation": 0,
+				"z": 9,
+				"style": {
+					"fill": "#DBEAFE",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Guided onboarding",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Problem: 40% of new teams never create a second board."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s10",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 255,
+				"w": 470,
+				"h": 150,
+				"rotation": 0,
+				"z": 10,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Faster exports",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Problem: large boards time out when exporting."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s11",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 425,
+				"w": 470,
+				"h": 150,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Single sign-on",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Problem: blocks sales to larger companies."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s12",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 565,
+				"y": 85,
+				"w": 470,
+				"h": 150,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": "#DBEAFE",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Comments and mentions",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Problem: feedback happens in chat, not on the work."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s13",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 565,
+				"y": 255,
+				"w": 470,
+				"h": 150,
+				"rotation": 0,
+				"z": 13,
+				"style": {
+					"fill": "#DBEAFE",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Template gallery",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Problem: new users face a blank page."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s14",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 565,
+				"y": 425,
+				"w": 470,
+				"h": 150,
+				"rotation": 0,
+				"z": 14,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Audit log",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Problem: admins cannot see who changed what."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s15",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1105,
+				"y": 85,
+				"w": 470,
+				"h": 150,
+				"rotation": 0,
+				"z": 15,
+				"style": {
+					"fill": "#DBEAFE",
+					"stroke": "#3B82F6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Mobile editing",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Problem: people review boards on their phones."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s16",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1105,
+				"y": 255,
+				"w": 470,
+				"h": 150,
+				"rotation": 0,
+				"z": 16,
+				"style": {
+					"fill": "#EDE9FE",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#4C1D95",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Integrations",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Problem: tasks live in other tools."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "s17",
+				"kind": "shape",
+				"shape": "rectangle",
+				"x": 1105,
+				"y": 425,
+				"w": 470,
+				"h": 150,
+				"rotation": 0,
+				"z": 17,
+				"style": {
+					"fill": "#DCFCE7",
+					"stroke": "#22C55E",
+					"strokeWidth": 2,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Offline mode",
+									"b": 1
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "Problem: poor connections at events."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t18",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 630,
+				"w": 1600,
+				"h": 23,
+				"rotation": 0,
+				"z": 18,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 14,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Theme colours:  "
+								},
+								{
+									"t": "blue",
+									"b": 1
+								},
+								{
+									"t": " = growth · "
+								},
+								{
+									"t": "green",
+									"b": 1
+								},
+								{
+									"t": " = quality and speed · "
+								},
+								{
+									"t": "violet",
+									"b": 1
+								},
+								{
+									"t": " = security and enterprise"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f19",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 690,
+				"w": 780,
+				"h": 200,
+				"rotation": 0,
+				"z": 19,
+				"style": {
+					"fill": "#FEF2F2",
+					"stroke": "#EF4444",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Not doing (and why)"
+			},
+			{
+				"id": "t20",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 740,
+				"w": 730,
+				"h": 65,
+				"rotation": 0,
+				"z": 20,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• Custom-branded themes: few requests, high support cost"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Desktop app: the web app covers the need"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Built-in video calls: use the tools people already have"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f21",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 820,
+				"y": 690,
+				"w": 780,
+				"h": 200,
+				"rotation": 0,
+				"z": 21,
+				"style": {
+					"fill": "#FFFBEB",
+					"stroke": "#F59E0B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Open questions"
+			},
+			{
+				"id": "t22",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 845,
+				"y": 740,
+				"w": 730,
+				"h": 65,
+				"rotation": 0,
+				"z": 22,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#1E293B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "• Do we price by seat or by board?"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• Is Single sign-on worth shipping before comments?"
+								}
+							]
+						},
+						{
+							"runs": [
+								{
+									"t": "• What do we learn from the beta that could move a Next card to Now?"
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"connectors": [],
+		"mindmaps": [],
+		"flowcharts": []
+	}
+}

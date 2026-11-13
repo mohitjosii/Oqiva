@@ -1,12 +1,13 @@
 {
 	"slug": "kanban-board",
 	"name": "Kanban board",
-	"description": "To do, doing and done, with a few notes to move around.",
+	"description": "A five-column team board with work-in-progress limits, card colours for features, bugs and chores, and example cards to replace.",
 	"category": "Planning",
 	"tags": [
 		"kanban",
 		"tasks",
-		"agile"
+		"agile",
+		"wip"
 	],
 	"sort_order": 42,
 	"document": {
@@ -22,60 +23,169 @@
 		},
 		"objects": [
 			{
-				"id": "frame-1",
+				"id": "t1",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -130,
+				"w": 1500,
+				"h": 44,
+				"rotation": 0,
+				"z": 1,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 30,
+					"color": "#0F172A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Team kanban board",
+									"b": 1
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t2",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": -86,
+				"w": 1500,
+				"h": 26,
+				"rotation": 0,
+				"z": 2,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Pull work from the left, finish before starting new work. Blue = feature, pink = bug, green = chore, yellow = idea. Replace the examples with your own cards."
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "f3",
 				"kind": "frame",
 				"shape": "rectangle",
 				"x": 0,
 				"y": 0,
-				"w": 320,
-				"h": 560,
-				"rotation": 0,
-				"z": 1,
-				"style": {
-					"fill": "#F8FAFC",
-					"stroke": "#94A3B8",
-					"strokeWidth": 1.5,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 10
-				},
-				"text": null,
-				"name": "To do"
-			},
-			{
-				"id": "frame-2",
-				"kind": "frame",
-				"shape": "rectangle",
-				"x": 360,
-				"y": 0,
-				"w": 320,
-				"h": 560,
-				"rotation": 0,
-				"z": 2,
-				"style": {
-					"fill": "#F8FAFC",
-					"stroke": "#94A3B8",
-					"strokeWidth": 1.5,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 10
-				},
-				"text": null,
-				"name": "Doing"
-			},
-			{
-				"id": "frame-3",
-				"kind": "frame",
-				"shape": "rectangle",
-				"x": 720,
-				"y": 0,
-				"w": 320,
-				"h": 560,
+				"w": 310,
+				"h": 720,
 				"rotation": 0,
 				"z": 3,
 				"style": {
 					"fill": "#F8FAFC",
-					"stroke": "#94A3B8",
+					"stroke": "#64748B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "Backlog"
+			},
+			{
+				"id": "f4",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 330,
+				"y": 0,
+				"w": 310,
+				"h": 720,
+				"rotation": 0,
+				"z": 4,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#3B82F6",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "To do · limit 5"
+			},
+			{
+				"id": "f5",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 660,
+				"y": 0,
+				"w": 310,
+				"h": 720,
+				"rotation": 0,
+				"z": 5,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#F59E0B",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "In progress · limit 3"
+			},
+			{
+				"id": "f6",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 990,
+				"y": 0,
+				"w": 310,
+				"h": 720,
+				"rotation": 0,
+				"z": 6,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#8B5CF6",
+					"strokeWidth": 1.5,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 10
+				},
+				"text": null,
+				"name": "In review · limit 2"
+			},
+			{
+				"id": "f7",
+				"kind": "frame",
+				"shape": "rectangle",
+				"x": 1320,
+				"y": 0,
+				"w": 310,
+				"h": 720,
+				"rotation": 0,
+				"z": 7,
+				"style": {
+					"fill": "#F8FAFC",
+					"stroke": "#22C55E",
 					"strokeWidth": 1.5,
 					"dash": "solid",
 					"opacity": 1,
@@ -85,15 +195,15 @@
 				"name": "Done"
 			},
 			{
-				"id": "a",
+				"id": "n8",
 				"kind": "note",
 				"shape": "rectangle",
-				"x": 30,
-				"y": 40,
+				"x": 25,
+				"y": 55,
 				"w": 260,
-				"h": 120,
+				"h": 96,
 				"rotation": 0,
-				"z": 4,
+				"z": 8,
 				"style": {
 					"fill": "#FEF08A",
 					"stroke": null,
@@ -104,13 +214,13 @@
 				},
 				"text": {
 					"align": "left",
-					"size": 18,
+					"size": 16,
 					"color": "#713F12",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Write the brief"
+									"t": "Research payment providers"
 								}
 							]
 						}
@@ -118,17 +228,17 @@
 				}
 			},
 			{
-				"id": "b",
+				"id": "n9",
 				"kind": "note",
 				"shape": "rectangle",
-				"x": 30,
-				"y": 180,
+				"x": 25,
+				"y": 175,
 				"w": 260,
-				"h": 120,
+				"h": 96,
 				"rotation": 0,
-				"z": 5,
+				"z": 9,
 				"style": {
-					"fill": "#93C5FD",
+					"fill": "#BFDBFE",
 					"stroke": null,
 					"strokeWidth": 0,
 					"dash": "solid",
@@ -137,13 +247,13 @@
 				},
 				"text": {
 					"align": "left",
-					"size": 18,
+					"size": 16,
 					"color": "#1E3A8A",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Review the design"
+									"t": "Dark mode for settings"
 								}
 							]
 						}
@@ -151,17 +261,17 @@
 				}
 			},
 			{
-				"id": "c",
+				"id": "n10",
 				"kind": "note",
 				"shape": "rectangle",
-				"x": 390,
-				"y": 40,
+				"x": 25,
+				"y": 295,
 				"w": 260,
-				"h": 120,
+				"h": 96,
 				"rotation": 0,
-				"z": 6,
+				"z": 10,
 				"style": {
-					"fill": "#FDBA74",
+					"fill": "#BBF7D0",
 					"stroke": null,
 					"strokeWidth": 0,
 					"dash": "solid",
@@ -170,46 +280,380 @@
 				},
 				"text": {
 					"align": "left",
-					"size": 18,
-					"color": "#7C2D12",
-					"paragraphs": [
-						{
-							"runs": [
-								{
-									"t": "Build the first version"
-								}
-							]
-						}
-					]
-				}
-			},
-			{
-				"id": "d",
-				"kind": "note",
-				"shape": "rectangle",
-				"x": 750,
-				"y": 40,
-				"w": 260,
-				"h": 120,
-				"rotation": 0,
-				"z": 7,
-				"style": {
-					"fill": "#86EFAC",
-					"stroke": null,
-					"strokeWidth": 0,
-					"dash": "solid",
-					"opacity": 1,
-					"radius": 2
-				},
-				"text": {
-					"align": "left",
-					"size": 18,
+					"size": 16,
 					"color": "#14532D",
 					"paragraphs": [
 						{
 							"runs": [
 								{
-									"t": "Set up the project"
+									"t": "Tidy the old migration scripts"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n11",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 25,
+				"y": 415,
+				"w": 260,
+				"h": 96,
+				"rotation": 0,
+				"z": 11,
+				"style": {
+					"fill": "#FEF08A",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#713F12",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Invite flow: copy review"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n12",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 355,
+				"y": 55,
+				"w": 260,
+				"h": 96,
+				"rotation": 0,
+				"z": 12,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Email verification for new accounts"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n13",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 355,
+				"y": 175,
+				"w": 260,
+				"h": 96,
+				"rotation": 0,
+				"z": 13,
+				"style": {
+					"fill": "#FBCFE8",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Fix: export fails on boards over 500 shapes"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n14",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 355,
+				"y": 295,
+				"w": 260,
+				"h": 96,
+				"rotation": 0,
+				"z": 14,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Rotate API keys (quarterly)"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n15",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 685,
+				"y": 55,
+				"w": 260,
+				"h": 96,
+				"rotation": 0,
+				"z": 15,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "CSV import for contacts"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n16",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 685,
+				"y": 175,
+				"w": 260,
+				"h": 96,
+				"rotation": 0,
+				"z": 16,
+				"style": {
+					"fill": "#FBCFE8",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Fix: avatar not updating after upload"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n17",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1015,
+				"y": 55,
+				"w": 260,
+				"h": 96,
+				"rotation": 0,
+				"z": 17,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Search filters on the dashboard"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n18",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1345,
+				"y": 55,
+				"w": 260,
+				"h": 96,
+				"rotation": 0,
+				"z": 18,
+				"style": {
+					"fill": "#BBF7D0",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#14532D",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Upgrade Node to the current LTS"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n19",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1345,
+				"y": 175,
+				"w": 260,
+				"h": 96,
+				"rotation": 0,
+				"z": 19,
+				"style": {
+					"fill": "#BFDBFE",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#1E3A8A",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Onboarding checklist"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "n20",
+				"kind": "note",
+				"shape": "rectangle",
+				"x": 1345,
+				"y": 295,
+				"w": 260,
+				"h": 96,
+				"rotation": 0,
+				"z": 20,
+				"style": {
+					"fill": "#FBCFE8",
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 2
+				},
+				"text": {
+					"align": "left",
+					"size": 16,
+					"color": "#831843",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Fix: wrong time zone in digests"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"id": "t21",
+				"kind": "text",
+				"shape": "rectangle",
+				"x": 0,
+				"y": 750,
+				"w": 1500,
+				"h": 24,
+				"rotation": 0,
+				"z": 21,
+				"style": {
+					"fill": null,
+					"stroke": null,
+					"strokeWidth": 0,
+					"dash": "solid",
+					"opacity": 1,
+					"radius": 8
+				},
+				"text": {
+					"align": "left",
+					"size": 15,
+					"color": "#64748B",
+					"paragraphs": [
+						{
+							"runs": [
+								{
+									"t": "Working agreements:",
+									"b": 1
+								},
+								{
+									"t": " limit work in progress · write who owns each card · a card is Done only when it is released or the next person can use it · review the board together every morning."
 								}
 							]
 						}
