@@ -51,7 +51,7 @@ function close() {
 }
 
 const TIPS = [
-	["Add something", "Double-click anywhere, or pick a shape from the bar at the bottom."],
+	["Add something", "Pick a shape from the bar at the bottom, then click or drag on the board."],
 	["Draw", "Press P for the pen, E for the eraser, Shift+L for a laser pointer."],
 	["Connect", "Hover over a shape and click an arrow around it, or press L to draw a line."],
 	["Mind map and flowchart", "Press M for a mind map and Shift+F for a flowchart."],

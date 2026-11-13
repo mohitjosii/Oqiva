@@ -17,7 +17,7 @@
 
 **v1 (Phases 1–10; the MVP milestone is after Phase 7):** workspaces, projects, boards, home area, Oqiva's own canvas engine (block diagrams, shape library, connectors, mind maps, flowcharts and whiteboard, matching the Draw features in `DRAW_FEATURE_REFERENCE.md`), templates, realtime co-editing, comments, sharing (people and links), notifications, version history, JSON export and import.
 
-**Later phases:** feedback and admin workspace (11), AI (12), hardening (13).
+**Later phases:** feedback and admin workspace (11, paused), hardening (13). AI (12) is built: see section 24.
 
 **Non-goals (carried over from Oqiva §1.5):** native apps, enterprise SSO beyond Frappe's own, billing, template marketplace, 100+ simultaneous editors, and changing a diagram's type after creation (a Draw rule).
 
@@ -594,4 +594,25 @@ Things worth knowing:
 - **The bench's socket server runs the handler it loaded at start.** After changing `handlers.js`, restart that process. It asks the web server for access using the port in the bench config.
 - **Browser runs.** `collab.e2e.mjs` (three people, presence, live sync, revocation, offline merge), `comments.e2e.mjs` (comments, mentions, bell, notifications page) and `phase5.e2e.mjs` (sharing and links) need a fresh trio of test users each, and the bench's socket server.
 - **Stale-save replies are normal.** A 417 from `save_document` is the answer that makes an editor merge and retry; the browser runs treat it as expected.
+
+## 24. Implementation notes for Phase 12 (AI diagram generation)
+
+| Area | Files | What it does |
+|---|---|---|
+| Settings | `oqiva_settings.json` and `.py`, `utils/settings.py` (`get_ai_settings`) | Provider (`none`, `anthropic`, `gemini`), model (blank = the provider's default), API key (Password field). Saving with a provider on and no key, or with the other provider's model, is refused. |
+| Output contract | `services/ai_schema.py` | `extract_json` (drops a code fence, takes first `{` to last `}`), `validate_diagram` (limits, ids, labels, edges), `InvalidDiagram` with short reasons. Pure functions. |
+| Service | `services/ai_service.py` | `status`, `request_diagram` (checks, audit, queue), `run_job` (worker), `result`, `call_provider` (the one HTTP call, shaped for Anthropic or Gemini; the replies are read by `_read_anthropic` and `_read_gemini`). Outcomes are cached for ten minutes under the asker's name. |
+| API | `api/ai.py` | `status`, `generate_diagram` (POST, 10 a minute per person), `result`. `OqivaAiUnavailable` answers 503. |
+| Converter | `engine/ai/diagram.js` | `cleanSpec`, `buildMindMap`, `buildFlowchart`, `buildArchitecture`: pure functions from a description to the engine's own records. |
+| Insert | `engine/ai/insert.js` | One `store.applyOps` per kind (one undo step); placement beside existing content; reveal. |
+| Waiting | `engine/ai/request.js` | `requestDiagram(port, ...)`: listens first, asks, polls every 2.5 s, gives up after 90 s, can be cancelled. |
+| UI | `ui/AiDialog.vue`, the sparkles button in `FloatingPalette.vue`, `host.ai` in `BoardView.vue` | Kind, description, examples, working, error and "not turned on" states. |
+
+Things worth knowing:
+
+- **The job needs a worker.** `frappe.enqueue` only queues. With no `bench worker` the request stays pending and the dialog says so after 90 s. The tests replace `frappe.enqueue` for this one method and run the job inline.
+- **Mock `call_provider`, not `requests`, for most tests.** `call_provider` is the single place that talks to the network; the tests that check headers, the timeout, the model field and the failure mapping patch `requests.post` instead.
+- **Models that think.** The current model families think before answering, which eats time and tokens in a 45 s call, so the request asks for `output_config.effort = "low"` when the model id belongs to one of them. An older id gets no such field (it would be rejected).
+- **A description is untrusted input twice.** The server cleans it, and `cleanSpec` reads it again in the browser (bounds, ids, loops, repeated edges) before any record is made.
+- **Architecture layout.** Depth is the longest path along the edges with the edges that close a cycle ignored; lanes are columns in order of first appearance; a lane is drawn as a `frame` named for it (only when there is more than one lane).
 

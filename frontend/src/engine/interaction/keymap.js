@@ -12,7 +12,7 @@ export const SHORTCUTS = [
 	{ group: "Edit", keys: ["Alt", "Drag"], label: "Move without snapping to guides" },
 	{ group: "Edit", keys: ["Delete"], label: "Delete selection" },
 	{ group: "Edit", keys: ["Arrows"], label: "Nudge by 1 (Shift: 10)" },
-	{ group: "Edit", keys: ["Double-click"], label: "Edit text, or add a shape on empty canvas" },
+	{ group: "Edit", keys: ["Double-click"], label: "Edit the text of what is under the pointer" },
 	{ group: "Select", keys: ["Ctrl/Cmd", "A"], label: "Select all" },
 	{ group: "Select", keys: ["Shift", "Click"], label: "Add to or remove from selection" },
 	{ group: "Select", keys: ["Esc"], label: "Deselect, or leave the current tool" },

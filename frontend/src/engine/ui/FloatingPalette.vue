@@ -16,8 +16,9 @@ import ToolButton from "./ToolButton.vue"
 const props = defineProps({
 	store: { type: Object, required: true },
 	controller: { type: Object, required: true },
+	aiEnabled: { type: Boolean, default: false }, // the host offers AI diagrams
 })
-const emit = defineEmits(["image"])
+const emit = defineEmits(["image", "ai"])
 
 const picker = ref(null)
 function picked(event) {
@@ -66,16 +67,6 @@ const drawOptions = computed(() => [
 				disabled: readonly.value,
 				onClick: () =>
 					props.store.setCanvas({ sketch: !canvas.value.sketch }, "Drawing style"),
-			},
-			{
-				label: "Double-click adds a text box",
-				icon: canvas.value.doubleClick === "text" ? "check" : null,
-				disabled: readonly.value,
-				onClick: () =>
-					props.store.setCanvas(
-						{ doubleClick: canvas.value.doubleClick === "text" ? "shape" : "text" },
-						"Double-click setting",
-					),
 			},
 		],
 	},
@@ -331,6 +322,14 @@ const settingsOptions = computed(() => [
 			:disabled="readonly"
 			data-testid="flowchart-tool"
 			@click="newFlowchart"
+		/>
+		<ToolButton
+			v-if="aiEnabled"
+			icon="lucide-sparkles"
+			title="Create with AI"
+			:disabled="readonly"
+			data-testid="ai-tool"
+			@click="emit('ai')"
 		/>
 		<ToolButton
 			icon="lucide-frame"

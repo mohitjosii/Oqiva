@@ -30,7 +30,8 @@ const drawing = computed(() =>
 				{{ editor ? "A blank board" : "This board is empty" }}
 			</p>
 			<p v-if="editor" class="mt-1 text-sm">
-				Double-click to add something, draw with the pen (P), or start from a template.
+				Pick a shape from the bar at the bottom, draw with the pen (P), or start from a
+				template.
 			</p>
 		</div>
 	</div>

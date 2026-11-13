@@ -26,7 +26,7 @@ import {
 } from "../geometry/connectors"
 import { objectsInRect, topObjectAt } from "../geometry/hit"
 import { HANDLES, resizeBox, rotationFor, snapAngle } from "../geometry/resize"
-import { panBy, toBoard, visibleRect, zoomAt } from "../geometry/viewport"
+import { fitBounds, panBy, toBoard, visibleRect, zoomAt } from "../geometry/viewport"
 import { autoHeight } from "../text/fit"
 import { connectorToolById } from "../model/connectorTools"
 import {
@@ -1477,6 +1477,14 @@ export class CanvasController {
 		if (!inside) centerOn(this.store, { x: rect.x + rect.w / 2, y: rect.y + rect.h / 2 })
 	}
 
+	// Shows a new diagram: scrolls to it, or when it is bigger than the screen zooms out to fit it all.
+	showRect(rect) {
+		const view = visibleRect(this.state.viewport, this.state.size)
+		if (rect.w > view.w || rect.h > view.h)
+			setViewport(this.store, fitBounds(rect, this.state.size, { padding: 72, maxScale: 1 }))
+		else this.revealRect(rect)
+	}
+
 	// A library shape, placed and selected, with its label selected for typing over.
 	placePreset(preset, drop = null) {
 		if (this.state.readonly) return null
@@ -1624,17 +1632,7 @@ export class CanvasController {
 			this.state.editingId = hit.id
 			return
 		}
-		// A whiteboard makes a text box instead of a shape.
-		if (this.store.canvas.value.doubleClick === "text") {
-			this.createAndSelect("text", defaultRect("text", point), { edit: true })
-			return
-		}
-		// Double-clicking empty canvas makes a shape, ready for typing.
-		this.createAndSelect(
-			this.state.lastShapeTool,
-			defaultRect(this.state.lastShapeTool, point),
-			{ edit: true },
-		)
+		// Double-clicking empty canvas does nothing: every shape is added on purpose, from the bar.
 	}
 
 	// Called every animation frame: while something is being dragged near the edge of the view,

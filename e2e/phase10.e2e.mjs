@@ -1,6 +1,6 @@
 // Phase 10 in the browser: the whiteboard. The empty-board hint, the pen, highlighter, eraser (ink
 // and object modes) and laser, pen width typed in, hand-drawn style for the board and for one shape,
-// a text box on double-click, a second person seeing strokes and cuts, saving, and the Whiteboard template.
+// double-click adding nothing, a second person seeing strokes and cuts, saving, and the Whiteboard template.
 import assert from "node:assert/strict"
 import { BASE, credentials, finish, launch, shot, signedIn, step } from "./lib.mjs"
 
@@ -199,19 +199,17 @@ await step("the hand-drawn style can be set for the board and for one shape", as
 	await page.keyboard.press("Escape")
 })
 
-await step("double-click can make a text box instead of a shape", async () => {
+await step("double-clicking empty canvas adds nothing, and the Draw menu has no double-click setting", async () => {
 	await page.keyboard.press("Escape")
 	await page.getByTestId("draw-button").click()
-	await page.getByRole("menuitem", { name: /Double-click adds a text box/ }).click()
+	assert.equal(await page.getByRole("menuitem", { name: /Double-click/ }).count(), 0)
+	await page.keyboard.press("Escape")
 	const before = await count(page)
 	await page.waitForTimeout(400) // the menu has closed
 	await page.mouse.dblclick(origin.x + 700, origin.y + 420)
-	await page.locator('[data-testid="text-editor"]').waitFor()
-	await page.keyboard.type("Hello board")
-	await page.keyboard.press("Escape")
-	await poll(countIs(page, before + 1), "one more object")
-	await poll(async () => (await page.locator('[data-testid="objects"]').textContent()).includes("Hello board"), "its text")
-	assert.equal(await page.locator('[data-testid="objects"] > g > rect').count(), 1, "no new shape outline: only the clean rectangle")
+	await page.waitForTimeout(400)
+	assert.equal(await page.locator('[data-testid="text-editor"]').count(), 0, "no editor opened")
+	assert.equal(await count(page), before)
 })
 
 await step("a second person sees the drawing, and a cut made by them", async () => {
@@ -248,7 +246,6 @@ await step("it is all still there after saving and reloading, including the styl
 	await page.getByTestId("draw-button").click()
 	const item = page.getByRole("menuitem", { name: "Hand-drawn outlines" })
 	assert.ok((await item.locator("svg, span").count()) > 0, "the board is still hand-drawn (a tick shows)")
-	assert.ok((await page.getByRole("menuitem", { name: /Double-click adds a text box/ }).locator("svg, span").count()) > 0, "and double-click still makes text")
 	await page.keyboard.press("Escape")
 })
 
@@ -263,8 +260,9 @@ await step("the Whiteboard template opens ready to use", async () => {
 	await poll(countIs(page, 3), "its three notes")
 	const before = await count(page)
 	await page.mouse.dblclick(origin.x + 700, origin.y + 460)
-	await page.locator('[data-testid="text-editor"]').waitFor()
-	await page.keyboard.press("Escape")
+	await page.waitForTimeout(400)
+	assert.equal(await page.locator('[data-testid="text-editor"]').count(), 0, "no editor opened")
+	assert.equal(await count(page), before, "nothing was added")
 	await shot(page, "p10-7-template")
 })
 

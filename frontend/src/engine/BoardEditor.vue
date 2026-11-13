@@ -17,7 +17,7 @@ import { pasteClipboard } from "./interaction/clipboard"
 import { insertImage } from "./interaction/images"
 import { exportBoard } from "./export/exporter"
 import { createThumbnailer, renderThumbnail } from "./export/thumbnail"
-import { fitView } from "./interaction/view"
+import { contentBounds, fitView } from "./interaction/view"
 import { attachCollab, prepareCollab } from "./collab/session"
 import { createComments } from "./comments/session"
 import { createAutosave } from "./persistence/autosave"
@@ -38,6 +38,8 @@ import ExportMenu from "./ui/ExportMenu.vue"
 import HelpMenu from "./ui/HelpMenu.vue"
 import QuickTips from "./ui/QuickTips.vue"
 import ShortcutsDialog from "./ui/ShortcutsDialog.vue"
+import AiDialog from "./ui/AiDialog.vue"
+import { insertDiagram } from "./ai/insert"
 import LineLabelEditor from "./ui/LineLabelEditor.vue"
 import RightPalette from "./ui/RightPalette.vue"
 import DrawOptionsBar from "./ui/DrawOptionsBar.vue"
@@ -226,6 +228,19 @@ async function restoreVersion(number) {
 const fonts = ref(0)
 const showShortcuts = ref(false)
 const showTips = ref(false)
+const showAi = ref(false)
+
+// A diagram the AI described, drawn at the middle of what the person is looking at as ONE edit.
+function drawGenerated({ kind, diagram }) {
+	const ok = insertDiagram(store, diagram, kind, {
+		origin: controller.mapHost().viewCenter(),
+		measure: controller.flowHost().measure,
+		content: () => contentBounds(store),
+		reveal: (rect) => controller.showRect(rect),
+	})
+	if (ok) toast.success("Diagram added. Undo (Ctrl+Z) takes it away in one step.")
+	else toast.error("The diagram could not be added to this board.")
+}
 
 // The home screen's thumbnail, refreshed after edits and at most every 30 seconds.
 const thumbnailer =
@@ -456,7 +471,14 @@ defineExpose({ flush: () => autosave.flush(), store, autosave, unsaved })
 			/>
 		</template>
 		<Minimap :store="store" :controller="controller" />
-		<FloatingPalette :store="store" :controller="controller" @image="addImage" />
+		<FloatingPalette
+			:store="store"
+			:controller="controller"
+			:ai-enabled="Boolean(host.ai)"
+			@image="addImage"
+			@ai="showAi = true"
+		/>
+		<AiDialog v-if="host.ai" v-model="showAi" :ai="host.ai" @generated="drawGenerated" />
 		<ExportMenu v-if="canExport" :store="store" @export="runExport" />
 		<CommentPanel v-if="comments" :store="store" :comments="comments" />
 		<div

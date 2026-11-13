@@ -39,3 +39,14 @@ describe("toApiError", () => {
 		expect(toApiError(error)).toBe(error)
 	})
 })
+
+describe("diagram generation", () => {
+	it("says plainly when it is not enabled, and when the person is going too fast", () => {
+		expect(toApiError({ exc_type: "OqivaAiUnavailable", status: 503 }).message).toMatch(
+			/not enabled/,
+		)
+		expect(toApiError({ exc_type: "RateLimitExceededError", status: 429 }).message).toMatch(
+			/Wait a minute/,
+		)
+	})
+})

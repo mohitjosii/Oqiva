@@ -126,3 +126,18 @@ Where each case of sections 3 to 6 is proved. `test_sharing.py`, `test_links.py`
 - **Presence:** a peer's cursor, laser and selection are made safe before they are drawn (finite numbers, short strings, colours checked); the laser and the cursor are never saved or exported. [`collab/provider.test.js` "presence"]
 - **Not covered:** a peer with edit rights storing a corrupt collaboration state is handled by every loader sanitising (unit-tested in `bridge.test.js`) but not by the server, which cannot read it.
 
+## 11. Phase 12 coverage (AI diagram generation)
+`test_ai.py` is backend, with every provider call mocked; `engine/ai/*.test.js` and `utils/errors.test.js` are frontend; the browser run is `e2e/phase12.e2e.mjs`.
+
+- **Off by default and honest.** With the provider `none`, or on without a key, the status says unavailable, a request fails with `OqivaAiUnavailable` (503) and nothing is queued; the dialog shows a "not turned on" state with no form. The key is never in a status reply or an error message. [`test_ai.py` TestRequestChecks, TestGeneration; browser `phase12`]
+- **Authorisation.** A signed-out caller is refused; naming a board needs edit rights (a viewer gets 403, an outsider not-found); the prompt never decides access; only the asker can read a result. [`test_ai.py` TestRequestChecks, TestGeneration]
+- **Input limits.** A description under 3 or over 2,000 characters and an unknown kind are refused. [`test_ai.py`]
+- **Privacy.** The audit log keeps the kind and the prompt's length, never its words; no provider failure message contains the key or the prompt. [`test_ai.py` TestGeneration]
+- **Output contract.** Text that is not JSON, 61 nodes, 121 edges, a repeated or unsafe id, an empty or over-long label, an edge to a node that does not exist, a truncated or refused answer: rejected as a whole, recorded as `ai.rejected` with the reasons, nothing drawn. Markup in a label is taken out. [`test_ai.py` TestOutputContract, TestGeneration; browser `phase12`]
+- **Failure paths.** A timeout (45 s), a provider error or refusal of the key (401, 500), a network error, an unexpected bug in the job: each ends in an honest message and no change to any board. [`test_ai.py` TestGeneration, TestProviderCall]
+- **Spend.** The 11th request in a minute from one person is refused (429). [`test_ai.py` TestRateLimit]
+- **Settings.** A provider with no key, or with the other provider's model, cannot be saved; a blank model uses the default; the key is stored encrypted and read back only on the server. [`test_ai.py` TestSettings]
+- **Gemini.** The request shape (key in a header, never in the address; JSON output requested), a blocked, cut-off or empty answer, thinking parts ignored, failures without the key, and a model name that is not a plain identifier never reaching the address. [`test_ai.py` TestGemini]
+- **Applying.** One undo step for each kind, convergence for a peer, no overlap with existing content, read-only boards refused, the object limit respected, the result exports and survives a reload. [`engine/ai/diagram.test.js`; browser `phase12`]
+- **Not covered:** a real provider answer (no key was available), and a background worker under load.
+
