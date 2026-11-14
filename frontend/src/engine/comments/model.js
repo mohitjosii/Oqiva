@@ -66,6 +66,24 @@ export function suggestPeople(people, query, limit = 6) {
 		.slice(0, limit)
 }
 
+// Where the suggestion list goes: fixed on screen, below the box when there is room and above it
+// when there is not, never off the screen. The comment box sits in a scrolling panel, so a list
+// drawn inside it would be cut off by the panel's edge. ``anchor`` is the box's rectangle,
+// ``viewport`` is {width, height}, ``rows`` is how many people are listed.
+export const SUGGESTION_ROW = 46
+export function placeSuggestions(anchor, viewport, rows, { gap = 4, margin = 8 } = {}) {
+	const wanted = rows * SUGGESTION_ROW + 2
+	const below = viewport.height - anchor.bottom - margin - gap
+	const above = anchor.top - margin - gap
+	const openBelow = below >= Math.min(wanted, 220) || below >= above
+	const room = Math.max(SUGGESTION_ROW, openBelow ? below : above)
+	const height = Math.min(wanted, room)
+	const width = Math.min(anchor.width, viewport.width - margin * 2)
+	const left = Math.min(Math.max(anchor.left, margin), viewport.width - width - margin)
+	const top = openBelow ? anchor.bottom + gap : anchor.top - gap - height
+	return { top, left, width, maxHeight: room, below: openBelow }
+}
+
 export const insertMention = (text, person) => text.replace(/@[^\s@]*$/, `@${person.email} `)
 
 export function timeAgo(value, now = Date.now()) {

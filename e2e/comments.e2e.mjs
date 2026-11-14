@@ -78,6 +78,23 @@ await step("clicking the comment tool on a shape opens a draft, and @ offers the
 	await p.mouse.click(shape.x + shape.width / 2, shape.y + shape.height / 2)
 	await p.getByTestId("comment-draft").waitFor()
 	assert.equal(await p.getByTestId("comment-draft-pin").count(), 1)
+	// Typing only "@" lists everyone. Every row must be on the screen and be what a click reaches (not
+	// cut off by the scrolling panel, so the click would fall through to the canvas).
+	await p.getByLabel("New comment").fill("Please check this @")
+	await p.getByTestId("mention-list").getByRole("option").first().waitFor()
+	const rows = await p.getByTestId("mention-list").getByRole("option").count()
+	assert.ok(rows >= 2, `expected the people on the board, saw ${rows}`)
+	const unreachable = await p.evaluate(() => {
+		const list = document.querySelector('[data-testid="mention-list"]')
+		const bad = []
+		for (const row of list.querySelectorAll("button")) {
+			const r = row.getBoundingClientRect()
+			const hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)
+			if (r.top < 0 || r.bottom > innerHeight || !row.contains(hit)) bad.push(row.innerText.split("\n")[0])
+		}
+		return bad
+	})
+	assert.deepEqual(unreachable, [], "these people in the mention list cannot be clicked")
 	await p.getByLabel("New comment").fill(`Please check this @${creds.b.user.slice(0, 8)}`)
 	await p.getByTestId("mention-list").getByRole("option").first().waitFor()
 	await p.getByTestId("mention-list").getByRole("option").first().locator("button").click()

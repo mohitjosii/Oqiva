@@ -6,6 +6,8 @@ import {
 	mentionParts,
 	mentionQuery,
 	pinPosition,
+	placeSuggestions,
+	SUGGESTION_ROW,
 	suggestPeople,
 	threadCounts,
 	timeAgo,
@@ -96,5 +98,52 @@ describe("threads", () => {
 		expect(timeAgo("2026-11-10 07:00:00", now)).toBe("5 h ago")
 		expect(timeAgo("2026-11-07 12:00:00", now)).toBe("3 d ago")
 		expect(timeAgo("not a date", now)).toBe("")
+	})
+
+	describe("placeSuggestions", () => {
+		const screen = { width: 1360, height: 860 }
+		const anchor = (top, over = {}) => ({
+			top,
+			bottom: top + 80,
+			left: 100,
+			width: 280,
+			...over,
+		})
+
+		it("opens below the box when there is room, so a box at the top of the panel is not cut off", () => {
+			const spot = placeSuggestions(anchor(120), screen, 6)
+			expect(spot.below).toBe(true)
+			expect(spot.top).toBe(120 + 80 + 4)
+			expect(spot.top + 6 * SUGGESTION_ROW).toBeLessThan(screen.height)
+		})
+
+		it("opens above the box near the bottom of the screen, and stays on the screen", () => {
+			const spot = placeSuggestions(anchor(700), screen, 6)
+			expect(spot.below).toBe(false)
+			expect(spot.top).toBeGreaterThanOrEqual(8)
+			expect(spot.top + Math.min(6 * SUGGESTION_ROW + 2, spot.maxHeight)).toBeLessThanOrEqual(
+				700,
+			)
+		})
+
+		it("shrinks to the room it has rather than running off the screen", () => {
+			const spot = placeSuggestions(anchor(200), { width: 1360, height: 400 }, 6)
+			expect(spot.maxHeight).toBeLessThan(6 * SUGGESTION_ROW)
+			const height = Math.min(6 * SUGGESTION_ROW + 2, spot.maxHeight)
+			expect(spot.top).toBeGreaterThanOrEqual(8)
+			expect(spot.top + height).toBeLessThanOrEqual(200)
+		})
+
+		it("keeps the list inside the screen sideways, and no wider than it", () => {
+			const wide = placeSuggestions(anchor(100, { left: 1300, width: 280 }), screen, 3)
+			expect(wide.left + wide.width).toBeLessThanOrEqual(screen.width - 8)
+			const narrow = placeSuggestions(
+				anchor(100, { left: -20, width: 600 }),
+				{ width: 320, height: 640 },
+				3,
+			)
+			expect(narrow.left).toBeGreaterThanOrEqual(8)
+			expect(narrow.width).toBeLessThanOrEqual(320 - 16)
+		})
 	})
 })

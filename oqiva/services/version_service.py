@@ -7,7 +7,9 @@ A version is a full copy of the board's document. Three kinds:
 * **Pre-restore**: the board as it was just before a restore, so a restore can always be undone.
 
 Retention keeps the newest ``version_retention`` automatic versions (Auto and Pre-restore)
-and every Named or pinned one. Restore itself runs in the browser as one ordinary edit
+and every Named or pinned one. On top of that, automatic versions older than
+``history_retention_days`` (3 by default) are deleted by an hourly job, so history is short-lived
+unless a person names or pins a version to keep it. Restore itself runs in the browser as one ordinary edit
 (the server never writes a document behind a live room); the one server-side restore is for
 a board whose stored content cannot be opened at all.
 """
@@ -18,7 +20,7 @@ from frappe.utils import add_to_date, get_datetime, now_datetime
 
 from oqiva.access import require, resolve
 from oqiva.access.guard import service_write
-from oqiva.constants import BOARD_DOCTYPE
+from oqiva.constants import BOARD_DOCTYPE, SETTINGS_DEFAULTS
 from oqiva.exceptions import OqivaConflict, OqivaError, OqivaLimitExceeded, OqivaNotFound
 from oqiva.services import audit_service
 from oqiva.utils import realtime
@@ -30,6 +32,8 @@ LIST_LIMIT = 200
 MAX_KEPT = 200  # Named and pinned versions one board may hold
 LABEL_LENGTH = 120
 PRUNE_EVERY_SECONDS = 3600
+PURGE_BATCH = 200  # Versions deleted per commit by the history job
+PURGE_MAX_PER_RUN = 5000  # So one run of the hourly job stays short; the rest goes next hour
 AUTOMATIC = ("Auto", "Pre-restore")
 
 
@@ -134,8 +138,15 @@ def prune(board: str) -> int:
 		limit_page_length=0,
 	)
 	for row in rows:
+		# delete_permanently: a deleted version is a whole copy of a board, and must not be kept
+		# again in the "Deleted Document" log.
 		frappe.delete_doc(
-			VERSION_DOCTYPE, row.name, ignore_permissions=True, force=True, flags={"oqiva_service": True}
+			VERSION_DOCTYPE,
+			row.name,
+			ignore_permissions=True,
+			force=True,
+			delete_permanently=True,
+			flags={"oqiva_service": True},
 		)
 	return len(rows)
 
@@ -151,6 +162,43 @@ def prune_all() -> None:
 	)
 	for (board,) in boards:
 		prune(board)
+
+
+def history_days() -> int:
+	"""How many days automatic history is kept. A value that is missing or below one (which the
+	settings form refuses) means the default, never "delete it as it is made"."""
+	days = get_setting("history_retention_days")
+	return days if days >= 1 else SETTINGS_DEFAULTS["history_retention_days"]
+
+
+def history_cutoff():
+	"""Automatic history created before this moment is too old to keep."""
+	return add_to_date(now_datetime(), days=-history_days())
+
+
+def purge_old_history() -> int:
+	"""Hourly: delete automatic history older than the history retention (3 days by default).
+
+	Only Auto and Pre-restore versions that are not pinned go. A Named version, or one a person
+	pinned, is something they chose to keep, so it stays. Versions are removed straight from the
+	table, in small batches with a commit after each, so a large backlog never holds one long
+	transaction; a run stops after ``PURGE_MAX_PER_RUN`` and the next hour carries on. Copies of
+	deleted versions left in the "Deleted Document" log by older releases go with them."""
+	cutoff = history_cutoff()
+	filters = {"kind": ["in", AUTOMATIC], "pinned": 0, "creation": ["<", cutoff]}
+	removed = 0
+	while removed < PURGE_MAX_PER_RUN:
+		names = frappe.get_all(VERSION_DOCTYPE, filters=filters, pluck="name", limit_page_length=PURGE_BATCH)
+		if not names:
+			break
+		frappe.db.delete(VERSION_DOCTYPE, {"name": ["in", names]})
+		frappe.db.commit()  # nosemgrep -- a scheduled job owns its transaction
+		removed += len(names)
+	frappe.db.delete("Deleted Document", {"deleted_doctype": VERSION_DOCTYPE, "creation": ["<", cutoff]})
+	frappe.db.commit()  # nosemgrep -- a scheduled job owns its transaction
+	if removed:
+		frappe.logger("oqiva").info(f"Deleted {removed} board versions older than {cutoff}")
+	return removed
 
 
 # ----- reading -----
@@ -183,7 +231,10 @@ def list_versions(user: str, board: str) -> dict:
 		(row.name, LIST_LIMIT),
 		as_dict=True,
 	)
-	return {"versions": [_row_to_item(r) for r in rows]}
+	return {
+		"versions": [_row_to_item(r) for r in rows],
+		"retention_days": history_days(),
+	}
 
 
 def _version_row(board: str, number: int, fields: list[str]):

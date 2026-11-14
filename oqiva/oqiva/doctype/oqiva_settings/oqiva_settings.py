@@ -12,6 +12,7 @@ POSITIVE_FIELDS = (
 	"trash_retention_days",
 	"auto_version_interval_min",
 	"version_retention",
+	"history_retention_days",
 	"realtime_reauth_seconds",
 )
 

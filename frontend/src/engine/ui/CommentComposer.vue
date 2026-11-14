@@ -2,8 +2,8 @@
 // A box to write a comment in. Typing @ offers the people on the board; picking one writes their
 // address in. Ctrl+Enter (or the button) sends it.
 import { Button } from "frappe-ui"
-import { computed, nextTick, ref } from "vue"
-import { insertMention, mentionQuery, suggestPeople } from "../comments/model"
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
+import { insertMention, mentionQuery, placeSuggestions, suggestPeople } from "../comments/model"
 
 const props = defineProps({
 	modelValue: { type: String, default: "" },
@@ -26,6 +26,40 @@ const query = computed(() => mentionQuery(text.value))
 const suggestions = computed(() =>
 	query.value !== null && people.value ? suggestPeople(people.value, query.value) : [],
 )
+
+// The list is drawn on the page itself, not inside the scrolling comment panel, so the panel's
+// edge cannot cut it off. It follows the box while the panel scrolls or the window changes.
+const place = ref(null)
+function reposition() {
+	if (!box.value || !suggestions.value.length) {
+		place.value = null
+		return
+	}
+	place.value = placeSuggestions(
+		box.value.getBoundingClientRect(),
+		{ width: window.innerWidth, height: window.innerHeight },
+		suggestions.value.length,
+	)
+}
+const listStyle = computed(() =>
+	place.value
+		? {
+				top: `${place.value.top}px`,
+				left: `${place.value.left}px`,
+				width: `${place.value.width}px`,
+				maxHeight: `${place.value.maxHeight}px`,
+			}
+		: { visibility: "hidden" },
+)
+watch(suggestions, () => nextTick(reposition), { flush: "post" })
+onMounted(() => {
+	window.addEventListener("scroll", reposition, true)
+	window.addEventListener("resize", reposition)
+})
+onBeforeUnmount(() => {
+	window.removeEventListener("scroll", reposition, true)
+	window.removeEventListener("resize", reposition)
+})
 
 async function typed() {
 	if (query.value !== null && people.value === null) {
@@ -73,24 +107,27 @@ defineExpose({ focus: () => box.value?.focus() })
 				@keydown.meta.enter.prevent="submit"
 				@keydown.esc.stop.prevent="emit('cancel')"
 			/>
-			<ul
-				v-if="suggestions.length"
-				class="absolute bottom-full left-0 z-20 mb-1 w-full overflow-hidden rounded border border-outline-gray-2 bg-surface-white shadow-lg"
-				role="listbox"
-				aria-label="People to mention"
-				data-testid="mention-list"
-			>
-				<li v-for="person in suggestions" :key="person.user" role="option">
-					<button
-						type="button"
-						class="flex w-full flex-col px-2 py-1 text-left text-sm hover:bg-surface-gray-2"
-						@mousedown.prevent="pick(person)"
-					>
-						<span class="text-ink-gray-9">{{ person.full_name }}</span>
-						<span class="text-xs text-ink-gray-5">{{ person.email }}</span>
-					</button>
-				</li>
-			</ul>
+			<Teleport to="body">
+				<ul
+					v-if="suggestions.length"
+					class="fixed z-[60] overflow-y-auto rounded border border-outline-gray-2 bg-surface-white shadow-lg"
+					:style="listStyle"
+					role="listbox"
+					aria-label="People to mention"
+					data-testid="mention-list"
+				>
+					<li v-for="person in suggestions" :key="person.user" role="option">
+						<button
+							type="button"
+							class="flex w-full flex-col px-2 py-1 text-left text-sm hover:bg-surface-gray-2"
+							@mousedown.prevent="pick(person)"
+						>
+							<span class="text-ink-gray-9">{{ person.full_name }}</span>
+							<span class="text-xs text-ink-gray-5">{{ person.email }}</span>
+						</button>
+					</li>
+				</ul>
+			</Teleport>
 		</div>
 		<div class="flex items-center justify-end gap-1">
 			<Button size="sm" variant="ghost" label="Cancel" @click="emit('cancel')" />

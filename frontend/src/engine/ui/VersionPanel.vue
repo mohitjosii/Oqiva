@@ -14,6 +14,7 @@ const emit = defineEmits(["preview", "restore"])
 
 const state = computed(() => props.store.state)
 const items = ref([])
+const retentionDays = ref(0) // automatic versions older than this are deleted; 0 until the list loads
 const loading = ref(false)
 const error = ref("")
 const busy = ref(null) // the version number being worked on
@@ -27,7 +28,9 @@ async function refresh() {
 	loading.value = true
 	error.value = ""
 	try {
-		items.value = (await props.versions.list()).versions
+		const listed = await props.versions.list()
+		items.value = listed.versions
+		retentionDays.value = listed.retention_days || 0
 	} catch (e) {
 		error.value = e?.message || "The history could not be loaded."
 	} finally {
@@ -142,6 +145,15 @@ const close = () => (state.value.versionsOpen = false)
 				data-testid="version-save"
 			/>
 		</form>
+
+		<p
+			v-if="retentionDays"
+			class="px-3 pt-2 text-xs text-ink-gray-6"
+			data-testid="versions-retention"
+		>
+			Automatic versions are deleted after {{ retentionDays }}
+			{{ retentionDays === 1 ? "day" : "days" }}. Name or pin a version to keep it.
+		</p>
 
 		<p v-if="error" class="px-3 pt-2 text-xs text-red-600" role="alert">{{ error }}</p>
 

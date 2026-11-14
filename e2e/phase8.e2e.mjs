@@ -298,17 +298,25 @@ await step("it is all still there after saving and reloading", async () => {
 	assert.ok((await texts(page)).some((t) => t.includes("Live from A")))
 })
 
+let templateThumbnail
 await step("the Project mind map template opens as a real map", async () => {
 	await page.goto(page.url().replace(/\/board\/.*/, "/"))
 	await page.getByRole("link", { name: "Templates" }).first().click()
 	await page.getByLabel(/Search templates/i).fill("Project mind map")
 	await page.locator('article[aria-labelledby^="template-"]').first().waitFor()
 	await shot(page, "p8-5-gallery")
+	templateThumbnail = page.waitForResponse((response) => response.url().includes("save_thumbnail"), { timeout: 45000 })
+	templateThumbnail.catch(() => {}) // reported where it is awaited
 	await page.getByRole("button", { name: "Use template" }).click()
 	await page.waitForURL(/\/oqiva\/board\//)
 	await canvas.waitFor()
 	await poll(async () => (await nodes(page).count()) === 30, "30 nodes")
 	await shot(page, "p8-6-template")
+})
+
+await step("a board made from a template gets its picture when opened, without any edit", async () => {
+	const response = await templateThumbnail
+	assert.equal(response.status(), 200)
 })
 
 await browser.close()

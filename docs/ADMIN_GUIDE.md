@@ -16,7 +16,8 @@ A person's access to a workspace or board is never managed from Desk: workspace 
 ## Oqiva Settings (Desk → Oqiva Settings)
 **Fair-use limits.** Objects per board (3,000), largest saved board (5 MB), boards per workspace (2,000),
 picture storage per workspace (2 GB), largest picture (10 MB).
-**Retention.** Trash (30 days), minutes between automatic versions (10), automatic versions kept per board (50).
+**Retention.** Trash (30 days), minutes between automatic versions (10), automatic versions kept per board (50),
+days automatic history is kept (3: older automatic versions are deleted every hour; named and pinned versions stay).
 **Access.** Grant the Oqiva User role on first visit; how often a live session's access is re-checked (15 s,
 which is how long a removed person can still send changes to a board they had open).
 **AI diagram generation.** Off by default. See below.
@@ -41,7 +42,7 @@ in the site config (the Gemini address keeps `{model}` in it).
 ## Watching the system
 - **Audit log** (Oqiva Audit Log): exports, share-link redemptions and refusals, picture uploads that were
   refused, AI requests and rejections. Kept 365 days.
-- **Scheduled jobs** (hourly: prune old versions; daily: purge expired Trash, prune board views and the audit
+- **Scheduled jobs** (hourly: prune versions beyond the count and delete automatic history older than the history retention; daily: purge expired Trash, prune board views and the audit
   log). `bench --site <site> doctor` shows whether the scheduler and workers are alive.
 - **Error Log** (Desk) holds server errors; a failed audit write or an unexpected AI failure is logged there.
 - Usage: Oqiva Workspace, Oqiva Board and Oqiva Comment lists show counts; a board's *object count* and size are

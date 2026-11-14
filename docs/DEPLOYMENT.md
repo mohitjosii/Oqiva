@@ -14,6 +14,7 @@ what Frappe's own socket server design implies, and should be checked on your se
 | Processes | web (gunicorn), **socket server**, **scheduler**, **at least one worker** on the `default` queue |
 | Browser | a current Chromium-based browser was tested. Firefox, Safari and Edge were not tested yet |
 
+The scheduler also matters: it runs the hourly job that deletes automatic history older than 3 days.
 The socket server matters: live editing, presence and the "access changed" notices go through it. The
 workers matter: AI diagram generation runs as a background job on the `default` queue.
 

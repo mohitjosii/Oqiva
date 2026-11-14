@@ -70,6 +70,7 @@ SETTINGS_DEFAULTS = {
 	"trash_retention_days": 30,
 	"auto_version_interval_min": 10,
 	"version_retention": 50,
+	"history_retention_days": 3,
 	"realtime_reauth_seconds": 15,
 }
 

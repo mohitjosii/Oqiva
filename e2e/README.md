@@ -39,6 +39,11 @@ OQIVA_E2E_CREDS=/path/to/creds.json node home.e2e.mjs
 | `OQIVA_E2E_SITE` | `frappe.com` | Sent as `X-Frappe-Site-Name` so the right site answers |
 | `OQIVA_E2E_SHOTS` | none | A folder; screenshots are written there when set |
 
+The page must be opened with a port in its address (`OQIVA_E2E_URL=http://127.0.0.1:8001`, from `bench serve --port 8001`): the
+socket client picks `https` when the address has no port (so on port 80 live editing and comments fail with a
+connection refused), and the bench's gunicorn on port 8000 does not serve the app's assets. Use fresh test
+users for `comments` (earlier runs leave notifications that the bell step counts).
+
 On a machine without the browser's system libraries, point `LD_LIBRARY_PATH` at a folder
 of extracted packages, and set `PLAYWRIGHT_HOST_PLATFORM_OVERRIDE` if Playwright does not
 recognise the operating system.
