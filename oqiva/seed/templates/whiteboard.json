@@ -1,7 +1,7 @@
 {
 	"slug": "whiteboard",
 	"name": "Whiteboard",
-	"description": "A free whiteboard for drawing and quick notes: double-click adds text, and the pen, highlighter, eraser and laser are one key away.",
+	"description": "A free whiteboard for drawing and quick notes: the pen, highlighter, eraser, laser and text box are each one key away.",
 	"category": "Basics",
 	"tags": [
 		"whiteboard",
@@ -69,7 +69,14 @@
 									"b": 1
 								},
 								{
-									"t": " to erase, double-click anywhere to type. Delete these notes when you are ready."
+									"t": " to erase, "
+								},
+								{
+									"t": "T",
+									"b": 1
+								},
+								{
+									"t": " for a text box. Delete these notes when you are ready."
 								}
 							]
 						}

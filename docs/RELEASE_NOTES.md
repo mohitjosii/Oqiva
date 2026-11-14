@@ -26,6 +26,12 @@ drawn as one undo step. Providers: Anthropic and Google Gemini.
   records only the prompt's length).
 - Double-clicking empty canvas no longer adds a shape; every shape is added on purpose. Double-clicking still
   edits what is under the pointer.
+- Automatic history is deleted after 3 days by an hourly job (setting: History Retention Days). Named and pinned
+  versions are kept. The History panel says how long automatic versions last.
+- The @ mention list in a comment is no longer cut off by the comments panel; it opens below or above the box,
+  wherever there is room.
+- Boards made from a template, a file or a copy get their home-screen picture when first opened, not only after
+  the first edit. The Whiteboard template no longer mentions double-clicking to add text.
 - The welcome page is shown once per person, not once per device.
 - Accessibility: named dialog close buttons, a named canvas, darker secondary text (contrast), focus returned to
   the Help button, no sideways scroll at 320 px.
@@ -44,8 +50,6 @@ drawn as one undo step. Providers: Anthropic and Google Gemini.
 - **Boards at the 3,000-shape limit** are slow when fully zoomed out and for whole-board edits.
 - **Replacing a board's content through the API without a collaboration state** while people have it open
   (or have a copy on their device) can merge old and new content. The app's own clients never do this.
-- Comments tests: three steps of the `comments` browser suite (the @-mention list can be covered by the canvas)
-  fail on the development setup; the feature works by hand.
 - Not included: bug reports and feature requests inside the app, and an administrator console (both were built
   and set aside).
 

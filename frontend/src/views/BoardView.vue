@@ -133,6 +133,9 @@ const prepared = computed(() => {
 				thumbnails: {
 					save: (blob) =>
 						upload("board.save_thumbnail", { board: boardName.value }, blob),
+					// True once the board is known to have no picture yet (a board made from a
+					// template, a file or a copy has content but nobody has edited it).
+					missing: () => Boolean(board.data.value) && !board.data.value.thumbnail,
 				},
 				exports: {
 					prepare: (format, scope) =>

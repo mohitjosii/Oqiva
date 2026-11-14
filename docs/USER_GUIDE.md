@@ -74,7 +74,8 @@ diagram. It never undoes someone else's work.
 - **Comments.** Press **C** and click a shape or a place, write the comment, and mention people with **@**.
   Comments can be answered and resolved; mentioned people get a notification (the bell).
 - **History** keeps older versions of a board. Open *History* to look at one and *Restore* it (restoring is
-  one undo step, so you can take it back).
+  one undo step, so you can take it back). Automatic versions are deleted after 3 days (the History panel shows
+  the number). To keep one, give it a name or pin it.
 
 ## Getting your work out
 

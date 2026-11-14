@@ -14,6 +14,7 @@
   "trash_retention_days",
   "auto_version_interval_min",
   "version_retention",
+  "history_retention_days",
   "sec_access",
   "auto_grant_role",
   "realtime_reauth_seconds",
@@ -84,6 +85,13 @@
    "fieldtype": "Int",
    "label": "Version Retention",
    "default": "50"
+  },
+  {
+   "fieldname": "history_retention_days",
+   "fieldtype": "Int",
+   "label": "History Retention Days",
+   "default": "3",
+   "description": "Automatic history older than this many days is deleted every hour. Named and pinned versions are kept."
   },
   {
    "fieldname": "sec_access",

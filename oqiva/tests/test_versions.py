@@ -1,6 +1,7 @@
 """Version history (T8.5), and the .oqiva.json export and import (T7.4)."""
 
 import json
+from unittest.mock import patch
 
 import frappe
 from frappe.tests import IntegrationTestCase
@@ -159,6 +160,164 @@ class TestRetention(RestoresSettings, IntegrationTestCase):
 		self.add("Auto")
 		version_service._prune_if_due(self.w.board)
 		self.assertEqual(len(numbers(self.w.board)), 3)  # not pruned again within the hour
+
+
+class TestHistoryPurge(RestoresSettings, IntegrationTestCase):
+	"""The hourly job that deletes automatic history older than the history retention (3 days)."""
+
+	@classmethod
+	def setUpClass(cls):
+		super().setUpClass()
+		cls.w = make_world("vh")
+
+	def setUp(self):
+		super().setUp()
+		frappe.db.delete(V, {"board": self.w.board})
+		frappe.db.set_single_value("Oqiva Settings", "history_retention_days", 3)
+		# The job is global, so start from a site with no old history. This runs in the test's
+		# transaction, which is rolled back when the class ends: nothing real is lost.
+		frappe.db.delete(V, {"creation": ["<", version_service.history_cutoff()]})
+
+	def add(self, kind="Auto", days_old=0.0, pinned=0, label=None, board=None):
+		board = board or self.w.board
+		number = version_service._insert(board, kind, doc(shape("a")), 1, 1, 1, self.w.member, label)
+		name = frappe.db.get_value(V, {"board": board, "version_number": number}, "name")
+		values = {"creation": add_to_date(now_datetime(), days=-days_old)}
+		if pinned:
+			values["pinned"] = 1
+		frappe.db.set_value(V, name, values, update_modified=False)
+		return number
+
+	def purge(self):
+		with patch.object(frappe.db, "commit"):  # the job commits; the test must stay in its transaction
+			return version_service.purge_old_history()
+
+	def test_the_job_is_on_the_hourly_schedule(self):
+		"""Success: the purge is registered to run every hour."""
+		hourly = frappe.get_hooks("scheduler_events")["hourly"]
+		self.assertIn("oqiva.services.version_service.purge_old_history", hourly)
+
+	def test_automatic_history_older_than_three_days_is_deleted_and_newer_is_kept(self):
+		"""Success: Auto and Pre-restore versions past 3 days go; younger ones stay."""
+		old_auto = self.add("Auto", days_old=3.5)
+		old_pre = self.add("Pre-restore", days_old=10)
+		fresh = self.add("Auto", days_old=2.5)
+		new = self.add("Auto")
+		self.assertEqual(self.purge(), 2)
+		left = numbers(self.w.board)
+		self.assertNotIn(old_auto, left)
+		self.assertNotIn(old_pre, left)
+		self.assertEqual(left, [fresh, new])
+
+	def test_named_and_pinned_versions_are_kept_however_old(self):
+		"""Success: a version a person named or pinned is theirs to keep."""
+		named = self.add("Named", days_old=40, label="Release 1")
+		pinned = self.add("Auto", days_old=40, pinned=1)
+		pinned_pre = self.add("Pre-restore", days_old=40, pinned=1)
+		gone = self.add("Auto", days_old=40)
+		self.purge()
+		self.assertEqual(numbers(self.w.board), [named, pinned, pinned_pre])
+		self.assertNotIn(gone, numbers(self.w.board))
+
+	def test_every_board_is_cleaned_not_only_one(self):
+		"""Success: old history goes from all boards in a single run."""
+		other = board_service.create_board(self.w.member, self.w.workspace, None, "Other")["name"]
+		frappe.db.delete(V, {"board": other})
+		self.add("Auto", days_old=5)
+		self.add("Auto", days_old=5, board=other)
+		self.assertEqual(self.purge(), 2)
+		self.assertEqual(numbers(self.w.board), [])
+		self.assertEqual(numbers(other), [])
+
+	def test_the_number_of_days_comes_from_the_setting(self):
+		"""Success: with 7 days a 5-day-old version stays and an 8-day-old one goes."""
+		frappe.db.set_single_value("Oqiva Settings", "history_retention_days", 7)
+		five = self.add("Auto", days_old=5)
+		self.add("Auto", days_old=8)
+		self.purge()
+		self.assertEqual(numbers(self.w.board), [five])
+
+	def test_a_blank_setting_falls_back_to_three_days(self):
+		"""Boundary: a missing or zero value keeps the safe default instead of deleting history at once."""
+		keep = self.add("Auto", days_old=2)
+		self.add("Auto", days_old=4)
+		for blank in (None, 0):
+			frappe.db.set_single_value("Oqiva Settings", "history_retention_days", blank)
+			self.assertEqual(version_service.history_days(), 3)
+		self.purge()
+		self.assertEqual(numbers(self.w.board), [keep])
+
+	def test_a_nothing_to_do_run_changes_nothing(self):
+		"""Boundary: with only young history the job removes nothing."""
+		self.add("Auto")
+		self.add("Auto", days_old=1)
+		self.assertEqual(self.purge(), 0)
+		self.assertEqual(len(numbers(self.w.board)), 2)
+
+	def test_a_large_backlog_is_cleared_in_batches_and_finished_by_the_next_run(self):
+		"""Boundary: one run stops at its cap; the next run carries on until nothing is left."""
+		for _i in range(7):
+			self.add("Auto", days_old=9)
+		keep = self.add("Auto")
+		with (
+			patch.object(version_service, "PURGE_BATCH", 2),
+			patch.object(version_service, "PURGE_MAX_PER_RUN", 4),
+		):
+			self.assertEqual(self.purge(), 4)
+			self.assertEqual(len(numbers(self.w.board)), 4)
+			self.assertEqual(self.purge(), 3)
+		self.assertEqual(numbers(self.w.board), [keep])
+
+	def test_copies_left_in_the_deleted_document_log_go_too(self):
+		"""Success: old copies of deleted versions are removed; recent ones and other kinds stay."""
+
+		def log(doctype, days_old):
+			row = frappe.get_doc(
+				{
+					"doctype": "Deleted Document",
+					"deleted_doctype": doctype,
+					"deleted_name": frappe.generate_hash(),
+					"data": "{}",
+				}
+			).insert(ignore_permissions=True)
+			frappe.db.set_value(
+				"Deleted Document",
+				row.name,
+				"creation",
+				add_to_date(now_datetime(), days=-days_old),
+				update_modified=False,
+			)
+			return row.name
+
+		old = log(V, 5)
+		recent = log(V, 1)
+		other = log("Oqiva Comment", 30)
+		self.purge()
+		self.assertFalse(frappe.db.exists("Deleted Document", old))
+		self.assertTrue(frappe.db.exists("Deleted Document", recent))
+		self.assertTrue(frappe.db.exists("Deleted Document", other))
+
+	def test_pruning_by_count_no_longer_keeps_a_copy_of_each_deleted_version(self):
+		"""Success: deleting extra versions must not fill the Deleted Document log with whole boards."""
+		frappe.db.set_single_value("Oqiva Settings", "version_retention", 1)
+		before = frappe.db.count("Deleted Document", {"deleted_doctype": V})
+		for _i in range(4):
+			self.add("Auto")
+		self.assertEqual(version_service.prune(self.w.board), 3)
+		self.assertEqual(frappe.db.count("Deleted Document", {"deleted_doctype": V}), before)
+
+	def test_the_list_tells_the_panel_how_long_history_is_kept(self):
+		"""Success: the history list carries the number of days, so the panel can say so."""
+		self.assertEqual(version_service.list_versions(self.w.member, self.w.board)["retention_days"], 3)
+		frappe.db.set_single_value("Oqiva Settings", "history_retention_days", 14)
+		self.assertEqual(version_service.list_versions(self.w.member, self.w.board)["retention_days"], 14)
+
+	def test_the_setting_must_be_at_least_one_day(self):
+		"""Failure: zero days would delete history as it is made, so it is refused."""
+		settings = frappe.get_doc("Oqiva Settings")
+		settings.history_retention_days = 0
+		with self.assertRaises(OqivaError):
+			settings.save()
 
 
 class TestVersionApi(IntegrationTestCase):

@@ -108,6 +108,7 @@ Conventions:
 | trash_retention_days | Int | 30 |
 | auto_version_interval_min | Int | 10 |
 | version_retention | Int | 50 |
+| history_retention_days | Int | 3 |
 | realtime_reauth_seconds | Int | 15 |
 | ai_enabled, ai_api_key (Password), ai_model | – | Phase 12 |
 | notification_email, notify_new_bug, notify_new_feature | – | Phase 11 |
@@ -278,6 +279,7 @@ Together these close Oqiva gap #1 (revoked users kept their open sockets).
 ### 7.4 Version history
 - **When a version is taken:** inside the save transaction, if the newest Auto version is older than `auto_version_interval_min`, an `Auto` version is written. "Save version" (with a label) writes a `Named` version. Restore writes a `Pre-restore` version first.
 - **Retention:** keep the newest `version_retention` Auto versions plus all Named and pinned versions. Pruning runs in the save transaction, at most once per hour per board.
+- **Age limit:** an hourly job (`version_service.purge_old_history`) deletes Auto and Pre-restore versions older than `history_retention_days` (default 3, at least 1; a missing or zero value means 3). Named and pinned versions are never deleted by age. Rows go straight from the table in batches of 200 with a commit each, at most 5,000 a run, and old copies of deleted versions in the `Deleted Document` log go with them. Count pruning deletes permanently, so it no longer leaves a copy of each version in that log.
 - **Restore runs on the client (fixes Oqiva gap #2).** The restoring editor fetches the version's `document` and applies it to its local store as **one ordinary edit**. The CRDT bridge turns that into Yjs deletes and sets, so peers converge and normal autosave persists it. The server never overwrites `document` behind a live room. Import and AI insert follow the same rule.
 
 **As built (Phase 7).** Versions are read only through `version_service` (`list_versions`, `get_version`, `save_named`, `set_label`, `set_pinned`, `begin_restore`, `restore_unopenable`; endpoints in `api/version.py`), because the table grants no read to ordinary users. An Auto version is skipped when the content equals the newest version. Labelling an Auto version makes it Named. Retention treats Auto and Pre-restore together. `begin_restore` writes the Pre-restore version, returns the old document and leaves the board row alone; the editor applies it with `store.replaceContent`. `restore_unopenable` is the one server-side write, allowed only while the stored document fails validation. The `.oqiva.json` file is `{format: "oqiva-board", formatVersion: 1, schemaVersion, title, exportedOn, document}`; `board.import_board` reads it with `export_service.read_board_file`, drops picture objects and their lines, and validates the rest as a save. Oqiva errors now put their message in the message log, so the browser can show it.
@@ -457,7 +459,7 @@ Positions in mind maps are derived by the layout engine and never stored. Flowch
 ## 16. Scheduled jobs (`scheduler_events`)
 | Frequency | Job |
 |---|---|
-| hourly | prune versions beyond retention (for boards saved since the last run); prune expired Link Grants from the lookup cache |
+| hourly | prune versions beyond retention (for boards saved since the last run); delete automatic versions older than `history_retention_days`; prune expired Link Grants from the lookup cache |
 | daily | purge trash older than `trash_retention_days`; prune Board View older than 90 days; prune Audit Log older than 365 days |
 
 ---

@@ -258,6 +258,16 @@ const thumbnailer =
 			})
 		: null
 
+// A board that arrives with content but no picture (from a template, a file or a copy) gets one
+// when it is opened, without waiting for the first edit.
+watch(
+	() => props.host.thumbnails?.missing?.(),
+	(missing) => {
+		if (missing) thumbnailer?.request()
+	},
+	{ immediate: true },
+)
+
 const canExport = Boolean(props.host.capabilities.can_export && props.host.exports)
 const notify = {
 	error: (message) => toast.error(message),
