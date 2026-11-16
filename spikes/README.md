@@ -1,7 +1,7 @@
 # Phase 1 spikes
 
 Throwaway experiments that settle two risks before the real code is written. They are
-not part of the app and ship nothing. Results are recorded in `docs/DECISIONS.md`
+not part of the app and ship nothing. Results are recorded in the bench's `docs/DECISIONS.md`
 (ADR-003 and ADR-009).
 
 | Folder | Question |

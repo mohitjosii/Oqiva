@@ -8,23 +8,17 @@ access, and draw on an infinite canvas together.
 admin console, was built and set aside). It has workspaces, projects and boards; a canvas editor with shapes,
 connectors, mind maps, flowcharts and a whiteboard; live editing; sharing and links; comments; version
 history; export and import; about forty templates; and AI diagram generation (off by default). See
-`docs/RELEASE_NOTES.md` for what it does and what is known not to work yet.
+the release notes for what it does and what is known not to work yet.
 
 ## Documentation
-| | |
-|---|---|
-| `docs/USER_GUIDE.md` | Using Oqiva |
-| `docs/ADMIN_GUIDE.md` | Roles, settings, AI setup, monitoring |
-| `docs/DEPLOYMENT.md` | Install, processes, backup and restore, upgrade, uninstall |
-| `docs/RELEASE_NOTES.md` | What is in 1.1 and its known limits |
-| `docs/ARCHITECTURE.md`, `docs/DECISIONS.md` | How it is built and why |
-| `docs/SECURITY_TEST_PLAN.md`, `docs/PERFORMANCE.md` | What was tested, and the measurements |
-| `docs/DEVELOPMENT_PLAN.md` | The phased plan and each phase's status |
+The documentation (user guide, admin guide, deployment, release notes, architecture, decisions, security test
+plan, performance and the development plan) is kept outside this repository, in the bench's `docs/` folder.
+The user guide is also on the Oqiva website.
 
 ## Install
 
 ```bash
-bench get-app oqiva /path/to/oqiva          # or the git URL
+bench get-app https://github.com/mohitjosii/Oqiva.git --branch version-16
 bench --site your-site install-app oqiva
 bench build --app oqiva                      # builds the SPA in frontend/
 bench --site your-site migrate
@@ -65,7 +59,6 @@ that settled early risks live in `spikes/`.
 | `oqiva/oqiva/doctype/` | The DocTypes |
 | `realtime/handlers.js` | The relay that Frappe's socket server loads for live editing |
 | `frontend/` | The Vue 3 and frappe-ui single-page app |
-| `docs/` | Architecture, decisions, the Draw feature reference, the development plan, the security test plan |
 
 ## Licence
 
