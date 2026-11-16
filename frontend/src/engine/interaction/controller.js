@@ -562,6 +562,10 @@ export class CanvasController {
 		this.state.editingId = null // pressing anywhere else ends text editing, which saves it
 		if (!event.target?.closest?.("[data-mmnode],[data-mmadd],[data-mmtoggle]"))
 			this.state.editingNodeId = null
+		// the same for a flowchart step or arrow label being typed: pressing anywhere else keeps the text
+		// and closes the field, so the chart is not left looking selected
+		this.state.editingFlowId = null
+		this.state.editingFlowNew = false
 		if (!event.target?.dataset?.quick) this.state.hoverId = null
 		const point = this.boardPoint(event)
 		if (this.state.tool === "comment") {

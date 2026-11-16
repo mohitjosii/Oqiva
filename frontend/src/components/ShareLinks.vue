@@ -4,6 +4,7 @@
 import { Button, Select, toast } from "frappe-ui"
 import { computed, ref, watch } from "vue"
 import { api } from "@/data/api"
+import { copyText } from "@/utils/clipboard"
 import { messageFor } from "@/utils/errors"
 
 const props = defineProps({
@@ -17,6 +18,7 @@ const access = ref("Viewer")
 const expiry = ref("")
 const anonymous = ref(false)
 const made = ref(null) // {url} shown once, right after a link is made
+const urlField = ref(null)
 
 const accessOptions = [
 	{ value: "Viewer", label: "Can view" },
@@ -73,11 +75,11 @@ async function create() {
 }
 
 async function copy(url) {
-	try {
-		await navigator.clipboard.writeText(url)
-		toast.success("Link copied")
-	} catch {
-		toast.error("Could not copy. Select the link and copy it by hand.")
+	// the field in the dialog is used when the page has no clipboard (plain http on a private address)
+	if (await copyText(url, urlField.value)) toast.success("Link copied")
+	else {
+		urlField.value?.select()
+		toast.error("Could not copy. The link is selected: press Ctrl+C (or Cmd+C) to copy it.")
 	}
 }
 
@@ -143,6 +145,7 @@ const when = (value) => (value ? new Date(value.replace(" ", "T")).toLocaleDateS
 			</p>
 			<div class="flex items-center gap-2">
 				<input
+					ref="urlField"
 					class="min-w-0 flex-1 rounded border border-outline-gray-2 bg-surface-white px-2 py-1 text-sm text-ink-gray-9"
 					:value="made.url"
 					readonly

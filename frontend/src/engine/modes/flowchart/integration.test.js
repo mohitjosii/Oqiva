@@ -359,6 +359,36 @@ describe("the pointer", () => {
 		expect(store.state.selection).toEqual(["p"])
 	})
 
+	it("a press on empty canvas closes the text field of a step and leaves nothing selected", () => {
+		store.select(["p"])
+		store.state.editingFlowId = "p"
+		store.state.editingFlowNew = true
+		controller.pointerDown(press(5000, 5000))
+		expect(store.state.editingFlowId).toBeNull()
+		expect(store.state.editingFlowNew).toBe(false)
+		controller.pointerUp(press(5000, 5000))
+		expect(store.state.selection).toEqual([])
+	})
+
+	it("a press on empty canvas closes an arrow label field too", () => {
+		store.select(["sd"])
+		store.state.editingFlowId = "sd"
+		controller.pointerDown(press(5000, 5000))
+		expect(store.state.editingFlowId).toBeNull()
+		controller.pointerUp(press(5000, 5000))
+		expect(store.state.selection).toEqual([])
+	})
+
+	it("a press on another step moves the field away from the first one", () => {
+		store.select(["p"])
+		store.state.editingFlowId = "p"
+		const { x, y } = centre("e")
+		controller.pointerDown(press(x, y))
+		expect(store.state.editingFlowId).toBeNull()
+		controller.pointerUp(press(x, y))
+		expect(store.state.selection).toEqual(["e"])
+	})
+
 	it("selects an arrow by a press on it", () => {
 		const route = controller.flows.value.get("c").routes.get("sd")
 		const a = route.points[0]
