@@ -1,10 +1,10 @@
 """Version history endpoints."""
 
 import frappe
-from frappe.rate_limiter import rate_limit
 
 from oqiva.api import current_user
 from oqiva.services import version_service
+from oqiva.utils.rate_limit import rate_limit
 
 
 @frappe.whitelist()
