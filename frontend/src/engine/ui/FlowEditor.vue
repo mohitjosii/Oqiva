@@ -4,6 +4,7 @@
 // moment ago and left empty is thrown away (it keeps its default wording only if never typed in).
 import { computed, nextTick, ref, watch } from "vue"
 import { toScreen } from "../geometry/viewport"
+import { FONT } from "../render/nodes"
 import { FLOW_LABEL_LIMIT, FLOW_TEXT_LIMIT, fontSizeOf } from "../modes/flowchart/model"
 import { setEdgeLabel, setNodeText } from "../modes/flowchart/ops"
 import { applyFlowChange } from "../modes/flowchart/storeOps"
@@ -25,6 +26,27 @@ const layout = computed(() => {
 	return chartId ? props.controller.flows.value.get(chartId) : null
 })
 
+// How wide the drawn text of each kind of step may be, as a share of the step's width (the same
+// numbers the drawing uses, so the text does not jump when typing ends).
+const TEXT_SHARE = { decision: 0.58, io: 0.8 }
+const textShare = (type) => TEXT_SHARE[type] ?? 0.9
+
+// A step: a frame over the step itself, centring the text field in it. The step's own shape (a
+// diamond, a pill, a slanted box) stays visible under the text; it is not covered.
+const frame = computed(() => {
+	const l = layout.value
+	if (!l || !node.value) return {}
+	const { viewport } = props.store.state
+	const size = l.sizes.get(node.value.id)
+	const p = toScreen(viewport, { x: node.value.x - size.w / 2, y: node.value.y - size.h / 2 })
+	return {
+		left: `${p.x}px`,
+		top: `${p.y}px`,
+		width: `${size.w * viewport.scale}px`,
+		height: `${size.h * viewport.scale}px`,
+	}
+})
+
 const style = computed(() => {
 	const l = layout.value
 	if (!l) return {}
@@ -32,15 +54,12 @@ const style = computed(() => {
 	const s = viewport.scale
 	if (node.value) {
 		const size = l.sizes.get(node.value.id)
-		const p = toScreen(viewport, { x: node.value.x - size.w / 2, y: node.value.y - size.h / 2 })
+		const inner = Math.max(40, size.w * textShare(node.value.type) - 8)
 		return {
-			left: `${p.x}px`,
-			top: `${p.y}px`,
-			width: `${size.w * s}px`,
-			minHeight: `${size.h * s}px`,
+			width: `${inner * s}px`,
 			fontSize: `${fontSizeOf(node.value) * s}px`,
-			padding: `${8 * s}px ${12 * s}px`,
-			borderRadius: `${10 * s}px`,
+			fontFamily: FONT,
+			color: "#1f2937",
 			textAlign: "center",
 		}
 	}
@@ -76,8 +95,9 @@ function chartParts(chartId) {
 	return { nodes: props.store.nodesOfChart(chartId), edges: props.store.edgesOfChart(chartId) }
 }
 
-// Saves what was typed. A new step left empty is thrown away.
-function commit() {
+// Saves what was typed. A new step left empty is thrown away. ``reselect`` is false when the field
+// was closed by a press somewhere else: that press chose what is selected, the save must not undo it.
+function commit({ reselect = true } = {}) {
 	if (!session) return
 	const { id: target, isEdge, fresh, original } = session
 	session = null
@@ -89,7 +109,7 @@ function commit() {
 		const { edges } = chartParts(current.chartId)
 		applyFlowChange(props.store, current.chartId, setEdgeLabel(edges, target, text), {
 			label: "Edit label",
-			select: target,
+			select: reselect ? target : undefined,
 			selectUndo: [target],
 		})
 		return
@@ -105,7 +125,7 @@ function commit() {
 	const { nodes } = chartParts(current.chartId)
 	applyFlowChange(props.store, current.chartId, setNodeText(nodes, target, text), {
 		label: "Edit step",
-		select: target,
+		select: reselect ? target : undefined,
 		selectUndo: [target],
 	})
 }
@@ -113,7 +133,7 @@ function commit() {
 watch(
 	id,
 	(next, previous) => {
-		if (previous && session) commit()
+		if (previous && session) commit({ reselect: false })
 		if (!next || props.store.state.readonly) return
 		const n = props.store.getFlowNode(next)
 		const e = n ? null : props.store.getFlowEdge(next)
@@ -146,14 +166,40 @@ function keep() {
 		class="pointer-events-none absolute inset-0"
 		data-testid="flow-editor"
 	>
+		<div
+			v-if="node"
+			class="pointer-events-none absolute flex items-center justify-center"
+			:style="frame"
+			data-testid="flow-step-frame"
+		>
+			<textarea
+				ref="input"
+				v-model="value"
+				rows="1"
+				class="pointer-events-auto resize-none overflow-hidden rounded-none border-0 bg-transparent p-0 leading-[1.35] caret-blue-600 shadow-none ring-0 focus:shadow-none focus:outline-none focus:ring-0"
+				:style="style"
+				:maxlength="FLOW_TEXT_LIMIT"
+				aria-label="Step text"
+				data-testid="flow-input"
+				@input="resize"
+				@pointerdown.stop
+				@pointerup.stop
+				@dblclick.stop
+				@keydown.enter.exact.stop.prevent="keep"
+				@keydown.esc.stop.prevent="keep"
+				@keydown.stop
+				@blur="keep"
+			/>
+		</div>
 		<textarea
+			v-else
 			ref="input"
 			v-model="value"
 			rows="1"
 			class="pointer-events-auto absolute resize-none overflow-hidden border-2 border-blue-600 bg-white leading-[1.35] text-ink-gray-9 shadow-lg focus:outline-none"
 			:style="style"
-			:maxlength="edge ? FLOW_LABEL_LIMIT : FLOW_TEXT_LIMIT"
-			:aria-label="edge ? 'Arrow label' : 'Step text'"
+			:maxlength="FLOW_LABEL_LIMIT"
+			aria-label="Arrow label"
 			data-testid="flow-input"
 			@input="resize"
 			@pointerdown.stop

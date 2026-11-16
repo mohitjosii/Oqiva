@@ -1,11 +1,11 @@
 """Board endpoints."""
 
 import frappe
-from frappe.rate_limiter import rate_limit
 
 from oqiva.api import current_user
 from oqiva.exceptions import OqivaError
 from oqiva.services import board_service, document_service, file_service
+from oqiva.utils.rate_limit import rate_limit
 
 
 @frappe.whitelist()

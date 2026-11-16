@@ -295,6 +295,45 @@ await step("it is all still there after saving and reloading", async () => {
 	assert.ok((await texts(page)).some((t) => t.includes("Receipt sent")))
 })
 
+await step("while typing in a step, its own shape stays visible and the text sits inside it", async () => {
+	// A new decision is a diamond, a new input step a slanted box. The text field must not cover them
+	// with a plain white rectangle.
+	await click(page, "Archive") // the last step: D, I and T add the next one after it
+	for (const [key, text] of [["d", "Is everything fine here?"], ["i", "Read the file"]]) {
+		await page.keyboard.press(key)
+		await editor.waitFor()
+		await typed(page, text)
+		const seen = await page.evaluate(() => {
+			const input = document.querySelector('[data-testid="flow-input"]')
+			const frame = document.querySelector('[data-testid="flow-step-frame"]')
+			const style = getComputedStyle(input)
+			const i = input.getBoundingClientRect()
+			const f = frame.getBoundingClientRect()
+			return {
+				transparent: style.backgroundColor === "rgba(0, 0, 0, 0)",
+				borderless: parseFloat(style.borderTopWidth) === 0,
+				inside: i.left >= f.left - 1 && i.right <= f.right + 1 && i.top >= f.top - 1 && i.bottom <= f.bottom + 1,
+			}
+		})
+		assert.deepEqual(seen, { transparent: true, borderless: true, inside: true }, `typing in a step (${key})`)
+		const shapeVisible = await page.locator("[data-flownode] polygon, [data-flownode] path").count()
+		assert.ok(shapeVisible > 0, "the step's own shape is still drawn while typing")
+		await page.keyboard.press("Enter")
+		await editor.waitFor({ state: "detached" })
+	}
+})
+
+await step("pressing on empty canvas while a new step is being typed keeps it and unselects the chart", async () => {
+	await page.getByTestId("flowchart-tool").click()
+	await editor.waitFor()
+	await typed(page, "Typed then left")
+	const view = page.viewportSize()
+	await page.mouse.click(60, view.height - 160) // empty canvas, far from any chart
+	await editor.waitFor({ state: "detached" })
+	await poll(async () => (await texts(page)).some((t) => t.includes("Typed then left")), "the typed text to be kept")
+	assert.equal(await page.locator('[data-testid="flowchart-bar"]').count(), 0, "nothing is selected after pressing away")
+})
+
 await step("the Decision tree template opens as a real flowchart", async () => {
 	await page.goto(page.url().replace(/\/board\/.*/, "/"))
 	await page.getByRole("link", { name: "Templates" }).first().click()
